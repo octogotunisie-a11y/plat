@@ -111,6 +111,16 @@
             cursor: pointer;
         }
         
+        .btn-outline {
+            background: transparent;
+            color: #667eea;
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            border: 2px solid #667eea;
+            cursor: pointer;
+        }
+        
         .input-modern {
             border: 2px solid #e2e8f0;
             border-radius: 12px;
@@ -218,6 +228,16 @@
         .fade-in {
             animation: fadeIn 0.5s ease-out;
         }
+        
+        .tab-active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .tab-inactive {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
     </style>
 </head>
 
@@ -244,8 +264,8 @@
                     </div>
                     <div class="hidden md:flex space-x-4">
                         <button onclick="showHome()" class="text-gray-600 hover:text-purple-600 px-4 py-2">Accueil</button>
-                        <button onclick="showLogin('candidat')" class="text-gray-600 hover:text-purple-600 px-4 py-2">Espace Candidat</button>
-                        <button onclick="showLogin('entreprise')" class="text-gray-600 hover:text-purple-600 px-4 py-2">Espace Entreprise</button>
+                        <button onclick="showAuthModal('candidat')" class="text-gray-600 hover:text-purple-600 px-4 py-2">Espace Candidat</button>
+                        <button onclick="showAuthModal('entreprise')" class="text-gray-600 hover:text-purple-600 px-4 py-2">Espace Entreprise</button>
                         <button onclick="showLogin('admin')" class="text-gray-600 hover:text-purple-600 px-4 py-2">Administrateur</button>
                     </div>
                 </div>
@@ -258,7 +278,6 @@
         // ====================================================
         // CONFIGURATION SUPABASE
         // ====================================================
-        // !!! REMPLACEZ CES VALEURS PAR LES VOTRES !!!
         const SUPABASE_URL = 'https://ubeaidhmtkivrpnkqsnt.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_SMqeBYqnHCjrQGO2_rfTJA_JvkumJXQ';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -305,7 +324,6 @@
         // AFFICHAGE ACCUEIL
         // ====================================================
         async function showHome() {
-            // Compter les candidats, entreprises et offres depuis Supabase
             let candidatsCount = 0;
             let entreprisesCount = 0;
             let offresCount = 0;
@@ -318,7 +336,6 @@
                     head: true
                 });
                 candidatsCount = cCount || 0;
-
                 const {
                     count: eCount
                 } = await supabaseClient.from('entreprises').select('*', {
@@ -326,7 +343,6 @@
                     head: true
                 });
                 entreprisesCount = eCount || 0;
-
                 const {
                     count: oCount
                 } = await supabaseClient.from('offres').select('*', {
@@ -344,22 +360,22 @@
                         <h1 class="text-5xl md:text-6xl font-bold mb-4">Plateforme de Recrutement</h1>
                         <p class="text-xl md:text-2xl mb-8">La solution complète pour l'emploi et le recrutement professionnel</p>
                         <div class="flex justify-center gap-4 flex-wrap">
-                            <button onclick="showLogin('candidat')" class="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:shadow-lg">Je cherche un emploi</button>
-                            <button onclick="showLogin('entreprise')" class="bg-purple-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-800">Je recrute</button>
+                            <button onclick="showAuthModal('candidat')" class="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:shadow-lg">Je cherche un emploi</button>
+                            <button onclick="showAuthModal('entreprise')" class="bg-purple-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-800">Je recrute</button>
                         </div>
                     </div>
                     <div class="grid md:grid-cols-3 gap-8 mb-16">
-                        <div class="stat-card" onclick="showLogin('candidat')">
+                        <div class="stat-card" onclick="showAuthModal('candidat')">
                             <i class="fas fa-users text-4xl text-purple-600 mb-3"></i>
                             <div class="text-3xl font-bold">${candidatsCount}</div>
                             <div class="text-gray-600">Candidats inscrits</div>
                         </div>
-                        <div class="stat-card" onclick="showLogin('entreprise')">
+                        <div class="stat-card" onclick="showAuthModal('entreprise')">
                             <i class="fas fa-building text-4xl text-purple-600 mb-3"></i>
                             <div class="text-3xl font-bold">${entreprisesCount}</div>
                             <div class="text-gray-600">Entreprises partenaires</div>
                         </div>
-                        <div class="stat-card" onclick="showLogin('entreprise')">
+                        <div class="stat-card" onclick="showAuthModal('entreprise')">
                             <i class="fas fa-briefcase text-4xl text-purple-600 mb-3"></i>
                             <div class="text-3xl font-bold">${offresCount}</div>
                             <div class="text-gray-600">Offres d'emploi</div>
@@ -367,14 +383,14 @@
                     </div>
                     <h2 class="text-3xl font-bold text-center mb-12">Nos services</h2>
                     <div class="grid md:grid-cols-3 gap-8">
-                        <div class="card-pro p-8 text-center cursor-pointer" onclick="showLogin('candidat')">
+                        <div class="card-pro p-8 text-center cursor-pointer" onclick="showAuthModal('candidat')">
                             <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i class="fas fa-user-graduate text-white text-3xl"></i>
                             </div>
                             <h3 class="text-2xl font-bold mb-3">Espace Candidat</h3>
                             <p class="text-gray-600">Créez votre CV professionnel, postulez aux offres et suivez vos candidatures</p>
                         </div>
-                        <div class="card-pro p-8 text-center cursor-pointer" onclick="showLogin('entreprise')">
+                        <div class="card-pro p-8 text-center cursor-pointer" onclick="showAuthModal('entreprise')">
                             <div class="w-20 h-20 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i class="fas fa-chart-line text-white text-3xl"></i>
                             </div>
@@ -395,146 +411,46 @@
         }
 
         // ====================================================
-        // CONNEXION
+        // MODAL AUTHENTIFICATION (INSCRIPTION EN PREMIER)
         // ====================================================
-        function showLogin(type) {
+        function showAuthModal(type) {
             const html = `
-                <div class="max-w-md mx-auto fade-in">
+                <div class="max-w-4xl mx-auto fade-in">
                     <div class="card-pro p-8">
                         <div class="text-center mb-8">
-                            <div class="text-5xl mb-4">${type === 'candidat' ? '👤' : type === 'entreprise' ? '🏢' : '👑'}</div>
-                            <h2 class="text-3xl font-bold">Connexion</h2>
-                            <p class="text-gray-600 mt-2">Espace ${type === 'candidat' ? 'Candidat' : type === 'entreprise' ? 'Entreprise' : 'Administrateur'}</p>
+                            <div class="text-5xl mb-4">${type === 'candidat' ? '👤' : '🏢'}</div>
+                            <h2 class="text-3xl font-bold">Espace ${type === 'candidat' ? 'Candidat' : 'Entreprise'}</h2>
+                            <p class="text-gray-600 mt-2">${type === 'candidat' ? 'Trouvez l\'emploi de vos rêves' : 'Recrutez les meilleurs talents'}</p>
                         </div>
-                        <form onsubmit="handleLogin(event, '${type}')">
-                            <div class="mb-4">
-                                <label class="block text-gray-700 mb-2">${type === 'candidat' ? 'Téléphone' : 'Email'}</label>
-                                <input type="${type === 'candidat' ? 'tel' : 'email'}" id="loginIdentifier" required class="input-modern" placeholder="${type === 'candidat' ? '06XXXXXXXX' : 'votre@email.com'}">
-                            </div>
-                            <div class="mb-6">
-                                <label class="block text-gray-700 mb-2">Mot de passe</label>
-                                <input type="password" id="loginPassword" required class="input-modern" placeholder="••••••••">
-                            </div>
-                            <button type="submit" class="btn-primary w-full">Se connecter</button>
-                        </form>
-                        <div class="mt-4 text-center">
-                            <button onclick="showRegister('${type}')" class="text-purple-600 hover:underline">Pas encore de compte ? S'inscrire</button>
+                        
+                        <!-- Tabs: Inscription (active par défaut) et Connexion -->
+                        <div class="flex mb-8 rounded-lg overflow-hidden border border-gray-200">
+                            <button id="tabInscription" onclick="switchTab('inscription', '${type}')" class="flex-1 py-3 font-semibold transition tab-active">
+                                <i class="fas fa-user-plus mr-2"></i> Inscription
+                            </button>
+                            <button id="tabConnexion" onclick="switchTab('connexion', '${type}')" class="flex-1 py-3 font-semibold transition tab-inactive">
+                                <i class="fas fa-sign-in-alt mr-2"></i> Connexion
+                            </button>
                         </div>
-                        <button onclick="showHome()" class="mt-4 text-gray-500 hover:text-gray-700 text-sm w-full">← Retour à l'accueil</button>
+                        
+                        <!-- Formulaire d'inscription (visible par défaut) -->
+                        <div id="formInscription">
+                            ${type === 'candidat' ? getRegisterCandidatForm() : getRegisterEntrepriseForm()}
+                        </div>
+                        
+                        <!-- Formulaire de connexion (caché par défaut) -->
+                        <div id="formConnexion" style="display: none;">
+                            ${type === 'candidat' ? getLoginCandidatForm() : getLoginEntrepriseForm()}
+                        </div>
                     </div>
                 </div>
             `;
             document.getElementById('mainContent').innerHTML = html;
         }
 
-        async function handleLogin(event, type) {
-            event.preventDefault();
-            const identifier = document.getElementById('loginIdentifier').value;
-            const password = document.getElementById('loginPassword').value;
-
-            if (type === 'admin') {
-                if (identifier === 'admin@octogo.com' && password === 'admin123') {
-                    currentUser = {
-                        nom: 'Administrateur',
-                        email: identifier
-                    };
-                    currentUserType = 'admin';
-                    localStorage.setItem('currentSession', JSON.stringify({
-                        user: currentUser,
-                        type: 'admin'
-                    }));
-                    showAdminDashboard();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Erreur',
-                        text: 'Identifiants administrateur incorrects'
-                    });
-                }
-            } else if (type === 'candidat') {
-                const {
-                    data,
-                    error
-                } = await supabaseClient
-                    .from('candidats')
-                    .select('*')
-                    .eq('telephone', identifier)
-                    .eq('mot_de_passe', password);
-
-                if (error) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Erreur',
-                        text: error.message
-                    });
-                } else if (data && data.length > 0) {
-                    currentUser = data[0];
-                    currentUserType = 'candidat';
-                    localStorage.setItem('currentSession', JSON.stringify({
-                        user: currentUser,
-                        type: 'candidat'
-                    }));
-                    showCandidatDashboard();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Erreur',
-                        text: 'Téléphone ou mot de passe incorrect'
-                    });
-                }
-            } else if (type === 'entreprise') {
-                const {
-                    data,
-                    error
-                } = await supabaseClient
-                    .from('entreprises')
-                    .select('*')
-                    .eq('email', identifier)
-                    .eq('mot_de_passe', password);
-
-                if (error) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Erreur',
-                        text: error.message
-                    });
-                } else if (data && data.length > 0) {
-                    currentUser = data[0];
-                    currentUserType = 'entreprise';
-                    localStorage.setItem('currentSession', JSON.stringify({
-                        user: currentUser,
-                        type: 'entreprise'
-                    }));
-                    showEntrepriseDashboard();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Erreur',
-                        text: 'Email ou mot de passe incorrect'
-                    });
-                }
-            }
-        }
-
-        // ====================================================
-        // INSCRIPTION CANDIDAT (sans email)
-        // ====================================================
-        function showRegister(type) {
-            if (type === 'candidat') {
-                showRegisterCandidat();
-            } else if (type === 'entreprise') {
-                showRegisterEntreprise();
-            } else {
-                Swal.fire('Info', 'Contactez le support pour créer un compte administrateur', 'info');
-            }
-        }
-
-        function showRegisterCandidat() {
-            const html = `
-        <div class="max-w-5xl mx-auto fade-in">
-            <div class="card-pro p-8">
-                <h2 class="text-3xl font-bold text-center mb-6">Inscription Candidat</h2>
-                <form onsubmit="registerCandidat(event)" enctype="multipart/form-data">
+        function getRegisterCandidatForm() {
+            return `
+                <form onsubmit="registerCandidat(event)">
                     <div class="form-section">
                         <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-user-circle mr-2"></i>Informations personnelles</h3>
                         <div class="grid md:grid-cols-2 gap-4">
@@ -593,66 +509,110 @@
                         </div>
                     </div>
                     
-                    <!-- NOUVELLE SECTION: DOCUMENTS -->
-                    <div class="form-section">
-                        <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-file-alt mr-2"></i>Documents</h3>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-gray-700 mb-2">CV (PDF ou Word)</label>
-                                <input type="file" id="cvFile" accept=".pdf,.doc,.docx" class="input-modern">
-                                <p class="text-xs text-gray-500 mt-1">Format accepté: PDF, DOC, DOCX (Max 5MB)</p>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 mb-2">Photo de profil</label>
-                                <input type="file" id="photoFile" accept="image/*" class="input-modern">
-                                <p class="text-xs text-gray-500 mt-1">Format accepté: JPG, PNG (Max 2MB)</p>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 mb-2">Carte d'identité</label>
-                                <input type="file" id="carteIdentiteFile" accept=".pdf,.jpg,.png" class="input-modern">
-                                <p class="text-xs text-gray-500 mt-1">Format accepté: PDF, JPG, PNG (Max 2MB)</p>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 mb-2">Diplômes</label>
-                                <input type="file" id="diplomesFile" accept=".pdf,.jpg,.png" class="input-modern">
-                                <p class="text-xs text-gray-500 mt-1">Format accepté: PDF, JPG, PNG (Max 5MB)</p>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 mb-2">Certificats</label>
-                                <input type="file" id="certificatsFile" accept=".pdf,.jpg,.png" class="input-modern">
-                                <p class="text-xs text-gray-500 mt-1">Format accepté: PDF, JPG, PNG (Max 5MB)</p>
-                            </div>
-                            <div>
-                                <label class="block text-gray-700 mb-2">Attestations de travail</label>
-                                <input type="file" id="attestationsFile" accept=".pdf,.jpg,.png" class="input-modern">
-                                <p class="text-xs text-gray-500 mt-1">Format accepté: PDF, JPG, PNG (Max 5MB)</p>
-                            </div>
-                        </div>
-                        <div class="mt-3 p-3 bg-blue-50 rounded-lg">
-                            <p class="text-sm text-blue-700"><i class="fas fa-info-circle mr-2"></i>Les documents seront téléchargés en toute sécurité. Vous pourrez les modifier plus tard depuis votre profil.</p>
-                        </div>
-                    </div>
-                    
                     <div class="flex justify-between mt-8">
                         <button type="button" onclick="showHome()" class="btn-secondary">Annuler</button>
-                        <button type="submit" class="btn-primary"><i class="fas fa-user-plus mr-2"></i> M'inscrire</button>
+                        <button type="submit" class="btn-primary"><i class="fas fa-user-plus mr-2"></i> S'inscrire</button>
                     </div>
                 </form>
-            </div>
-        </div>
-    `;
-            document.getElementById('mainContent').innerHTML = html;
+            `;
         }
 
-        // Remplacer la fonction registerCandidat par celle-ci :
+        function getRegisterEntrepriseForm() {
+            return `
+                <form onsubmit="registerEntreprise(event)">
+                    <div class="form-section">
+                        <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-building mr-2"></i>Informations entreprise</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2"><label class="block text-gray-700 mb-2">Nom de l'entreprise *</label><input type="text" id="nomEntreprise" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Secteur d'activité *</label>
+                                <select id="secteurActivite" required class="input-modern">
+                                    <option value="">Sélectionner</option>
+                                    <option>Industrie</option><option>Services</option><option>Logistique</option>
+                                    <option>Hôtellerie</option><option>Sécurité</option><option>Nettoyage</option>
+                                    <option>Restauration</option><option>Technologie</option><option>Construction</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2"><label class="block text-gray-700 mb-2">Adresse *</label><input type="text" id="adresseEntreprise" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Ville *</label><input type="text" id="villeEntreprise" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Responsable RH *</label><input type="text" id="responsableRH" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Téléphone *</label><input type="tel" id="telEntreprise" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Email *</label><input type="email" id="emailEntreprise" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Mot de passe *</label><input type="password" id="passwordEntreprise" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Matricule fiscal</label><input type="text" id="matriculeFiscal" class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Registre de commerce</label><input type="text" id="registreCommerce" class="input-modern"></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between mt-8">
+                        <button type="button" onclick="showHome()" class="btn-secondary">Annuler</button>
+                        <button type="submit" class="btn-primary"><i class="fas fa-check-circle mr-2"></i> Créer mon espace</button>
+                    </div>
+                </form>
+            `;
+        }
 
+        function getLoginCandidatForm() {
+            return `
+                <form onsubmit="handleLoginCandidat(event)">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Téléphone *</label>
+                        <input type="tel" id="loginTelephone" required class="input-modern" placeholder="0612345678">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 mb-2">Mot de passe *</label>
+                        <input type="password" id="loginPasswordCandidat" required class="input-modern" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-primary w-full">Se connecter</button>
+                </form>
+            `;
+        }
+
+        function getLoginEntrepriseForm() {
+            return `
+                <form onsubmit="handleLoginEntreprise(event)">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Email *</label>
+                        <input type="email" id="loginEmail" required class="input-modern" placeholder="contact@entreprise.com">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 mb-2">Mot de passe *</label>
+                        <input type="password" id="loginPasswordEntreprise" required class="input-modern" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="btn-primary w-full">Se connecter</button>
+                </form>
+            `;
+        }
+
+        function switchTab(tab, type) {
+            const tabInscription = document.getElementById('tabInscription');
+            const tabConnexion = document.getElementById('tabConnexion');
+            const formInscription = document.getElementById('formInscription');
+            const formConnexion = document.getElementById('formConnexion');
+
+            if (tab === 'inscription') {
+                tabInscription.classList.remove('tab-inactive');
+                tabInscription.classList.add('tab-active');
+                tabConnexion.classList.remove('tab-active');
+                tabConnexion.classList.add('tab-inactive');
+                formInscription.style.display = 'block';
+                formConnexion.style.display = 'none';
+            } else {
+                tabConnexion.classList.remove('tab-inactive');
+                tabConnexion.classList.add('tab-active');
+                tabInscription.classList.remove('tab-active');
+                tabInscription.classList.add('tab-inactive');
+                formInscription.style.display = 'none';
+                formConnexion.style.display = 'block';
+            }
+        }
+
+        // ====================================================
+        // INSCRIPTIONS
+        // ====================================================
         async function registerCandidat(event) {
             event.preventDefault();
 
-            // Afficher un loader
             Swal.fire({
                 title: 'Inscription en cours...',
-                text: 'Veuillez patienter',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
@@ -660,55 +620,6 @@
             });
 
             try {
-                // Fonction pour uploader un fichier vers Supabase Storage
-                async function uploadFile(file, folder, fileName) {
-                    if (!file || file.size === 0) return null;
-
-                    const fileExt = file.name.split('.').pop();
-                    const filePath = `${folder}/${fileName}_${Date.now()}.${fileExt}`;
-
-                    const {
-                        data,
-                        error
-                    } = await supabaseClient.storage
-                        .from('candidat-documents')
-                        .upload(filePath, file);
-
-                    if (error) {
-                        console.error('Erreur upload:', error);
-                        return null;
-                    }
-
-                    // Récupérer l'URL publique
-                    const {
-                        data: publicUrl
-                    } = supabaseClient.storage
-                        .from('candidat-documents')
-                        .getPublicUrl(filePath);
-
-                    return publicUrl.publicUrl;
-                }
-
-                // Générer un ID unique pour les fichiers
-                const userPhone = document.getElementById('telephone').value;
-
-                // Upload des fichiers
-                const cvFile = document.getElementById('cvFile').files[0];
-                const photoFile = document.getElementById('photoFile').files[0];
-                const carteFile = document.getElementById('carteIdentiteFile').files[0];
-                const diplomesFile = document.getElementById('diplomesFile').files[0];
-                const certificatsFile = document.getElementById('certificatsFile').files[0];
-                const attestationsFile = document.getElementById('attestationsFile').files[0];
-
-                const [cvUrl, photoUrl, carteUrl, diplomesUrl, certificatsUrl, attestationsUrl] = await Promise.all([
-                    uploadFile(cvFile, 'cv', userPhone),
-                    uploadFile(photoFile, 'photos', userPhone),
-                    uploadFile(carteFile, 'cartes', userPhone),
-                    uploadFile(diplomesFile, 'diplomes', userPhone),
-                    uploadFile(certificatsFile, 'certificats', userPhone),
-                    uploadFile(attestationsFile, 'attestations', userPhone)
-                ]);
-
                 const candidatData = {
                     nom: document.getElementById('nom').value,
                     prenom: document.getElementById('prenom').value,
@@ -728,134 +639,103 @@
                     disponibilite: document.getElementById('disponibilite').value,
                     mobilite_geographique: document.getElementById('mobilite').value === 'true',
                     salaire_souhaite: document.getElementById('salaireSouhaite').value || null,
-                    // URLs des documents
-                    cv_url: cvUrl,
-                    photo_url: photoUrl,
-                    carte_identite_url: carteUrl,
-                    diplomes_url: diplomesUrl,
-                    certificats_url: certificatsUrl,
-                    attestations_url: attestationsUrl,
                     status: 'actif',
                     created_at: new Date(),
                     updated_at: new Date()
                 };
 
                 const {
-                    data,
                     error
-                } = await supabaseClient
-                    .from('candidats')
-                    .insert([candidatData])
-                    .select();
+                } = await supabaseClient.from('candidats').insert([candidatData]);
 
-                if (error) {
-                    throw error;
-                }
+                if (error) throw error;
 
                 Swal.fire({
-                    icon: 'success',
-                    title: 'Inscription réussie !',
-                    text: 'Votre profil a été créé avec succès',
-                    confirmButtonColor: '#667eea'
-                }).then(() => showLogin('candidat'));
-
+                        icon: 'success',
+                        title: 'Inscription réussie !',
+                        text: 'Votre profil a été créé avec succès. Veuillez vous connecter.'
+                    })
+                    .then(() => {
+                        // Basculer vers l'onglet connexion
+                        switchTab('connexion', 'candidat');
+                    });
             } catch (error) {
-                console.error('Erreur:', error);
                 Swal.fire({
                     icon: 'error',
                     title: 'Erreur',
-                    text: error.message || 'Une erreur est survenue lors de l\'inscription'
+                    text: error.message
                 });
             }
         }
 
-        // Ajouter cette fonction pour afficher les documents dans le profil candidat
-        async function showDocumentsCandidat() {
-            const html = `
-        <div class="dashboard-main">
-            <h2 class="text-2xl font-bold mb-6"><i class="fas fa-file-alt text-purple-600 mr-2"></i> Mes documents</h2>
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="border rounded-lg p-4">
-                    <h3 class="font-bold text-lg mb-3"><i class="fas fa-file-pdf text-red-500 mr-2"></i>CV</h3>
-                    ${currentUser.cv_url ? 
-                        `<a href="${currentUser.cv_url}" target="_blank" class="text-purple-600 hover:underline">Voir mon CV</a>
-                         <button onclick="uploadNewDocument('cv')" class="ml-4 text-sm bg-gray-200 px-3 py-1 rounded">Modifier</button>` : 
-                        `<p class="text-gray-500">Aucun CV téléchargé</p>
-                         <button onclick="uploadNewDocument('cv')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Télécharger un CV</button>`}
-                </div>
-                <div class="border rounded-lg p-4">
-                    <h3 class="font-bold text-lg mb-3"><i class="fas fa-image text-blue-500 mr-2"></i>Photo de profil</h3>
-                    ${currentUser.photo_url ? 
-                        `<img src="${currentUser.photo_url}" class="w-24 h-24 rounded-full object-cover mb-2">
-                         <button onclick="uploadNewDocument('photo')" class="text-sm bg-gray-200 px-3 py-1 rounded">Modifier</button>` : 
-                        `<p class="text-gray-500">Aucune photo</p>
-                         <button onclick="uploadNewDocument('photo')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter une photo</button>`}
-                </div>
-                <div class="border rounded-lg p-4">
-                    <h3 class="font-bold text-lg mb-3"><i class="fas fa-id-card text-green-500 mr-2"></i>Carte d'identité</h3>
-                    ${currentUser.carte_identite_url ? 
-                        `<a href="${currentUser.carte_identite_url}" target="_blank" class="text-purple-600 hover:underline">Voir ma carte d'identité</a>
-                         <button onclick="uploadNewDocument('carte')" class="ml-4 text-sm bg-gray-200 px-3 py-1 rounded">Modifier</button>` : 
-                        `<p class="text-gray-500">Aucune carte d'identité</p>
-                         <button onclick="uploadNewDocument('carte')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
-                </div>
-                <div class="border rounded-lg p-4">
-                    <h3 class="font-bold text-lg mb-3"><i class="fas fa-graduation-cap text-yellow-500 mr-2"></i>Diplômes</h3>
-                    ${currentUser.diplomes_url ? 
-                        `<a href="${currentUser.diplomes_url}" target="_blank" class="text-purple-600 hover:underline">Voir mes diplômes</a>
-                         <button onclick="uploadNewDocument('diplomes')" class="ml-4 text-sm bg-gray-200 px-3 py-1 rounded">Modifier</button>` : 
-                        `<p class="text-gray-500">Aucun diplôme</p>
-                         <button onclick="uploadNewDocument('diplomes')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
-                </div>
-                <div class="border rounded-lg p-4">
-                    <h3 class="font-bold text-lg mb-3"><i class="fas fa-certificate text-indigo-500 mr-2"></i>Certificats</h3>
-                    ${currentUser.certificats_url ? 
-                        `<a href="${currentUser.certificats_url}" target="_blank" class="text-purple-600 hover:underline">Voir mes certificats</a>
-                         <button onclick="uploadNewDocument('certificats')" class="ml-4 text-sm bg-gray-200 px-3 py-1 rounded">Modifier</button>` : 
-                        `<p class="text-gray-500">Aucun certificat</p>
-                         <button onclick="uploadNewDocument('certificats')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
-                </div>
-                <div class="border rounded-lg p-4">
-                    <h3 class="font-bold text-lg mb-3"><i class="fas fa-briefcase text-gray-500 mr-2"></i>Attestations de travail</h3>
-                    ${currentUser.attestations_url ? 
-                        `<a href="${currentUser.attestations_url}" target="_blank" class="text-purple-600 hover:underline">Voir mes attestations</a>
-                         <button onclick="uploadNewDocument('attestations')" class="ml-4 text-sm bg-gray-200 px-3 py-1 rounded">Modifier</button>` : 
-                        `<p class="text-gray-500">Aucune attestation</p>
-                         <button onclick="uploadNewDocument('attestations')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
-                </div>
-            </div>
-            <div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div>
-        </div>
-    `;
-    document.getElementById('dashboardContent').innerHTML = html;
-}
-
         async function registerEntreprise(event) {
             event.preventDefault();
 
-            const entrepriseData = {
-                nom_entreprise: document.getElementById('nomEntreprise').value,
-                secteur_activite: document.getElementById('secteurActivite').value,
-                adresse: document.getElementById('adresseEntreprise').value,
-                ville: document.getElementById('villeEntreprise').value,
-                responsable_rh: document.getElementById('responsableRH').value,
-                telephone: document.getElementById('telEntreprise').value,
-                email: document.getElementById('emailEntreprise').value,
-                mot_de_passe: document.getElementById('passwordEntreprise').value,
-                matricule_fiscal: document.getElementById('matriculeFiscal').value,
-                registre_commerce: document.getElementById('registreCommerce').value,
-                status: 'actif',
-                created_at: new Date(),
-                updated_at: new Date()
-            };
+            Swal.fire({
+                title: 'Inscription en cours...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            try {
+                const entrepriseData = {
+                    nom_entreprise: document.getElementById('nomEntreprise').value,
+                    secteur_activite: document.getElementById('secteurActivite').value,
+                    adresse: document.getElementById('adresseEntreprise').value,
+                    ville: document.getElementById('villeEntreprise').value,
+                    responsable_rh: document.getElementById('responsableRH').value,
+                    telephone: document.getElementById('telEntreprise').value,
+                    email: document.getElementById('emailEntreprise').value,
+                    mot_de_passe: document.getElementById('passwordEntreprise').value,
+                    matricule_fiscal: document.getElementById('matriculeFiscal').value,
+                    registre_commerce: document.getElementById('registreCommerce').value,
+                    status: 'actif',
+                    created_at: new Date(),
+                    updated_at: new Date()
+                };
+
+                const {
+                    error
+                } = await supabaseClient.from('entreprises').insert([entrepriseData]);
+
+                if (error) throw error;
+
+                Swal.fire({
+                        icon: 'success',
+                        title: 'Inscription réussie !',
+                        text: 'Votre espace entreprise a été créé. Veuillez vous connecter.'
+                    })
+                    .then(() => {
+                        // Basculer vers l'onglet connexion
+                        switchTab('connexion', 'entreprise');
+                    });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: error.message
+                });
+            }
+        }
+
+        // ====================================================
+        // CONNEXIONS
+        // ====================================================
+        async function handleLoginCandidat(event) {
+            event.preventDefault();
+            const telephone = document.getElementById('loginTelephone').value;
+            const password = document.getElementById('loginPasswordCandidat').value;
 
             const {
                 data,
                 error
             } = await supabaseClient
-                .from('entreprises')
-                .insert([entrepriseData])
-                .select();
+                .from('candidats')
+                .select('*')
+                .eq('telephone', telephone)
+                .eq('mot_de_passe', password);
 
             if (error) {
                 Swal.fire({
@@ -863,28 +743,118 @@
                     title: 'Erreur',
                     text: error.message
                 });
+            } else if (data && data.length > 0) {
+                currentUser = data[0];
+                currentUserType = 'candidat';
+                localStorage.setItem('currentSession', JSON.stringify({
+                    user: currentUser,
+                    type: 'candidat'
+                }));
+                showCandidatDashboard();
             } else {
                 Swal.fire({
-                        icon: 'success',
-                        title: 'Inscription réussie !',
-                        text: 'Votre espace entreprise a été créé'
-                    })
-                    .then(() => showLogin('entreprise'));
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Téléphone ou mot de passe incorrect'
+                });
+            }
+        }
+
+        async function handleLoginEntreprise(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPasswordEntreprise').value;
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from('entreprises')
+                .select('*')
+                .eq('email', email)
+                .eq('mot_de_passe', password);
+
+            if (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: error.message
+                });
+            } else if (data && data.length > 0) {
+                currentUser = data[0];
+                currentUserType = 'entreprise';
+                localStorage.setItem('currentSession', JSON.stringify({
+                    user: currentUser,
+                    type: 'entreprise'
+                }));
+                showEntrepriseDashboard();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Email ou mot de passe incorrect'
+                });
             }
         }
 
         // ====================================================
-        // DASHBOARD CANDIDAT
+        // CONNEXION ADMIN
+        // ====================================================
+        function showLogin(type) {
+            const html = `
+                <div class="max-w-md mx-auto fade-in">
+                    <div class="card-pro p-8">
+                        <div class="text-center mb-8">
+                            <div class="text-5xl mb-4">👑</div>
+                            <h2 class="text-3xl font-bold">Connexion Administrateur</h2>
+                        </div>
+                        <form onsubmit="handleLoginAdmin(event)">
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Email</label>
+                                <input type="email" id="adminEmail" required class="input-modern" placeholder="admin@afa.com">
+                            </div>
+                            <div class="mb-6">
+                                <label class="block text-gray-700 mb-2">Mot de passe</label>
+                                <input type="password" id="adminPassword" required class="input-modern" placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="btn-primary w-full">Se connecter</button>
+                        </form>
+                        <button onclick="showHome()" class="mt-4 text-gray-500 hover:text-gray-700 text-sm w-full">← Retour à l'accueil</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = html;
+        }
+
+        async function handleLoginAdmin(event) {
+            event.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+
+            if (email === 'admin@afa.com' && password === 'admin123') {
+                currentUser = {
+                    nom: 'Administrateur',
+                    email: email
+                };
+                currentUserType = 'admin';
+                localStorage.setItem('currentSession', JSON.stringify({
+                    user: currentUser,
+                    type: 'admin'
+                }));
+                showAdminDashboard();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: 'Identifiants administrateur incorrects'
+                });
+            }
+        }
+
+        // ====================================================
+        // DASHBOARD CANDIDAT (simplifié pour la démo)
         // ====================================================
         async function showCandidatDashboard() {
-            // Récupérer les offres et candidatures depuis Supabase
-            const {
-                data: offres
-            } = await supabaseClient.from('offres').select('*').eq('status', 'active');
-            const {
-                data: candidatures
-            } = await supabaseClient.from('candidatures').select('*').eq('candidat_id', currentUser.id);
-
             const html = `
                 <div class="flex flex-col md:flex-row gap-6 fade-in">
                     <div class="md:w-80">
@@ -895,17 +865,10 @@
                                 </div>
                                 <h3 class="font-bold text-xl">Espace Candidat</h3>
                                 <p class="text-sm text-gray-500">${currentUser.prenom} ${currentUser.nom}</p>
-                                <p class="text-xs text-gray-400">${currentUser.telephone}</p>
                             </div>
                             <nav class="space-y-2">
                                 <button onclick="showListeOffres()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
-                                    <i class="fas fa-search w-6 text-purple-600"></i> Rechercher offres
-                                </button>
-                                <button onclick="showSuiviCandidatures()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
-                                    <i class="fas fa-chart-line w-6 text-purple-600"></i> Suivi candidatures
-                                </button>
-                                <button onclick="showMonProfilCandidat()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
-                                    <i class="fas fa-user-edit w-6 text-purple-600"></i> Mon profil
+                                    <i class="fas fa-search w-6 text-purple-600"></i> Offres d'emploi
                                 </button>
                                 <button onclick="logout()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 flex items-center">
                                     <i class="fas fa-sign-out-alt w-6"></i> Déconnexion
@@ -914,24 +877,9 @@
                         </div>
                     </div>
                     <div class="flex-1">
-                        <div class="dashboard-main" id="dashboardContent">
-                            <div class="text-center mb-8">
-                                <i class="fas fa-chart-line text-5xl text-purple-600 mb-3"></i>
-                                <h2 class="text-2xl font-bold">Tableau de bord</h2>
-                                <p class="text-gray-600">Bienvenue dans votre espace candidat</p>
-                            </div>
-                            <div class="grid md:grid-cols-2 gap-6">
-                                <div class="stat-card" onclick="showListeOffres()">
-                                    <i class="fas fa-briefcase text-3xl text-blue-600 mb-2"></i>
-                                    <div class="text-2xl font-bold">${offres ? offres.length : 0}</div>
-                                    <div class="text-gray-600">Offres disponibles</div>
-                                </div>
-                                <div class="stat-card" onclick="showSuiviCandidatures()">
-                                    <i class="fas fa-paper-plane text-3xl text-green-600 mb-2"></i>
-                                    <div class="text-2xl font-bold">${candidatures ? candidatures.length : 0}</div>
-                                    <div class="text-gray-600">Mes candidatures</div>
-                                </div>
-                            </div>
+                        <div class="dashboard-main">
+                            <h2 class="text-2xl font-bold mb-4">Bienvenue ${currentUser.prenom} !</h2>
+                            <p class="text-gray-600">Vous êtes connecté à votre espace candidat.</p>
                         </div>
                     </div>
                 </div>
@@ -944,154 +892,43 @@
                 data: offres
             } = await supabaseClient.from('offres').select('*, entreprises(nom_entreprise)').eq('status', 'active');
 
-            let html = `
-                <div class="dashboard-main">
-                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-search text-purple-600 mr-2"></i> Offres disponibles</h2>
-                    <div class="space-y-4">
-            `;
+            let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6">Offres disponibles</h2><div class="space-y-4">`;
 
             if (!offres || offres.length === 0) {
-                html += '<p class="text-center text-gray-500 py-8">Aucune offre disponible pour le moment.</p>';
+                html += '<p class="text-center text-gray-500 py-8">Aucune offre disponible.</p>';
             } else {
                 for (const offre of offres) {
-                    html += `
-                        <div class="border rounded-lg p-4 hover:shadow-lg transition">
-                            <div class="flex justify-between items-start flex-wrap gap-4">
-                                <div class="flex-1">
-                                    <h3 class="font-bold text-lg">${offre.intitule}</h3>
-                                    <p class="text-sm text-gray-600">${offre.entreprises?.nom_entreprise || 'Entreprise'}</p>
-                                    <p class="text-sm text-gray-500 mt-1">${offre.lieu_travail || 'Lieu non spécifié'} • ${offre.type_contrat}</p>
-                                    <p class="text-sm mt-2">${offre.description_courte || offre.description_longue?.substring(0, 150) || ''}...</p>
-                                    ${offre.salaire_propose ? `<p class="text-sm font-semibold text-green-600 mt-1">${offre.salaire_propose} TND</p>` : ''}
-                                </div>
-                                <button onclick="postulerOffre('${offre.id}')" class="btn-primary px-4 py-2 text-sm">Postuler</button>
-                            </div>
-                        </div>
-                    `;
+                    html += `<div class="border rounded-lg p-4"><h3 class="font-bold">${offre.intitule}</h3><p class="text-sm text-gray-600">${offre.entreprises?.nom_entreprise || 'Entreprise'}</p><button onclick="postulerOffre('${offre.id}')" class="mt-2 btn-primary px-4 py-2 text-sm">Postuler</button></div>`;
                 }
             }
-            
             html += `</div><div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div></div>`;
             document.getElementById('dashboardContent').innerHTML = html;
         }
 
         async function postulerOffre(offreId) {
-            // Vérifier si déjà postulé
-            const { data: existing } = await supabaseClient
-                .from('candidatures')
-                .select('id')
-                .eq('candidat_id', currentUser.id)
-                .eq('offre_id', offreId);
-            
+            const {
+                data: existing
+            } = await supabaseClient.from('candidatures').select('id').eq('candidat_id', currentUser.id).eq('offre_id', offreId);
             if (existing && existing.length > 0) {
-                Swal.fire('Info', 'Vous avez déjà postulé à cette offre', 'info');
+                Swal.fire('Info', 'Vous avez déjà postulé', 'info');
                 return;
             }
-            
-            const candidatureData = {
+            const {
+                error
+            } = await supabaseClient.from('candidatures').insert([{
                 candidat_id: currentUser.id,
                 offre_id: offreId,
                 statut: 'en_attente',
-                date_candidature: new Date(),
-                updated_at: new Date()
-            };
-            
-            const { error } = await supabaseClient.from('candidatures').insert([candidatureData]);
-            
-            if (error) {
-                Swal.fire('Erreur', error.message, 'error');
-            } else {
-                Swal.fire('Succès', 'Votre candidature a été envoyée !', 'success');
-                showListeOffres();
-            }
-        }
-
-        async function showSuiviCandidatures() {
-            const { data: candidatures } = await supabaseClient
-                .from('candidatures')
-                .select('*, offres(intitule, lieu_travail, type_contrat)')
-                .eq('candidat_id', currentUser.id)
-                .order('date_candidature', { ascending: false });
-            
-            let html = `
-                <div class="dashboard-main">
-                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-chart-line text-purple-600 mr-2"></i> Suivi des candidatures</h2>
-                    <div class="space-y-4">
-            `;
-            
-            if (!candidatures || candidatures.length === 0) {
-                html += '<p class="text-center text-gray-500 py-8">Vous n\'avez pas encore postulé à des offres.</p>';
-            } else {
-                for (const cand of candidatures) {
-                    const statutClass = {
-                        'en_attente': 'status-etude',
-                        'preselectionne': 'status-preselection',
-                        'entretien': 'status-entretien',
-                        'accepte': 'status-retenu',
-                        'refuse': 'status-non-retenu'
-                    }[cand.statut] || 'status-etude';
-                    
-                    const statutText = {
-                        'en_attente': 'En cours d\'étude',
-                        'preselectionne': 'Présélectionné',
-                        'entretien': 'Entretien prévu',
-                        'accepte': 'Retenu',
-                        'refuse': 'Non retenu'
-                    }[cand.statut] || cand.statut;
-                    
-                    html += `
-                        <div class="border rounded-lg p-4">
-                            <div class="flex justify-between items-center flex-wrap gap-2">
-                                <div>
-                                    <h3 class="font-bold">${cand.offres?.intitule || 'Offre'}</h3>
-                                    <p class="text-sm text-gray-600">Postulé le ${new Date(cand.date_candidature).toLocaleDateString()}</p>
-                                    ${cand.offres?.lieu_travail ? `<p class="text-xs text-gray-500">${cand.offres.lieu_travail} • ${cand.offres.type_contrat}</p>` : ''}
-                                </div>
-                                <span class="status-badge ${statutClass}">${statutText}</span>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            
-            html += `</div><div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div></div>`;
-            document.getElementById('dashboardContent').innerHTML = html;
-        }
-
-        async function showMonProfilCandidat() {
-            const html = `
-                <div class="dashboard-main">
-                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-user-edit text-purple-600 mr-2"></i> Mon profil</h2>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div><label class="font-semibold">Nom:</label> <p>${currentUser.nom || '-'}</p></div>
-                        <div><label class="font-semibold">Prénom:</label> <p>${currentUser.prenom || '-'}</p></div>
-                        <div><label class="font-semibold">Date de naissance:</label> <p>${currentUser.date_naissance ? new Date(currentUser.date_naissance).toLocaleDateString() : '-'}</p></div>
-                        <div><label class="font-semibold">Téléphone:</label> <p>${currentUser.telephone || '-'}</p></div>
-                        <div><label class="font-semibold">Adresse:</label> <p>${currentUser.adresse || '-'}</p></div>
-                        <div><label class="font-semibold">Ville/Région:</label> <p>${currentUser.ville || '-'} / ${currentUser.region || '-'}</p></div>
-                        <div><label class="font-semibold">Situation familiale:</label> <p>${currentUser.situation_familiale || '-'}</p></div>
-                        <div><label class="font-semibold">Niveau d'étude:</label> <p>${currentUser.niveau_etude || '-'}</p></div>
-                        <div><label class="font-semibold">Métier recherché:</label> <p>${currentUser.metier_recherche || '-'}</p></div>
-                        <div><label class="font-semibold">Secteur:</label> <p>${currentUser.secteur || '-'}</p></div>
-                        <div class="md:col-span-2"><label class="font-semibold">Expériences:</label> <p class="whitespace-pre-wrap">${currentUser.experiences || '-'}</p></div>
-                        <div class="md:col-span-2"><label class="font-semibold">Compétences:</label> <p class="whitespace-pre-wrap">${currentUser.competences || '-'}</p></div>
-                        <div><label class="font-semibold">Permis de conduire:</label> <p>${currentUser.permis_conduire ? 'Oui' : 'Non'}</p></div>
-                        <div><label class="font-semibold">Disponibilité:</label> <p>${currentUser.disponibilite || '-'}</p></div>
-                        <div><label class="font-semibold">Mobilité géographique:</label> <p>${currentUser.mobilite_geographique ? 'Oui' : 'Non'}</p></div>
-                        <div><label class="font-semibold">Salaire souhaité:</label> <p>${currentUser.salaire_souhaite ? currentUser.salaire_souhaite + ' TND' : '-'}</p></div>
-                    </div>
-                    <div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div>
-                </div>
-            `;
-            document.getElementById('dashboardContent').innerHTML = html;
+                date_candidature: new Date()
+            }]);
+            if (error) Swal.fire('Erreur', error.message, 'error');
+            else Swal.fire('Succès', 'Candidature envoyée', 'success');
         }
 
         // ====================================================
-        // DASHBOARD ENTREPRISE
+        // DASHBOARD ENTREPRISE (simplifié)
         // ====================================================
         async function showEntrepriseDashboard() {
-            const { data: offres } = await supabaseClient.from('offres').select('*').eq('entreprise_id', currentUser.id);
-            
             const html = `
                 <div class="flex flex-col md:flex-row gap-6 fade-in">
                     <div class="md:w-80">
@@ -1107,12 +944,6 @@
                                 <button onclick="showPublierOffre()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
                                     <i class="fas fa-plus-circle w-6 text-purple-600"></i> Publier une offre
                                 </button>
-                                <button onclick="showMesOffres()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
-                                    <i class="fas fa-bullhorn w-6 text-purple-600"></i> Mes offres
-                                </button>
-                                <button onclick="showCandidaturesRecues()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
-                                    <i class="fas fa-inbox w-6 text-purple-600"></i> Candidatures reçues
-                                </button>
                                 <button onclick="logout()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 flex items-center">
                                     <i class="fas fa-sign-out-alt w-6"></i> Déconnexion
                                 </button>
@@ -1120,68 +951,28 @@
                         </div>
                     </div>
                     <div class="flex-1">
-                        <div class="dashboard-main" id="dashboardContent">
-                            <div class="text-center mb-8">
-                                <i class="fas fa-chart-line text-5xl text-green-600 mb-3"></i>
-                                <h2 class="text-2xl font-bold">Tableau de bord</h2>
-                                <p class="text-gray-600">Bienvenue dans votre espace recruteur</p>
-                            </div>
-                            <div class="grid md:grid-cols-2 gap-6">
-                                <div class="stat-card" onclick="showMesOffres()">
-                                    <i class="fas fa-bullhorn text-3xl text-blue-600 mb-2"></i>
-                                    <div class="text-2xl font-bold">${offres ? offres.length : 0}</div>
-                                    <div class="text-gray-600">Mes offres</div>
-                                </div>
-                                <div class="stat-card" onclick="showCandidaturesRecues()">
-                                    <i class="fas fa-users text-3xl text-green-600 mb-2"></i>
-                                    <div class="text-2xl font-bold" id="candidaturesCount">0</div>
-                                    <div class="text-gray-600">Candidatures reçues</div>
-                                </div>
-                            </div>
+                        <div class="dashboard-main">
+                            <h2 class="text-2xl font-bold mb-4">Bienvenue ${currentUser.nom_entreprise} !</h2>
+                            <p class="text-gray-600">Vous êtes connecté à votre espace recruteur.</p>
                         </div>
                     </div>
                 </div>
             `;
             document.getElementById('mainContent').innerHTML = html;
-            chargerCandidaturesCount();
-        }
-
-        async function chargerCandidaturesCount() {
-            const { data: offres } = await supabaseClient.from('offres').select('id').eq('entreprise_id', currentUser.id);
-            if (offres && offres.length > 0) {
-                const offreIds = offres.map(o => o.id);
-                const { data: candidatures } = await supabaseClient.from('candidatures').select('id').in('offre_id', offreIds);
-                const count = candidatures ? candidatures.length : 0;
-                const countEl = document.getElementById('candidaturesCount');
-                if (countEl) countEl.innerText = count;
-            }
         }
 
         function showPublierOffre() {
             const html = `
                 <div class="dashboard-main">
-                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-plus-circle text-purple-600 mr-2"></i> Publier une offre d'emploi</h2>
+                    <h2 class="text-2xl font-bold mb-6">Publier une offre</h2>
                     <form onsubmit="publierOffre(event)">
                         <div class="grid md:grid-cols-2 gap-4">
-                            <div class="md:col-span-2"><label class="block text-gray-700 mb-2">Intitulé du poste *</label><input type="text" id="intitule" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Nombre de personnes</label><input type="number" id="nbPersonnes" class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Type de contrat *</label>
-                                <select id="typeContrat" class="input-modern">
-                                    <option>CDI</option><option>CDD</option><option>Intérim</option><option>Stage</option>
-                                </select>
-                            </div>
-                            <div class="md:col-span-2"><label class="block text-gray-700 mb-2">Description courte *</label><textarea id="descriptionCourte" rows="2" required class="input-modern"></textarea></div>
-                            <div class="md:col-span-2"><label class="block text-gray-700 mb-2">Description détaillée</label><textarea id="descriptionLongue" rows="4" class="input-modern"></textarea></div>
-                            <div><label class="block text-gray-700 mb-2">Niveau d'expérience souhaité</label><input type="text" id="niveauExperience" class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Compétences nécessaires</label><textarea id="competencesRequises" rows="2" class="input-modern"></textarea></div>
-                            <div><label class="block text-gray-700 mb-2">Lieu de travail</label><input type="text" id="lieuTravail" class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Horaires</label><input type="text" id="horaires" class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Salaire proposé (TND)</label><input type="number" id="salairePropose" class="input-modern"></div>
-                            <div class="md:col-span-2"><label class="block text-gray-700 mb-2">Avantages (transport, repas, primes, assurance, logement...)</label><textarea id="avantages" rows="2" class="input-modern"></textarea></div>
+                            <div class="md:col-span-2"><label>Intitulé *</label><input type="text" id="intitule" required class="input-modern"></div>
+                            <div><label>Type de contrat *</label><select id="typeContrat" class="input-modern"><option>CDI</option><option>CDD</option></select></div>
+                            <div><label>Salaire</label><input type="number" id="salairePropose" class="input-modern"></div>
+                            <div class="md:col-span-2"><label>Description *</label><textarea id="descriptionCourte" rows="3" required class="input-modern"></textarea></div>
                         </div>
-                        <div class="mt-6 flex justify-end">
-                            <button type="submit" class="btn-primary"><i class="fas fa-paper-plane mr-2"></i> Publier l'offre</button>
-                        </div>
+                        <div class="mt-6"><button type="submit" class="btn-primary">Publier</button></div>
                     </form>
                 </div>
             `;
@@ -1190,187 +981,31 @@
 
         async function publierOffre(event) {
             event.preventDefault();
-            
             const offreData = {
                 entreprise_id: currentUser.id,
                 intitule: document.getElementById('intitule').value,
-                nombre_personnes: document.getElementById('nbPersonnes').value || 1,
-                description_courte: document.getElementById('descriptionCourte').value,
-                description_longue: document.getElementById('descriptionLongue').value,
-                niveau_experience: document.getElementById('niveauExperience').value,
-                competences_requises: document.getElementById('competencesRequises').value,
-                lieu_travail: document.getElementById('lieuTravail').value,
-                horaires: document.getElementById('horaires').value,
                 type_contrat: document.getElementById('typeContrat').value,
                 salaire_propose: document.getElementById('salairePropose').value || null,
-                avantages: document.getElementById('avantages').value,
+                description_courte: document.getElementById('descriptionCourte').value,
                 status: 'active',
-                created_at: new Date(),
-                updated_at: new Date()
+                created_at: new Date()
             };
-            
-            const { error } = await supabaseClient.from('offres').insert([offreData]);
-            
-            if (error) {
-                Swal.fire('Erreur', error.message, 'error');
-            } else {
-                Swal.fire('Succès', 'Offre publiée avec succès', 'success').then(() => showEntrepriseDashboard());
-            }
-        }
-
-        async function showMesOffres() {
-            const { data: offres } = await supabaseClient
-                .from('offres')
-                .select('*')
-                .eq('entreprise_id', currentUser.id)
-                .order('created_at', { ascending: false });
-            
-            let html = `
-                <div class="dashboard-main">
-                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-bullhorn text-purple-600 mr-2"></i> Mes offres</h2>
-                    <div class="space-y-4">
-            `;
-            
-            if (!offres || offres.length === 0) {
-                html += '<p class="text-center text-gray-500 py-8">Vous n\'avez pas encore publié d\'offres.</p>';
-                html += '<div class="text-center"><button onclick="showPublierOffre()" class="btn-primary">+ Publier une offre</button></div>';
-            } else {
-                for (const offre of offres) {
-                    html += `
-                        <div class="border rounded-lg p-4">
-                            <div class="flex justify-between items-start flex-wrap gap-2">
-                                <div>
-                                    <h3 class="font-bold text-lg">${offre.intitule}</h3>
-                                    <p class="text-sm text-gray-500">${offre.lieu_travail || 'Lieu non spécifié'} • ${offre.type_contrat}</p>
-                                    <p class="text-xs text-gray-400 mt-1">Publiée le ${new Date(offre.created_at).toLocaleDateString()}</p>
-                                    ${offre.salaire_propose ? `<p class="text-sm font-semibold text-green-600">${offre.salaire_propose} TND</p>` : ''}
-                                </div>
-                                <span class="status-badge ${offre.status === 'active' ? 'status-preselection' : 'status-non-retenu'}">${offre.status === 'active' ? 'Active' : 'Fermée'}</span>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            
-            html += `</div><div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary">← Retour</button></div></div>`;
-            document.getElementById('dashboardContent').innerHTML = html;
-        }
-
-        async function showCandidaturesRecues() {
-            const { data: offres } = await supabaseClient.from('offres').select('id').eq('entreprise_id', currentUser.id);
-            
-            if (!offres || offres.length === 0) {
-                let html = `
-                    <div class="dashboard-main">
-                        <h2 class="text-2xl font-bold mb-6"><i class="fas fa-inbox text-purple-600 mr-2"></i> Candidatures reçues</h2>
-                        <p class="text-center text-gray-500 py-8">Aucune offre publiée pour recevoir des candidatures.</p>
-                        <div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary">← Retour</button></div>
-                    </div>
-                `;
-                document.getElementById('dashboardContent').innerHTML = html;
-                return;
-            }
-            
-            const offreIds = offres.map(o => o.id);
-            const { data: candidatures } = await supabaseClient
-                .from('candidatures')
-                .select('*, offres(intitule, lieu_travail), candidats(nom, prenom, metier_recherche, telephone)')
-                .in('offre_id', offreIds)
-                .order('date_candidature', { ascending: false });
-            
-            let html = `
-                <div class="dashboard-main">
-                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-inbox text-purple-600 mr-2"></i> Candidatures reçues</h2>
-                    <div class="space-y-4">
-            `;
-            
-            if (!candidatures || candidatures.length === 0) {
-                html += '<p class="text-center text-gray-500 py-8">Aucune candidature reçue pour le moment.</p>';
-            } else {
-                for (const cand of candidatures) {
-                    html += `
-                        <div class="border rounded-lg p-4">
-                            <div class="flex justify-between items-start flex-wrap gap-4">
-                                <div class="flex-1">
-                                    <h3 class="font-bold">${cand.candidats?.prenom || ''} ${cand.candidats?.nom || 'Candidat'}</h3>
-                                    <p class="text-sm text-gray-600">Tél: ${cand.candidats?.telephone || '-'}</p>
-                                    <p class="text-sm text-gray-600">Poste : ${cand.offres?.intitule || 'Offre'}</p>
-                                    <p class="text-sm text-gray-600">Métier : ${cand.candidats?.metier_recherche || 'Non spécifié'}</p>
-                                    <p class="text-xs text-gray-500">Reçu le ${new Date(cand.date_candidature).toLocaleDateString()}</p>
-                                </div>
-                                <div class="flex gap-2">
-                                    <button onclick="updateCandidatureStatus('${cand.id}', 'preselectionne')" class="px-3 py-1 bg-green-500 text-white rounded-lg text-sm">
-                                        <i class="fas fa-check mr-1"></i> Présélectionner
-                                    </button>
-                                    <button onclick="updateCandidatureStatus('${cand.id}', 'refuse')" class="px-3 py-1 bg-red-500 text-white rounded-lg text-sm">
-                                        <i class="fas fa-times mr-1"></i> Refuser
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            
-            html += `</div><div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary">← Retour</button></div></div>`;
-            document.getElementById('dashboardContent').innerHTML = html;
-        }
-
-        async function updateCandidatureStatus(candidatureId, status) {
-            const { error } = await supabaseClient
-                .from('candidatures')
-                .update({ statut: status, updated_at: new Date() })
-                .eq('id', candidatureId);
-            
-            if (error) {
-                Swal.fire('Erreur', error.message, 'error');
-            } else {
-                Swal.fire('Succès', `Statut mis à jour : ${status === 'preselectionne' ? 'Présélectionné' : 'Refusé'}`, 'success');
-                showCandidaturesRecues();
-            }
+            const {
+                error
+            } = await supabaseClient.from('offres').insert([offreData]);
+            if (error) Swal.fire('Erreur', error.message, 'error');
+            else Swal.fire('Succès', 'Offre publiée', 'success').then(() => showEntrepriseDashboard());
         }
 
         // ====================================================
-        // DASHBOARD ADMIN
+        // ADMIN DASHBOARD
         // ====================================================
         async function showAdminDashboard() {
-            const { count: candidatsCount } = await supabaseClient.from('candidats').select('*', { count: 'exact', head: true });
-            const { count: entreprisesCount } = await supabaseClient.from('entreprises').select('*', { count: 'exact', head: true });
-            const { count: offresCount } = await supabaseClient.from('offres').select('*', { count: 'exact', head: true });
-            const { count: candidaturesCount } = await supabaseClient.from('candidatures').select('*', { count: 'exact', head: true });
-            
             const html = `
                 <div class="dashboard-main fade-in">
-                    <div class="text-center mb-8">
-                        <i class="fas fa-chart-line text-5xl text-purple-600 mb-3"></i>
-                        <h2 class="text-2xl font-bold">Administration OctoGo</h2>
-                        <p class="text-gray-600">Gestion complète de la plateforme</p>
-                    </div>
-                    <div class="grid md:grid-cols-4 gap-6">
-                        <div class="stat-card">
-                            <i class="fas fa-users text-3xl text-blue-600 mb-2"></i>
-                            <div class="text-2xl font-bold">${candidatsCount || 0}</div>
-                            <div class="text-gray-600">Candidats</div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-building text-3xl text-green-600 mb-2"></i>
-                            <div class="text-2xl font-bold">${entreprisesCount || 0}</div>
-                            <div class="text-gray-600">Entreprises</div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-briefcase text-3xl text-purple-600 mb-2"></i>
-                            <div class="text-2xl font-bold">${offresCount || 0}</div>
-                            <div class="text-gray-600">Offres</div>
-                        </div>
-                        <div class="stat-card">
-                            <i class="fas fa-file-alt text-3xl text-orange-600 mb-2"></i>
-                            <div class="text-2xl font-bold">${candidaturesCount || 0}</div>
-                            <div class="text-gray-600">Candidatures</div>
-                        </div>
-                    </div>
-                    <div class="mt-8 flex justify-center">
-                        <button onclick="logout()" class="btn-secondary">Déconnexion</button>
-                    </div>
+                    <h2 class="text-2xl font-bold mb-6">Administration</h2>
+                    <p>Bienvenue dans l'espace administrateur.</p>
+                    <div class="mt-6"><button onclick="logout()" class="btn-secondary">Déconnexion</button></div>
                 </div>
             `;
             document.getElementById('mainContent').innerHTML = html;
