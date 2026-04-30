@@ -4,13 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OctoGo - Plateforme de Recrutement Professionnel</title>
+    <title>AFA - Plateforme de Recrutement Professionnel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         * {
             font-family: 'Inter', sans-serif;
         }
@@ -19,7 +19,6 @@
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
         }
-        /* Animation de chargement */
         
         .loader-wrapper {
             position: fixed;
@@ -32,33 +31,16 @@
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
         }
         
         .loader {
             text-align: center;
-            animation: fadeInUp 0.8s ease-out;
-        }
-        
-        .loader-logo {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 30px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-        
-        .loader-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
         }
         
         .loader-text {
             color: white;
             font-size: 28px;
             font-weight: 700;
-            letter-spacing: 2px;
             margin-top: 20px;
         }
         
@@ -74,7 +56,6 @@
             display: inline-block;
             width: 0;
             overflow: hidden;
-            vertical-align: bottom;
         }
         
         @keyframes dots {
@@ -94,85 +75,23 @@
             }
         }
         
-        @keyframes pulse {
-            0%,
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.1);
-                opacity: 0.9;
-            }
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        /* Animations des cartes */
-        
-        .fade-in {
-            animation: fadeIn 0.8s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        /* Cards professionnelles */
-        
         .card-pro {
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
+            background: white;
             border-radius: 20px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
         }
         
         .card-pro:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
         }
-        /* Badges */
-        
-        .badge-gradient {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 14px;
-        }
-        /* Navigation moderne */
-        
-        .nav-modern {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-        /* Boutons */
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             padding: 12px 28px;
             border-radius: 50px;
             font-weight: 600;
-            transition: all 0.3s ease;
             border: none;
             cursor: pointer;
         }
@@ -189,23 +108,15 @@
             border-radius: 50px;
             font-weight: 600;
             border: 2px solid #667eea;
-            transition: all 0.3s ease;
             cursor: pointer;
         }
-        
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-color: transparent;
-        }
-        /* Formulaires */
         
         .input-modern {
             border: 2px solid #e2e8f0;
             border-radius: 12px;
             padding: 12px 16px;
-            transition: all 0.3s ease;
             width: 100%;
+            transition: all 0.3s;
         }
         
         .input-modern:focus {
@@ -213,98 +124,87 @@
             outline: none;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-        /* Hero section */
         
         .hero-gradient {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
             border-radius: 30px;
             padding: 60px;
             text-align: center;
             color: white;
         }
-        /* Scrollbar personnalisée */
-        
-         ::-webkit-scrollbar {
-            width: 8px;
-        }
-        
-         ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        
-         ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            border-radius: 10px;
-        }
-        /* Form sections */
-        
-        .form-section-modern {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            border-left: 4px solid #667eea;
-        }
-        /* Dashboard layout */
-        
-        .dashboard-sidebar {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        }
-        
-        .dashboard-main {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        }
-        /* Table styles */
-        
-        .table-modern {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 10px;
-        }
-        
-        .table-modern th {
-            text-align: left;
-            padding: 15px;
-            background: #f8fafc;
-            font-weight: 600;
-            color: #4a5568;
-        }
-        
-        .table-modern td {
-            padding: 15px;
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        /* Stats cards */
         
         .stat-card {
-            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            background: white;
             border-radius: 16px;
             padding: 20px;
             text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid #e2e8f0;
+            transition: all 0.3s;
+            cursor: pointer;
         }
         
         .stat-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
         }
-        /* Loading animation for page transitions */
         
-        .page-transition {
-            animation: pageFadeIn 0.5s ease-out;
+        .dashboard-sidebar {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
         }
         
-        @keyframes pageFadeIn {
+        .dashboard-main {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+        }
+        
+        .form-section {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-recu {
+            background: #e0f2fe;
+            color: #0284c7;
+        }
+        
+        .status-etude {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        .status-preselection {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .status-entretien {
+            background: #f3e8ff;
+            color: #9333ea;
+        }
+        
+        .status-retenu {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+        
+        .status-non-retenu {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+        
+        @keyframes fadeIn {
             from {
                 opacity: 0;
                 transform: translateY(20px);
@@ -314,49 +214,62 @@
                 transform: translateY(0);
             }
         }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
     </style>
 </head>
 
 <body>
-    <!-- Page de chargement -->
     <div class="loader-wrapper" id="loaderWrapper">
         <div class="loader">
-            <div class="loader-logo">
-                <img src="octogo.png" alt="OctoGo" onerror="this.src='https://via.placeholder.com/120x120?text=OctoGo'">
+            <div style="width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;">
+                <img src="afa.png" alt="Logo" style="height:60px;">
             </div>
-            <div class="loader-text">
-                OctoGo<span class="loader-dots"></span>
-            </div>
+            <div class="loader-text">Afa<span class="loader-dots"></span></div>
             <p style="color: rgba(255,255,255,0.8); margin-top: 15px;">Plateforme de recrutement professionnel</p>
         </div>
     </div>
 
-    <!-- Contenu principal -->
     <div id="appContent" style="display: none;">
-        <!-- Navigation -->
-        <nav class="nav-modern sticky top-0 z-50">
+        <nav class="bg-white shadow-lg sticky top-0 z-50">
             <div class="container mx-auto px-4">
                 <div class="flex justify-between items-center py-4">
-                    <div class="flex items-center space-x-3">
-                        <img src="octogo.png" alt="OctoGo" class="h-12 w-auto" onerror="this.src='https://via.placeholder.com/48x48?text=OG'">
-                        <span class="font-bold text-2xl text-gray-800">Octo<span class="text-purple-600">Go</span></span>
+                    <div class="flex items-center space-x-3 cursor-pointer" onclick="showHome()">
+                        <div style="width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                            <img src="afa.png" alt="Logo" style="height:60px;">
+                        </div>
+                        <span class="font-bold text-2xl text-gray-800">AFA</span>
                     </div>
                     <div class="hidden md:flex space-x-4">
-                        <button onclick="showHome()" class="text-gray-600 hover:text-purple-600 transition px-4 py-2 font-medium">Accueil</button>
-                        <button onclick="showLogin('candidat')" class="text-gray-600 hover:text-purple-600 transition px-4 py-2 font-medium">Espace Candidat</button>
-                        <button onclick="showLogin('entreprise')" class="text-gray-600 hover:text-purple-600 transition px-4 py-2 font-medium">Espace Entreprise</button>
-                        <button onclick="showLogin('admin')" class="text-gray-600 hover:text-purple-600 transition px-4 py-2 font-medium">Administrateur</button>
+                        <button onclick="showHome()" class="text-gray-600 hover:text-purple-600 px-4 py-2">Accueil</button>
+                        <button onclick="showLogin('candidat')" class="text-gray-600 hover:text-purple-600 px-4 py-2">Espace Candidat</button>
+                        <button onclick="showLogin('entreprise')" class="text-gray-600 hover:text-purple-600 px-4 py-2">Espace Entreprise</button>
+                        <button onclick="showLogin('admin')" class="text-gray-600 hover:text-purple-600 px-4 py-2">Administrateur</button>
                     </div>
                 </div>
             </div>
         </nav>
-
-        <!-- Contenu principal -->
-        <div id="mainContent" class="container mx-auto px-4 py-8 page-transition"></div>
+        <div id="mainContent" class="container mx-auto px-4 py-8"></div>
     </div>
 
     <script>
-        // Simuler le chargement de la page
+        // ====================================================
+        // CONFIGURATION SUPABASE
+        // ====================================================
+        // !!! REMPLACEZ CES VALEURS PAR LES VOTRES !!!
+        const SUPABASE_URL = 'https://ubeaidhmtkivrpnkqsnt.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_SMqeBYqnHCjrQGO2_rfTJA_JvkumJXQ';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ====================================================
+        // VARIABLES GLOBALES
+        // ====================================================
+        let currentUser = null;
+        let currentUserType = null;
+
+        // Chargement de la page
         setTimeout(() => {
             const loader = document.getElementById('loaderWrapper');
             loader.style.opacity = '0';
@@ -364,49 +277,94 @@
                 loader.style.display = 'none';
                 document.getElementById('appContent').style.display = 'block';
                 showHome();
-            }, 500);
-        }, 2000);
+            }, 800);
+        }, 1000);
 
-        let currentUser = null;
+        // Vérifier session existante
+        async function checkSession() {
+            const session = localStorage.getItem('currentSession');
+            if (session) {
+                const data = JSON.parse(session);
+                currentUser = data.user;
+                currentUserType = data.type;
+                if (data.type === 'candidat') {
+                    showCandidatDashboard();
+                } else if (data.type === 'entreprise') {
+                    showEntrepriseDashboard();
+                } else if (data.type === 'admin') {
+                    showAdminDashboard();
+                } else {
+                    showHome();
+                }
+                return true;
+            }
+            return false;
+        }
 
-        // Afficher la page d'accueil professionnelle
-        function showHome() {
-            const homeHTML = `
+        // ====================================================
+        // AFFICHAGE ACCUEIL
+        // ====================================================
+        async function showHome() {
+            // Compter les candidats, entreprises et offres depuis Supabase
+            let candidatsCount = 0;
+            let entreprisesCount = 0;
+            let offresCount = 0;
+
+            try {
+                const {
+                    count: cCount
+                } = await supabaseClient.from('candidats').select('*', {
+                    count: 'exact',
+                    head: true
+                });
+                candidatsCount = cCount || 0;
+
+                const {
+                    count: eCount
+                } = await supabaseClient.from('entreprises').select('*', {
+                    count: 'exact',
+                    head: true
+                });
+                entreprisesCount = eCount || 0;
+
+                const {
+                    count: oCount
+                } = await supabaseClient.from('offres').select('*', {
+                    count: 'exact',
+                    head: true
+                }).eq('status', 'active');
+                offresCount = oCount || 0;
+            } catch (error) {
+                console.error('Erreur chargement stats:', error);
+            }
+
+            const html = `
                 <div class="fade-in">
-                    <!-- Hero Section -->
                     <div class="hero-gradient mb-16">
                         <h1 class="text-5xl md:text-6xl font-bold mb-4">Plateforme de Recrutement</h1>
-                        <p class="text-xl md:text-2xl mb-8 opacity-95">La solution complète pour l'emploi et le recrutement professionnel</p>
-                        <div class="flex justify-center gap-4">
-                            <button onclick="showLogin('candidat')" class="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:shadow-lg transition">
-                                Je cherche un emploi
-                            </button>
-                            <button onclick="showLogin('entreprise')" class="bg-purple-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-800 transition">
-                                Je recrute
-                            </button>
+                        <p class="text-xl md:text-2xl mb-8">La solution complète pour l'emploi et le recrutement professionnel</p>
+                        <div class="flex justify-center gap-4 flex-wrap">
+                            <button onclick="showLogin('candidat')" class="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:shadow-lg">Je cherche un emploi</button>
+                            <button onclick="showLogin('entreprise')" class="bg-purple-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-800">Je recrute</button>
                         </div>
                     </div>
-                    
-                    <!-- Statistiques -->
                     <div class="grid md:grid-cols-3 gap-8 mb-16">
-                        <div class="stat-card">
+                        <div class="stat-card" onclick="showLogin('candidat')">
                             <i class="fas fa-users text-4xl text-purple-600 mb-3"></i>
-                            <div class="text-3xl font-bold text-gray-800">500+</div>
+                            <div class="text-3xl font-bold">${candidatsCount}</div>
                             <div class="text-gray-600">Candidats inscrits</div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card" onclick="showLogin('entreprise')">
                             <i class="fas fa-building text-4xl text-purple-600 mb-3"></i>
-                            <div class="text-3xl font-bold text-gray-800">150+</div>
+                            <div class="text-3xl font-bold">${entreprisesCount}</div>
                             <div class="text-gray-600">Entreprises partenaires</div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card" onclick="showLogin('entreprise')">
                             <i class="fas fa-briefcase text-4xl text-purple-600 mb-3"></i>
-                            <div class="text-3xl font-bold text-gray-800">1000+</div>
+                            <div class="text-3xl font-bold">${offresCount}</div>
                             <div class="text-gray-600">Offres d'emploi</div>
                         </div>
                     </div>
-                    
-                    <!-- Services -->
                     <h2 class="text-3xl font-bold text-center mb-12">Nos services</h2>
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="card-pro p-8 text-center cursor-pointer" onclick="showLogin('candidat')">
@@ -415,516 +373,811 @@
                             </div>
                             <h3 class="text-2xl font-bold mb-3">Espace Candidat</h3>
                             <p class="text-gray-600">Créez votre CV professionnel, postulez aux offres et suivez vos candidatures</p>
-                            <div class="mt-4">
-                                <span class="badge-gradient">Gratuit</span>
-                            </div>
                         </div>
-                        
                         <div class="card-pro p-8 text-center cursor-pointer" onclick="showLogin('entreprise')">
                             <div class="w-20 h-20 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i class="fas fa-chart-line text-white text-3xl"></i>
                             </div>
                             <h3 class="text-2xl font-bold mb-3">Espace Entreprise</h3>
                             <p class="text-gray-600">Publiez vos offres, trouvez les meilleurs talents et gérez vos recrutements</p>
-                            <div class="mt-4">
-                                <span class="badge-gradient">Professionnel</span>
-                            </div>
                         </div>
-                        
                         <div class="card-pro p-8 text-center cursor-pointer" onclick="showLogin('admin')">
                             <div class="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i class="fas fa-chart-pie text-white text-3xl"></i>
                             </div>
                             <h3 class="text-2xl font-bold mb-3">Espace Admin</h3>
-                            <p class="text-gray-600">Gérez l'ensemble de la plateforme, analysez les statistiques et validez les profils</p>
-                            <div class="mt-4">
-                                <span class="badge-gradient">Supervision</span>
-                            </div>
+                            <p class="text-gray-600">Gérez l'ensemble de la plateforme</p>
                         </div>
                     </div>
                 </div>
             `;
-            animatePageTransition(homeHTML);
+            document.getElementById('mainContent').innerHTML = html;
         }
 
-        // Afficher formulaire de connexion moderne
+        // ====================================================
+        // CONNEXION
+        // ====================================================
         function showLogin(type) {
-            const loginHTML = `
+            const html = `
                 <div class="max-w-md mx-auto fade-in">
                     <div class="card-pro p-8">
                         <div class="text-center mb-8">
-                            <img src="octogo.png" alt="OctoGo" class="h-16 mx-auto mb-4" onerror="this.style.display='none'">
-                            <h2 class="text-3xl font-bold text-gray-800">Connexion</h2>
+                            <div class="text-5xl mb-4">${type === 'candidat' ? '👤' : type === 'entreprise' ? '🏢' : '👑'}</div>
+                            <h2 class="text-3xl font-bold">Connexion</h2>
                             <p class="text-gray-600 mt-2">Espace ${type === 'candidat' ? 'Candidat' : type === 'entreprise' ? 'Entreprise' : 'Administrateur'}</p>
                         </div>
-                        
                         <form onsubmit="handleLogin(event, '${type}')">
                             <div class="mb-4">
-                                <label class="block text-gray-700 mb-2 font-medium">Email</label>
-                                <input type="email" id="loginEmail" required class="input-modern" placeholder="votre@email.com">
+                                <label class="block text-gray-700 mb-2">${type === 'candidat' ? 'Téléphone' : 'Email'}</label>
+                                <input type="${type === 'candidat' ? 'tel' : 'email'}" id="loginIdentifier" required class="input-modern" placeholder="${type === 'candidat' ? '06XXXXXXXX' : 'votre@email.com'}">
                             </div>
-                            
                             <div class="mb-6">
-                                <label class="block text-gray-700 mb-2 font-medium">Mot de passe</label>
+                                <label class="block text-gray-700 mb-2">Mot de passe</label>
                                 <input type="password" id="loginPassword" required class="input-modern" placeholder="••••••••">
                             </div>
-                            
-                            <button type="submit" class="btn-primary w-full">
-                                <i class="fas fa-sign-in-alt mr-2"></i> Se connecter
-                            </button>
+                            <button type="submit" class="btn-primary w-full">Se connecter</button>
                         </form>
-                        
                         <div class="mt-4 text-center">
-                            <button onclick="showRegister('${type}')" class="text-purple-600 hover:underline">
-                                Pas encore de compte ? S'inscrire
-                            </button>
+                            <button onclick="showRegister('${type}')" class="text-purple-600 hover:underline">Pas encore de compte ? S'inscrire</button>
                         </div>
-                        
-                        <button onclick="showHome()" class="mt-4 text-gray-500 hover:text-gray-700 text-sm w-full">
-                            ← Retour à l'accueil
-                        </button>
+                        <button onclick="showHome()" class="mt-4 text-gray-500 hover:text-gray-700 text-sm w-full">← Retour à l'accueil</button>
                     </div>
                 </div>
             `;
-            animatePageTransition(loginHTML);
+            document.getElementById('mainContent').innerHTML = html;
         }
 
-        // Animation de transition entre les pages
-        function animatePageTransition(html) {
-            const mainContent = document.getElementById('mainContent');
-            mainContent.style.opacity = '0';
-            mainContent.style.transform = 'translateY(20px)';
-            setTimeout(() => {
-                mainContent.innerHTML = html;
-                mainContent.style.transition = 'all 0.3s ease';
-                mainContent.style.opacity = '1';
-                mainContent.style.transform = 'translateY(0)';
-            }, 200);
-        }
-
-        // Afficher formulaire d'inscription CANDIDAT complet
-        function showRegisterCandidat() {
-            const registerHTML = `
-                <div class="max-w-5xl mx-auto fade-in">
-                    <div class="card-pro p-8">
-                        <div class="text-center mb-6">
-                            <h2 class="text-3xl font-bold text-gray-800">Inscription Candidat</h2>
-                            <p class="text-gray-600">Créez votre profil professionnel facilement</p>
-                        </div>
-                        
-                        <form onsubmit="registerCandidat(event)" enctype="multipart/form-data">
-                            <!-- Section 1: Informations personnelles -->
-                            <div class="form-section-modern">
-                                <h3 class="text-xl font-bold mb-4 text-gray-800"><i class="fas fa-user-circle text-purple-600 mr-2"></i> Informations personnelles</h3>
-                                <div class="grid md:grid-cols-2 gap-4">
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Nom *</label><input type="text" id="nom" required class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Prénom *</label><input type="text" id="prenom" required class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Date de naissance *</label><input type="date" id="dateNaissance" required class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Téléphone *</label><input type="tel" id="telephone" required class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Email *</label><input type="email" id="email" required class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Mot de passe *</label><input type="password" id="password" required class="input-modern"></div>
-                                    <div class="md:col-span-2"><label class="block text-gray-700 mb-2 font-medium">Adresse complète</label><input type="text" id="adresse" class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Ville / Région *</label><input type="text" id="ville" required class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Situation familiale</label>
-                                        <select id="situation" class="input-modern"><option value="">Sélectionnez</option><option>Célibataire</option><option>Marié(e)</option><option>Divorcé(e)</option><option>Veuf/Veuve</option></select>
-                                    </div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Niveau d'étude</label>
-                                        <select id="niveauEtude" class="input-modern"><option value="">Sélectionnez</option><option>Primaire</option><option>Secondaire</option><option>Bac</option><option>Bac+2</option><option>Bac+3</option><option>Bac+5</option><option>Doctorat</option></select>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Section 2: Données professionnelles -->
-                            <div class="form-section-modern">
-                                <h3 class="text-xl font-bold mb-4 text-gray-800"><i class="fas fa-briefcase text-purple-600 mr-2"></i> Données professionnelles</h3>
-                                <div class="grid md:grid-cols-2 gap-4">
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Métier recherché *</label><input type="text" id="metier" required class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Secteur d'activité *</label>
-                                        <select id="secteur" required class="input-modern"><option value="">Sélectionnez</option><option>Industrie</option><option>Service</option><option>Logistique</option><option>Hôtellerie</option><option>Sécurité</option><option>Nettoyage</option><option>Restauration</option></select>
-                                    </div>
-                                    <div class="md:col-span-2"><label class="block text-gray-700 mb-2 font-medium">Expériences professionnelles</label><textarea id="experiences" rows="4" class="input-modern" placeholder="Décrivez vos expériences professionnelles..."></textarea></div>
-                                    <div class="md:col-span-2"><label class="block text-gray-700 mb-2 font-medium">Compétences</label><textarea id="competences" rows="3" class="input-modern" placeholder="Listez vos compétences..."></textarea></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Permis de conduire</label>
-                                        <select id="permis" class="input-modern"><option value="Non">Non</option><option>Oui - B</option><option>Oui - C</option><option>Oui - D</option></select>
-                                    </div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Disponibilité</label>
-                                        <select id="disponibilite" class="input-modern"><option>Immédiate</option><option>1 semaine</option><option>2 semaines</option><option>1 mois</option></select>
-                                    </div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Mobilité géographique</label>
-                                        <select id="mobilite" class="input-modern"><option>Locale</option><option>Régionale</option><option>Nationale</option><option>Internationale</option></select>
-                                    </div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Salaire souhaité (TND/mois)</label><input type="number" id="salaire" class="input-modern" placeholder="Ex: 1500"></div>
-                                </div>
-                            </div>
-                            
-                            <!-- Section 3: Documents -->
-                            <div class="form-section-modern">
-                                <h3 class="text-xl font-bold mb-4 text-gray-800"><i class="fas fa-file-alt text-purple-600 mr-2"></i> Documents</h3>
-                                <div class="grid md:grid-cols-2 gap-4">
-                                    <div><label class="block text-gray-700 mb-2 font-medium">CV (PDF/Word)</label><input type="file" id="cvFile" accept=".pdf,.doc,.docx" class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Photo de profil</label><input type="file" id="photo" accept="image/*" class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Carte d'identité</label><input type="file" id="cin" accept=".pdf,.jpg,.png" class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Diplômes</label><input type="file" id="diplomes" accept=".pdf" multiple class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Certificats</label><input type="file" id="certificats" accept=".pdf" multiple class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Attestations de travail</label><input type="file" id="attestations" accept=".pdf" multiple class="input-modern"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="flex justify-between mt-8">
-                                <button type="button" onclick="showHome()" class="btn-secondary">Annuler</button>
-                                <button type="submit" class="btn-primary"><i class="fas fa-check-circle mr-2"></i> S'inscrire et créer mon CV</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            `;
-            animatePageTransition(registerHTML);
-        }
-
-        // Afficher formulaire d'inscription ENTREPRISE complet
-        function showRegisterEntreprise() {
-            const registerHTML = `
-                <div class="max-w-4xl mx-auto fade-in">
-                    <div class="card-pro p-8">
-                        <div class="text-center mb-6">
-                            <h2 class="text-3xl font-bold text-gray-800">Inscription Entreprise</h2>
-                            <p class="text-gray-600">Créez votre espace recruteur</p>
-                        </div>
-                        
-                        <form onsubmit="registerEntreprise(event)">
-                            <div class="form-section-modern">
-                                <h3 class="text-xl font-bold mb-4 text-gray-800"><i class="fas fa-building text-purple-600 mr-2"></i> Informations entreprise</h3>
-                                <div class="grid md:grid-cols-2 gap-4">
-                                    <div class="md:col-span-2"><label class="block text-gray-700 mb-2 font-medium">Nom de l'entreprise *</label><input type="text" id="nomEntreprise" required class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Secteur d'activité *</label><input type="text" id="secteurActivite" required class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Adresse *</label><input type="text" id="adresseEntreprise" required class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Responsable RH *</label><input type="text" id="responsableRH" required class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Téléphone *</label><input type="tel" id="telEntreprise" required class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Email *</label><input type="email" id="emailEntreprise" required class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Mot de passe *</label><input type="password" id="passwordEntreprise" required class="input-modern"></div>
-                                    <div><label class="block text-gray-700 mb-2 font-medium">Matricule fiscal</label><input type="text" id="matricule" class="input-modern"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="flex justify-between mt-8">
-                                <button type="button" onclick="showHome()" class="btn-secondary">Annuler</button>
-                                <button type="submit" class="btn-primary"><i class="fas fa-check-circle mr-2"></i> Créer mon espace entreprise</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            `;
-            animatePageTransition(registerHTML);
-        }
-
-        // Inscription candidat
-        async function registerCandidat(event) {
+        async function handleLogin(event, type) {
             event.preventDefault();
-
-            const candidatData = {
-                id: Date.now(),
-                nom: document.getElementById('nom').value,
-                prenom: document.getElementById('prenom').value,
-                dateNaissance: document.getElementById('dateNaissance').value,
-                telephone: document.getElementById('telephone').value,
-                email: document.getElementById('email').value,
-                adresse: document.getElementById('adresse').value,
-                ville: document.getElementById('ville').value,
-                situation: document.getElementById('situation').value,
-                niveauEtude: document.getElementById('niveauEtude').value,
-                metier: document.getElementById('metier').value,
-                secteur: document.getElementById('secteur').value,
-                experiences: document.getElementById('experiences').value,
-                competences: document.getElementById('competences').value,
-                permis: document.getElementById('permis').value,
-                disponibilite: document.getElementById('disponibilite').value,
-                mobilite: document.getElementById('mobilite').value,
-                salaire: document.getElementById('salaire').value,
-                status: 'actif',
-                dateInscription: new Date().toISOString(),
-                candidatures: []
-            };
-
-            let candidats = JSON.parse(localStorage.getItem('candidats') || '[]');
-            candidats.push(candidatData);
-            localStorage.setItem('candidats', JSON.stringify(candidats));
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Inscription réussie !',
-                text: 'Votre profil a été créé avec succès',
-                confirmButtonColor: '#667eea',
-                background: '#fff',
-                iconColor: '#667eea'
-            }).then(() => {
-                showCandidatDashboard();
-            });
-        }
-
-        // Inscription entreprise
-        async function registerEntreprise(event) {
-            event.preventDefault();
-
-            const entrepriseData = {
-                id: Date.now(),
-                nom: document.getElementById('nomEntreprise').value,
-                secteur: document.getElementById('secteurActivite').value,
-                adresse: document.getElementById('adresseEntreprise').value,
-                responsable: document.getElementById('responsableRH').value,
-                telephone: document.getElementById('telEntreprise').value,
-                email: document.getElementById('emailEntreprise').value,
-                matricule: document.getElementById('matricule').value,
-                status: 'actif',
-                dateInscription: new Date().toISOString(),
-                offres: []
-            };
-
-            let entreprises = JSON.parse(localStorage.getItem('entreprises') || '[]');
-            entreprises.push(entrepriseData);
-            localStorage.setItem('entreprises', JSON.stringify(entreprises));
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Inscription réussie !',
-                text: 'Votre espace entreprise a été créé',
-                confirmButtonColor: '#667eea'
-            }).then(() => {
-                showEntrepriseDashboard();
-            });
-        }
-
-        // Gestion connexion
-        function handleLogin(event, type) {
-            event.preventDefault();
-            const email = document.getElementById('loginEmail').value;
+            const identifier = document.getElementById('loginIdentifier').value;
             const password = document.getElementById('loginPassword').value;
 
-            if (type === 'admin' && email === 'admin@octogo.com' && password === 'admin123') {
-                showAdminDashboard();
+            if (type === 'admin') {
+                if (identifier === 'admin@octogo.com' && password === 'admin123') {
+                    currentUser = {
+                        nom: 'Administrateur',
+                        email: identifier
+                    };
+                    currentUserType = 'admin';
+                    localStorage.setItem('currentSession', JSON.stringify({
+                        user: currentUser,
+                        type: 'admin'
+                    }));
+                    showAdminDashboard();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur',
+                        text: 'Identifiants administrateur incorrects'
+                    });
+                }
             } else if (type === 'candidat') {
-                showCandidatDashboard();
+                const {
+                    data,
+                    error
+                } = await supabaseClient
+                    .from('candidats')
+                    .select('*')
+                    .eq('telephone', identifier)
+                    .eq('mot_de_passe', password);
+
+                if (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur',
+                        text: error.message
+                    });
+                } else if (data && data.length > 0) {
+                    currentUser = data[0];
+                    currentUserType = 'candidat';
+                    localStorage.setItem('currentSession', JSON.stringify({
+                        user: currentUser,
+                        type: 'candidat'
+                    }));
+                    showCandidatDashboard();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur',
+                        text: 'Téléphone ou mot de passe incorrect'
+                    });
+                }
             } else if (type === 'entreprise') {
-                showEntrepriseDashboard();
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erreur',
-                    text: 'Identifiants incorrects',
-                    confirmButtonColor: '#667eea'
-                });
+                const {
+                    data,
+                    error
+                } = await supabaseClient
+                    .from('entreprises')
+                    .select('*')
+                    .eq('email', identifier)
+                    .eq('mot_de_passe', password);
+
+                if (error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur',
+                        text: error.message
+                    });
+                } else if (data && data.length > 0) {
+                    currentUser = data[0];
+                    currentUserType = 'entreprise';
+                    localStorage.setItem('currentSession', JSON.stringify({
+                        user: currentUser,
+                        type: 'entreprise'
+                    }));
+                    showEntrepriseDashboard();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur',
+                        text: 'Email ou mot de passe incorrect'
+                    });
+                }
             }
         }
 
+        // ====================================================
+        // INSCRIPTION CANDIDAT (sans email)
+        // ====================================================
         function showRegister(type) {
             if (type === 'candidat') {
                 showRegisterCandidat();
             } else if (type === 'entreprise') {
                 showRegisterEntreprise();
             } else {
-                const registerHTML = `
-                    <div class="max-w-md mx-auto fade-in">
-                        <div class="card-pro p-8 text-center">
-                            <i class="fas fa-lock text-6xl text-purple-600 mb-4"></i>
-                            <h2 class="text-2xl font-bold text-gray-800 mb-4">Accès Administrateur</h2>
-                            <p class="text-gray-600 mb-6">Contactez le support pour créer un compte administrateur</p>
-                            <button onclick="showLogin('admin')" class="btn-primary">Retour à la connexion</button>
-                        </div>
-                    </div>
-                `;
-                animatePageTransition(registerHTML);
+                Swal.fire('Info', 'Contactez le support pour créer un compte administrateur', 'info');
             }
         }
 
-        // Dashboard Candidat moderne
-        function showCandidatDashboard() {
-            const dashboardHTML = `
+        function showRegisterCandidat() {
+            const html = `
+        <div class="max-w-5xl mx-auto fade-in">
+            <div class="card-pro p-8">
+                <h2 class="text-3xl font-bold text-center mb-6">Inscription Candidat</h2>
+                <form onsubmit="registerCandidat(event)" enctype="multipart/form-data">
+                    <div class="form-section">
+                        <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-user-circle mr-2"></i>Informations personnelles</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div><label class="block text-gray-700 mb-2">Nom *</label><input type="text" id="nom" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Prénom *</label><input type="text" id="prenom" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Date de naissance</label><input type="date" id="dateNaissance" class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Téléphone *</label><input type="tel" id="telephone" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Mot de passe *</label><input type="password" id="password" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Adresse</label><input type="text" id="adresse" class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Ville</label><input type="text" id="ville" class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Région</label><input type="text" id="region" class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Situation familiale</label>
+                                <select id="situationFamiliale" class="input-modern">
+                                    <option value="">Sélectionner</option>
+                                    <option>Célibataire</option><option>Marié(e)</option><option>Divorcé(e)</option><option>Veuf/veuve</option>
+                                </select>
+                            </div>
+                            <div><label class="block text-gray-700 mb-2">Niveau d'étude</label>
+                                <select id="niveauEtude" class="input-modern">
+                                    <option value="">Sélectionner</option>
+                                    <option>Sans diplôme</option><option>Bac</option><option>Bac+2</option><option>Bac+3</option><option>Bac+5</option><option>Doctorat</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-briefcase mr-2"></i>Données professionnelles</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div><label class="block text-gray-700 mb-2">Métier recherché *</label><input type="text" id="metierRecherche" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Secteur</label>
+                                <select id="secteur" class="input-modern">
+                                    <option value="">Sélectionner</option>
+                                    <option>Industrie</option><option>Service</option><option>Logistique</option><option>Hôtellerie</option>
+                                    <option>Sécurité</option><option>Nettoyage</option><option>Restauration</option>
+                                </select>
+                            </div>
+                            <div><label class="block text-gray-700 mb-2">Expériences professionnelles</label><textarea id="experiences" rows="3" class="input-modern" placeholder="Décrivez vos expériences..."></textarea></div>
+                            <div><label class="block text-gray-700 mb-2">Compétences</label><textarea id="competences" rows="3" class="input-modern" placeholder="Listez vos compétences..."></textarea></div>
+                            <div><label class="block text-gray-700 mb-2">Permis de conduire</label>
+                                <select id="permisConduire" class="input-modern">
+                                    <option value="false">Non</option><option value="true">Oui</option>
+                                </select>
+                            </div>
+                            <div><label class="block text-gray-700 mb-2">Disponibilité</label>
+                                <select id="disponibilite" class="input-modern">
+                                    <option>Immédiate</option><option>1 semaine</option><option>2 semaines</option><option>1 mois</option>
+                                </select>
+                            </div>
+                            <div><label class="block text-gray-700 mb-2">Mobilité géographique</label>
+                                <select id="mobilite" class="input-modern">
+                                    <option value="false">Non</option><option value="true">Oui</option>
+                                </select>
+                            </div>
+                            <div><label class="block text-gray-700 mb-2">Salaire souhaité (TND)</label><input type="number" id="salaireSouhaite" class="input-modern"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- NOUVELLE SECTION: DOCUMENTS -->
+                    <div class="form-section">
+                        <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-file-alt mr-2"></i>Documents</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 mb-2">CV (PDF ou Word)</label>
+                                <input type="file" id="cvFile" accept=".pdf,.doc,.docx" class="input-modern">
+                                <p class="text-xs text-gray-500 mt-1">Format accepté: PDF, DOC, DOCX (Max 5MB)</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Photo de profil</label>
+                                <input type="file" id="photoFile" accept="image/*" class="input-modern">
+                                <p class="text-xs text-gray-500 mt-1">Format accepté: JPG, PNG (Max 2MB)</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Carte d'identité</label>
+                                <input type="file" id="carteIdentiteFile" accept=".pdf,.jpg,.png" class="input-modern">
+                                <p class="text-xs text-gray-500 mt-1">Format accepté: PDF, JPG, PNG (Max 2MB)</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Diplômes</label>
+                                <input type="file" id="diplomesFile" accept=".pdf,.jpg,.png" class="input-modern">
+                                <p class="text-xs text-gray-500 mt-1">Format accepté: PDF, JPG, PNG (Max 5MB)</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Certificats</label>
+                                <input type="file" id="certificatsFile" accept=".pdf,.jpg,.png" class="input-modern">
+                                <p class="text-xs text-gray-500 mt-1">Format accepté: PDF, JPG, PNG (Max 5MB)</p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Attestations de travail</label>
+                                <input type="file" id="attestationsFile" accept=".pdf,.jpg,.png" class="input-modern">
+                                <p class="text-xs text-gray-500 mt-1">Format accepté: PDF, JPG, PNG (Max 5MB)</p>
+                            </div>
+                        </div>
+                        <div class="mt-3 p-3 bg-blue-50 rounded-lg">
+                            <p class="text-sm text-blue-700"><i class="fas fa-info-circle mr-2"></i>Les documents seront téléchargés en toute sécurité. Vous pourrez les modifier plus tard depuis votre profil.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between mt-8">
+                        <button type="button" onclick="showHome()" class="btn-secondary">Annuler</button>
+                        <button type="submit" class="btn-primary"><i class="fas fa-user-plus mr-2"></i> M'inscrire</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    `;
+            document.getElementById('mainContent').innerHTML = html;
+        }
+
+        // Remplacer la fonction registerCandidat par celle-ci :
+
+        async function registerCandidat(event) {
+            event.preventDefault();
+
+            // Afficher un loader
+            Swal.fire({
+                title: 'Inscription en cours...',
+                text: 'Veuillez patienter',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            try {
+                // Fonction pour uploader un fichier vers Supabase Storage
+                async function uploadFile(file, folder, fileName) {
+                    if (!file || file.size === 0) return null;
+
+                    const fileExt = file.name.split('.').pop();
+                    const filePath = `${folder}/${fileName}_${Date.now()}.${fileExt}`;
+
+                    const {
+                        data,
+                        error
+                    } = await supabaseClient.storage
+                        .from('candidat-documents')
+                        .upload(filePath, file);
+
+                    if (error) {
+                        console.error('Erreur upload:', error);
+                        return null;
+                    }
+
+                    // Récupérer l'URL publique
+                    const {
+                        data: publicUrl
+                    } = supabaseClient.storage
+                        .from('candidat-documents')
+                        .getPublicUrl(filePath);
+
+                    return publicUrl.publicUrl;
+                }
+
+                // Générer un ID unique pour les fichiers
+                const userPhone = document.getElementById('telephone').value;
+
+                // Upload des fichiers
+                const cvFile = document.getElementById('cvFile').files[0];
+                const photoFile = document.getElementById('photoFile').files[0];
+                const carteFile = document.getElementById('carteIdentiteFile').files[0];
+                const diplomesFile = document.getElementById('diplomesFile').files[0];
+                const certificatsFile = document.getElementById('certificatsFile').files[0];
+                const attestationsFile = document.getElementById('attestationsFile').files[0];
+
+                const [cvUrl, photoUrl, carteUrl, diplomesUrl, certificatsUrl, attestationsUrl] = await Promise.all([
+                    uploadFile(cvFile, 'cv', userPhone),
+                    uploadFile(photoFile, 'photos', userPhone),
+                    uploadFile(carteFile, 'cartes', userPhone),
+                    uploadFile(diplomesFile, 'diplomes', userPhone),
+                    uploadFile(certificatsFile, 'certificats', userPhone),
+                    uploadFile(attestationsFile, 'attestations', userPhone)
+                ]);
+
+                const candidatData = {
+                    nom: document.getElementById('nom').value,
+                    prenom: document.getElementById('prenom').value,
+                    date_naissance: document.getElementById('dateNaissance').value || null,
+                    telephone: document.getElementById('telephone').value,
+                    mot_de_passe: document.getElementById('password').value,
+                    adresse: document.getElementById('adresse').value,
+                    ville: document.getElementById('ville').value,
+                    region: document.getElementById('region').value,
+                    situation_familiale: document.getElementById('situationFamiliale').value,
+                    niveau_etude: document.getElementById('niveauEtude').value,
+                    metier_recherche: document.getElementById('metierRecherche').value,
+                    secteur: document.getElementById('secteur').value,
+                    experiences: document.getElementById('experiences').value,
+                    competences: document.getElementById('competences').value,
+                    permis_conduire: document.getElementById('permisConduire').value === 'true',
+                    disponibilite: document.getElementById('disponibilite').value,
+                    mobilite_geographique: document.getElementById('mobilite').value === 'true',
+                    salaire_souhaite: document.getElementById('salaireSouhaite').value || null,
+                    // URLs des documents
+                    cv_url: cvUrl,
+                    photo_url: photoUrl,
+                    carte_identite_url: carteUrl,
+                    diplomes_url: diplomesUrl,
+                    certificats_url: certificatsUrl,
+                    attestations_url: attestationsUrl,
+                    status: 'actif',
+                    created_at: new Date(),
+                    updated_at: new Date()
+                };
+
+                const {
+                    data,
+                    error
+                } = await supabaseClient
+                    .from('candidats')
+                    .insert([candidatData])
+                    .select();
+
+                if (error) {
+                    throw error;
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Inscription réussie !',
+                    text: 'Votre profil a été créé avec succès',
+                    confirmButtonColor: '#667eea'
+                }).then(() => showLogin('candidat'));
+
+            } catch (error) {
+                console.error('Erreur:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: error.message || 'Une erreur est survenue lors de l\'inscription'
+                });
+            }
+        }
+
+        // Ajouter cette fonction pour afficher les documents dans le profil candidat
+        async function showDocumentsCandidat() {
+            const html = `
+        <div class="dashboard-main">
+            <h2 class="text-2xl font-bold mb-6"><i class="fas fa-file-alt text-purple-600 mr-2"></i> Mes documents</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="border rounded-lg p-4">
+                    <h3 class="font-bold text-lg mb-3"><i class="fas fa-file-pdf text-red-500 mr-2"></i>CV</h3>
+                    ${currentUser.cv_url ? 
+                        `<a href="${currentUser.cv_url}" target="_blank" class="text-purple-600 hover:underline">Voir mon CV</a>
+                         <button onclick="uploadNewDocument('cv')" class="ml-4 text-sm bg-gray-200 px-3 py-1 rounded">Modifier</button>` : 
+                        `<p class="text-gray-500">Aucun CV téléchargé</p>
+                         <button onclick="uploadNewDocument('cv')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Télécharger un CV</button>`}
+                </div>
+                <div class="border rounded-lg p-4">
+                    <h3 class="font-bold text-lg mb-3"><i class="fas fa-image text-blue-500 mr-2"></i>Photo de profil</h3>
+                    ${currentUser.photo_url ? 
+                        `<img src="${currentUser.photo_url}" class="w-24 h-24 rounded-full object-cover mb-2">
+                         <button onclick="uploadNewDocument('photo')" class="text-sm bg-gray-200 px-3 py-1 rounded">Modifier</button>` : 
+                        `<p class="text-gray-500">Aucune photo</p>
+                         <button onclick="uploadNewDocument('photo')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter une photo</button>`}
+                </div>
+                <div class="border rounded-lg p-4">
+                    <h3 class="font-bold text-lg mb-3"><i class="fas fa-id-card text-green-500 mr-2"></i>Carte d'identité</h3>
+                    ${currentUser.carte_identite_url ? 
+                        `<a href="${currentUser.carte_identite_url}" target="_blank" class="text-purple-600 hover:underline">Voir ma carte d'identité</a>
+                         <button onclick="uploadNewDocument('carte')" class="ml-4 text-sm bg-gray-200 px-3 py-1 rounded">Modifier</button>` : 
+                        `<p class="text-gray-500">Aucune carte d'identité</p>
+                         <button onclick="uploadNewDocument('carte')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
+                </div>
+                <div class="border rounded-lg p-4">
+                    <h3 class="font-bold text-lg mb-3"><i class="fas fa-graduation-cap text-yellow-500 mr-2"></i>Diplômes</h3>
+                    ${currentUser.diplomes_url ? 
+                        `<a href="${currentUser.diplomes_url}" target="_blank" class="text-purple-600 hover:underline">Voir mes diplômes</a>
+                         <button onclick="uploadNewDocument('diplomes')" class="ml-4 text-sm bg-gray-200 px-3 py-1 rounded">Modifier</button>` : 
+                        `<p class="text-gray-500">Aucun diplôme</p>
+                         <button onclick="uploadNewDocument('diplomes')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
+                </div>
+                <div class="border rounded-lg p-4">
+                    <h3 class="font-bold text-lg mb-3"><i class="fas fa-certificate text-indigo-500 mr-2"></i>Certificats</h3>
+                    ${currentUser.certificats_url ? 
+                        `<a href="${currentUser.certificats_url}" target="_blank" class="text-purple-600 hover:underline">Voir mes certificats</a>
+                         <button onclick="uploadNewDocument('certificats')" class="ml-4 text-sm bg-gray-200 px-3 py-1 rounded">Modifier</button>` : 
+                        `<p class="text-gray-500">Aucun certificat</p>
+                         <button onclick="uploadNewDocument('certificats')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
+                </div>
+                <div class="border rounded-lg p-4">
+                    <h3 class="font-bold text-lg mb-3"><i class="fas fa-briefcase text-gray-500 mr-2"></i>Attestations de travail</h3>
+                    ${currentUser.attestations_url ? 
+                        `<a href="${currentUser.attestations_url}" target="_blank" class="text-purple-600 hover:underline">Voir mes attestations</a>
+                         <button onclick="uploadNewDocument('attestations')" class="ml-4 text-sm bg-gray-200 px-3 py-1 rounded">Modifier</button>` : 
+                        `<p class="text-gray-500">Aucune attestation</p>
+                         <button onclick="uploadNewDocument('attestations')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
+                </div>
+            </div>
+            <div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div>
+        </div>
+    `;
+    document.getElementById('dashboardContent').innerHTML = html;
+}
+
+        async function registerEntreprise(event) {
+            event.preventDefault();
+
+            const entrepriseData = {
+                nom_entreprise: document.getElementById('nomEntreprise').value,
+                secteur_activite: document.getElementById('secteurActivite').value,
+                adresse: document.getElementById('adresseEntreprise').value,
+                ville: document.getElementById('villeEntreprise').value,
+                responsable_rh: document.getElementById('responsableRH').value,
+                telephone: document.getElementById('telEntreprise').value,
+                email: document.getElementById('emailEntreprise').value,
+                mot_de_passe: document.getElementById('passwordEntreprise').value,
+                matricule_fiscal: document.getElementById('matriculeFiscal').value,
+                registre_commerce: document.getElementById('registreCommerce').value,
+                status: 'actif',
+                created_at: new Date(),
+                updated_at: new Date()
+            };
+
+            const {
+                data,
+                error
+            } = await supabaseClient
+                .from('entreprises')
+                .insert([entrepriseData])
+                .select();
+
+            if (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erreur',
+                    text: error.message
+                });
+            } else {
+                Swal.fire({
+                        icon: 'success',
+                        title: 'Inscription réussie !',
+                        text: 'Votre espace entreprise a été créé'
+                    })
+                    .then(() => showLogin('entreprise'));
+            }
+        }
+
+        // ====================================================
+        // DASHBOARD CANDIDAT
+        // ====================================================
+        async function showCandidatDashboard() {
+            // Récupérer les offres et candidatures depuis Supabase
+            const {
+                data: offres
+            } = await supabaseClient.from('offres').select('*').eq('status', 'active');
+            const {
+                data: candidatures
+            } = await supabaseClient.from('candidatures').select('*').eq('candidat_id', currentUser.id);
+
+            const html = `
                 <div class="flex flex-col md:flex-row gap-6 fade-in">
                     <div class="md:w-80">
                         <div class="dashboard-sidebar">
                             <div class="text-center mb-6">
-                                <div class="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
+                                <div class="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <i class="fas fa-user text-white text-4xl"></i>
                                 </div>
                                 <h3 class="font-bold text-xl">Espace Candidat</h3>
-                                <p class="text-sm text-gray-500">Mon compte professionnel</p>
+                                <p class="text-sm text-gray-500">${currentUser.prenom} ${currentUser.nom}</p>
+                                <p class="text-xs text-gray-400">${currentUser.telephone}</p>
                             </div>
-                            
                             <nav class="space-y-2">
-                                <button onclick="showCandidatProfile()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-id-card w-6 text-purple-600"></i> Mon Profil</button>
-                                <button onclick="showCandidatExperiences()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-briefcase w-6 text-purple-600"></i> Mes Expériences</button>
-                                <button onclick="showCandidatCompetences()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-star w-6 text-purple-600"></i> Mes Compétences</button>
-                                <button onclick="showCandidatDocuments()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-file-alt w-6 text-purple-600"></i> Mes Documents</button>
-                                <button onclick="genererCVManuel()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-file-pdf w-6 text-purple-600"></i> Créer mon CV</button>
-                                <button onclick="showSuiviCandidatures()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-chart-line w-6 text-purple-600"></i> Suivi candidatures</button>
-                                <button onclick="showHome()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 transition flex items-center"><i class="fas fa-sign-out-alt w-6"></i> Déconnexion</button>
+                                <button onclick="showListeOffres()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
+                                    <i class="fas fa-search w-6 text-purple-600"></i> Rechercher offres
+                                </button>
+                                <button onclick="showSuiviCandidatures()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
+                                    <i class="fas fa-chart-line w-6 text-purple-600"></i> Suivi candidatures
+                                </button>
+                                <button onclick="showMonProfilCandidat()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
+                                    <i class="fas fa-user-edit w-6 text-purple-600"></i> Mon profil
+                                </button>
+                                <button onclick="logout()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 flex items-center">
+                                    <i class="fas fa-sign-out-alt w-6"></i> Déconnexion
+                                </button>
                             </nav>
                         </div>
                     </div>
-                    
                     <div class="flex-1">
                         <div class="dashboard-main" id="dashboardContent">
                             <div class="text-center mb-8">
                                 <i class="fas fa-chart-line text-5xl text-purple-600 mb-3"></i>
-                                <h2 class="text-2xl font-bold text-gray-800">Tableau de bord</h2>
+                                <h2 class="text-2xl font-bold">Tableau de bord</h2>
                                 <p class="text-gray-600">Bienvenue dans votre espace candidat</p>
                             </div>
-                            
-                            <div class="grid md:grid-cols-3 gap-6 mt-6">
-                                <div class="stat-card">
-                                    <i class="fas fa-paper-plane text-3xl text-blue-600 mb-2"></i>
-                                    <div class="text-2xl font-bold">5</div>
-                                    <div class="text-gray-600">Candidatures</div>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="stat-card" onclick="showListeOffres()">
+                                    <i class="fas fa-briefcase text-3xl text-blue-600 mb-2"></i>
+                                    <div class="text-2xl font-bold">${offres ? offres.length : 0}</div>
+                                    <div class="text-gray-600">Offres disponibles</div>
                                 </div>
-                                <div class="stat-card">
-                                    <i class="fas fa-clock text-3xl text-yellow-600 mb-2"></i>
-                                    <div class="text-2xl font-bold">2</div>
-                                    <div class="text-gray-600">En cours</div>
-                                </div>
-                                <div class="stat-card">
-                                    <i class="fas fa-check-circle text-3xl text-green-600 mb-2"></i>
-                                    <div class="text-2xl font-bold">1</div>
-                                    <div class="text-gray-600">Présélection</div>
+                                <div class="stat-card" onclick="showSuiviCandidatures()">
+                                    <i class="fas fa-paper-plane text-3xl text-green-600 mb-2"></i>
+                                    <div class="text-2xl font-bold">${candidatures ? candidatures.length : 0}</div>
+                                    <div class="text-gray-600">Mes candidatures</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
-            animatePageTransition(dashboardHTML);
+            document.getElementById('mainContent').innerHTML = html;
         }
 
-        function showEntrepriseDashboard() {
-            const dashboardHTML = `
+        async function showListeOffres() {
+            const {
+                data: offres
+            } = await supabaseClient.from('offres').select('*, entreprises(nom_entreprise)').eq('status', 'active');
+
+            let html = `
+                <div class="dashboard-main">
+                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-search text-purple-600 mr-2"></i> Offres disponibles</h2>
+                    <div class="space-y-4">
+            `;
+
+            if (!offres || offres.length === 0) {
+                html += '<p class="text-center text-gray-500 py-8">Aucune offre disponible pour le moment.</p>';
+            } else {
+                for (const offre of offres) {
+                    html += `
+                        <div class="border rounded-lg p-4 hover:shadow-lg transition">
+                            <div class="flex justify-between items-start flex-wrap gap-4">
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-lg">${offre.intitule}</h3>
+                                    <p class="text-sm text-gray-600">${offre.entreprises?.nom_entreprise || 'Entreprise'}</p>
+                                    <p class="text-sm text-gray-500 mt-1">${offre.lieu_travail || 'Lieu non spécifié'} • ${offre.type_contrat}</p>
+                                    <p class="text-sm mt-2">${offre.description_courte || offre.description_longue?.substring(0, 150) || ''}...</p>
+                                    ${offre.salaire_propose ? `<p class="text-sm font-semibold text-green-600 mt-1">${offre.salaire_propose} TND</p>` : ''}
+                                </div>
+                                <button onclick="postulerOffre('${offre.id}')" class="btn-primary px-4 py-2 text-sm">Postuler</button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            html += `</div><div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div></div>`;
+            document.getElementById('dashboardContent').innerHTML = html;
+        }
+
+        async function postulerOffre(offreId) {
+            // Vérifier si déjà postulé
+            const { data: existing } = await supabaseClient
+                .from('candidatures')
+                .select('id')
+                .eq('candidat_id', currentUser.id)
+                .eq('offre_id', offreId);
+            
+            if (existing && existing.length > 0) {
+                Swal.fire('Info', 'Vous avez déjà postulé à cette offre', 'info');
+                return;
+            }
+            
+            const candidatureData = {
+                candidat_id: currentUser.id,
+                offre_id: offreId,
+                statut: 'en_attente',
+                date_candidature: new Date(),
+                updated_at: new Date()
+            };
+            
+            const { error } = await supabaseClient.from('candidatures').insert([candidatureData]);
+            
+            if (error) {
+                Swal.fire('Erreur', error.message, 'error');
+            } else {
+                Swal.fire('Succès', 'Votre candidature a été envoyée !', 'success');
+                showListeOffres();
+            }
+        }
+
+        async function showSuiviCandidatures() {
+            const { data: candidatures } = await supabaseClient
+                .from('candidatures')
+                .select('*, offres(intitule, lieu_travail, type_contrat)')
+                .eq('candidat_id', currentUser.id)
+                .order('date_candidature', { ascending: false });
+            
+            let html = `
+                <div class="dashboard-main">
+                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-chart-line text-purple-600 mr-2"></i> Suivi des candidatures</h2>
+                    <div class="space-y-4">
+            `;
+            
+            if (!candidatures || candidatures.length === 0) {
+                html += '<p class="text-center text-gray-500 py-8">Vous n\'avez pas encore postulé à des offres.</p>';
+            } else {
+                for (const cand of candidatures) {
+                    const statutClass = {
+                        'en_attente': 'status-etude',
+                        'preselectionne': 'status-preselection',
+                        'entretien': 'status-entretien',
+                        'accepte': 'status-retenu',
+                        'refuse': 'status-non-retenu'
+                    }[cand.statut] || 'status-etude';
+                    
+                    const statutText = {
+                        'en_attente': 'En cours d\'étude',
+                        'preselectionne': 'Présélectionné',
+                        'entretien': 'Entretien prévu',
+                        'accepte': 'Retenu',
+                        'refuse': 'Non retenu'
+                    }[cand.statut] || cand.statut;
+                    
+                    html += `
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-center flex-wrap gap-2">
+                                <div>
+                                    <h3 class="font-bold">${cand.offres?.intitule || 'Offre'}</h3>
+                                    <p class="text-sm text-gray-600">Postulé le ${new Date(cand.date_candidature).toLocaleDateString()}</p>
+                                    ${cand.offres?.lieu_travail ? `<p class="text-xs text-gray-500">${cand.offres.lieu_travail} • ${cand.offres.type_contrat}</p>` : ''}
+                                </div>
+                                <span class="status-badge ${statutClass}">${statutText}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            html += `</div><div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div></div>`;
+            document.getElementById('dashboardContent').innerHTML = html;
+        }
+
+        async function showMonProfilCandidat() {
+            const html = `
+                <div class="dashboard-main">
+                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-user-edit text-purple-600 mr-2"></i> Mon profil</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div><label class="font-semibold">Nom:</label> <p>${currentUser.nom || '-'}</p></div>
+                        <div><label class="font-semibold">Prénom:</label> <p>${currentUser.prenom || '-'}</p></div>
+                        <div><label class="font-semibold">Date de naissance:</label> <p>${currentUser.date_naissance ? new Date(currentUser.date_naissance).toLocaleDateString() : '-'}</p></div>
+                        <div><label class="font-semibold">Téléphone:</label> <p>${currentUser.telephone || '-'}</p></div>
+                        <div><label class="font-semibold">Adresse:</label> <p>${currentUser.adresse || '-'}</p></div>
+                        <div><label class="font-semibold">Ville/Région:</label> <p>${currentUser.ville || '-'} / ${currentUser.region || '-'}</p></div>
+                        <div><label class="font-semibold">Situation familiale:</label> <p>${currentUser.situation_familiale || '-'}</p></div>
+                        <div><label class="font-semibold">Niveau d'étude:</label> <p>${currentUser.niveau_etude || '-'}</p></div>
+                        <div><label class="font-semibold">Métier recherché:</label> <p>${currentUser.metier_recherche || '-'}</p></div>
+                        <div><label class="font-semibold">Secteur:</label> <p>${currentUser.secteur || '-'}</p></div>
+                        <div class="md:col-span-2"><label class="font-semibold">Expériences:</label> <p class="whitespace-pre-wrap">${currentUser.experiences || '-'}</p></div>
+                        <div class="md:col-span-2"><label class="font-semibold">Compétences:</label> <p class="whitespace-pre-wrap">${currentUser.competences || '-'}</p></div>
+                        <div><label class="font-semibold">Permis de conduire:</label> <p>${currentUser.permis_conduire ? 'Oui' : 'Non'}</p></div>
+                        <div><label class="font-semibold">Disponibilité:</label> <p>${currentUser.disponibilite || '-'}</p></div>
+                        <div><label class="font-semibold">Mobilité géographique:</label> <p>${currentUser.mobilite_geographique ? 'Oui' : 'Non'}</p></div>
+                        <div><label class="font-semibold">Salaire souhaité:</label> <p>${currentUser.salaire_souhaite ? currentUser.salaire_souhaite + ' TND' : '-'}</p></div>
+                    </div>
+                    <div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div>
+                </div>
+            `;
+            document.getElementById('dashboardContent').innerHTML = html;
+        }
+
+        // ====================================================
+        // DASHBOARD ENTREPRISE
+        // ====================================================
+        async function showEntrepriseDashboard() {
+            const { data: offres } = await supabaseClient.from('offres').select('*').eq('entreprise_id', currentUser.id);
+            
+            const html = `
                 <div class="flex flex-col md:flex-row gap-6 fade-in">
                     <div class="md:w-80">
                         <div class="dashboard-sidebar">
                             <div class="text-center mb-6">
-                                <div class="w-24 h-24 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
+                                <div class="w-24 h-24 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-3">
                                     <i class="fas fa-building text-white text-4xl"></i>
                                 </div>
                                 <h3 class="font-bold text-xl">Espace Entreprise</h3>
-                                <p class="text-sm text-gray-500">Recruteur</p>
+                                <p class="text-sm text-gray-500">${currentUser.nom_entreprise}</p>
                             </div>
-                            
                             <nav class="space-y-2">
-                                <button onclick="showEntrepriseProfile()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-chart-line w-6 text-purple-600"></i> Tableau de bord</button>
-                                <button onclick="showPublierOffre()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-plus-circle w-6 text-purple-600"></i> Publier une offre</button>
-                                <button onclick="showCandidaturesRecues()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-inbox w-6 text-purple-600"></i> Candidatures reçues</button>
-                                <button onclick="showCandidatsDisponibles()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-users w-6 text-purple-600"></i> Candidats disponibles</button>
-                                <button onclick="showHistoriqueRecrutements()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-history w-6 text-purple-600"></i> Historique</button>
-                                <button onclick="showHome()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 transition flex items-center"><i class="fas fa-sign-out-alt w-6"></i> Déconnexion</button>
+                                <button onclick="showPublierOffre()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
+                                    <i class="fas fa-plus-circle w-6 text-purple-600"></i> Publier une offre
+                                </button>
+                                <button onclick="showMesOffres()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
+                                    <i class="fas fa-bullhorn w-6 text-purple-600"></i> Mes offres
+                                </button>
+                                <button onclick="showCandidaturesRecues()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
+                                    <i class="fas fa-inbox w-6 text-purple-600"></i> Candidatures reçues
+                                </button>
+                                <button onclick="logout()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 flex items-center">
+                                    <i class="fas fa-sign-out-alt w-6"></i> Déconnexion
+                                </button>
                             </nav>
                         </div>
                     </div>
-                    
                     <div class="flex-1">
                         <div class="dashboard-main" id="dashboardContent">
                             <div class="text-center mb-8">
                                 <i class="fas fa-chart-line text-5xl text-green-600 mb-3"></i>
-                                <h2 class="text-2xl font-bold text-gray-800">Tableau de bord</h2>
+                                <h2 class="text-2xl font-bold">Tableau de bord</h2>
                                 <p class="text-gray-600">Bienvenue dans votre espace recruteur</p>
                             </div>
-                            
-                            <div class="grid md:grid-cols-3 gap-6 mt-6">
-                                <div class="stat-card">
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="stat-card" onclick="showMesOffres()">
                                     <i class="fas fa-bullhorn text-3xl text-blue-600 mb-2"></i>
-                                    <div class="text-2xl font-bold">3</div>
-                                    <div class="text-gray-600">Offres actives</div>
+                                    <div class="text-2xl font-bold">${offres ? offres.length : 0}</div>
+                                    <div class="text-gray-600">Mes offres</div>
                                 </div>
-                                <div class="stat-card">
+                                <div class="stat-card" onclick="showCandidaturesRecues()">
                                     <i class="fas fa-users text-3xl text-green-600 mb-2"></i>
-                                    <div class="text-2xl font-bold">12</div>
-                                    <div class="text-gray-600">Candidatures</div>
-                                </div>
-                                <div class="stat-card">
-                                    <i class="fas fa-calendar-check text-3xl text-purple-600 mb-2"></i>
-                                    <div class="text-2xl font-bold">4</div>
-                                    <div class="text-gray-600">Entretiens</div>
+                                    <div class="text-2xl font-bold" id="candidaturesCount">0</div>
+                                    <div class="text-gray-600">Candidatures reçues</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
-            animatePageTransition(dashboardHTML);
+            document.getElementById('mainContent').innerHTML = html;
+            chargerCandidaturesCount();
         }
 
-        function showAdminDashboard() {
-            const candidats = JSON.parse(localStorage.getItem('candidats') || '[]');
-            const entreprises = JSON.parse(localStorage.getItem('entreprises') || '[]');
-
-            const dashboardHTML = `
-                <div class="flex flex-col md:flex-row gap-6 fade-in">
-                    <div class="md:w-80">
-                        <div class="dashboard-sidebar">
-                            <div class="text-center mb-6">
-                                <div class="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg">
-                                    <i class="fas fa-crown text-white text-4xl"></i>
-                                </div>
-                                <h3 class="font-bold text-xl">Administrateur</h3>
-                                <p class="text-sm text-gray-500">Super Admin</p>
-                            </div>
-                            
-                            <nav class="space-y-2">
-                                <button onclick="showAdminDashboard()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-tachometer-alt w-6 text-purple-600"></i> Dashboard</button>
-                                <button onclick="showAdminCandidats()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-user-graduate w-6 text-purple-600"></i> Candidats</button>
-                                <button onclick="showAdminEntreprises()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-building w-6 text-purple-600"></i> Entreprises</button>
-                                <button onclick="showAdminStatistiques()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 transition flex items-center"><i class="fas fa-chart-bar w-6 text-purple-600"></i> Statistiques</button>
-                                <button onclick="exportData()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-green-50 text-green-600 transition flex items-center"><i class="fas fa-download w-6"></i> Exporter données</button>
-                                <button onclick="showHome()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 transition flex items-center"><i class="fas fa-sign-out-alt w-6"></i> Déconnexion</button>
-                            </nav>
-                        </div>
-                    </div>
-                    
-                    <div class="flex-1">
-                        <div class="dashboard-main" id="dashboardContent">
-                            <div class="text-center mb-8">
-                                <i class="fas fa-chart-line text-5xl text-purple-600 mb-3"></i>
-                                <h2 class="text-2xl font-bold text-gray-800">Administration</h2>
-                                <p class="text-gray-600">Gestion complète de la plateforme</p>
-                            </div>
-                            
-                            <div class="grid md:grid-cols-4 gap-6 mt-6">
-                                <div class="stat-card">
-                                    <i class="fas fa-users text-3xl text-blue-600 mb-2"></i>
-                                    <div class="text-2xl font-bold">${candidats.length}</div>
-                                    <div class="text-gray-600">Candidats</div>
-                                </div>
-                                <div class="stat-card">
-                                    <i class="fas fa-building text-3xl text-green-600 mb-2"></i>
-                                    <div class="text-2xl font-bold">${entreprises.length}</div>
-                                    <div class="text-gray-600">Entreprises</div>
-                                </div>
-                                <div class="stat-card">
-                                    <i class="fas fa-briefcase text-3xl text-purple-600 mb-2"></i>
-                                    <div class="text-2xl font-bold">15</div>
-                                    <div class="text-gray-600">Offres</div>
-                                </div>
-                                <div class="stat-card">
-                                    <i class="fas fa-check-circle text-3xl text-orange-600 mb-2"></i>
-                                    <div class="text-2xl font-bold">8</div>
-                                    <div class="text-gray-600">Recrutements</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            animatePageTransition(dashboardHTML);
+        async function chargerCandidaturesCount() {
+            const { data: offres } = await supabaseClient.from('offres').select('id').eq('entreprise_id', currentUser.id);
+            if (offres && offres.length > 0) {
+                const offreIds = offres.map(o => o.id);
+                const { data: candidatures } = await supabaseClient.from('candidatures').select('id').in('offre_id', offreIds);
+                const count = candidatures ? candidatures.length : 0;
+                const countEl = document.getElementById('candidaturesCount');
+                if (countEl) countEl.innerText = count;
+            }
         }
 
         function showPublierOffre() {
-            const offreHTML = `
+            const html = `
                 <div class="dashboard-main">
                     <h2 class="text-2xl font-bold mb-6"><i class="fas fa-plus-circle text-purple-600 mr-2"></i> Publier une offre d'emploi</h2>
                     <form onsubmit="publierOffre(event)">
                         <div class="grid md:grid-cols-2 gap-4">
                             <div class="md:col-span-2"><label class="block text-gray-700 mb-2">Intitulé du poste *</label><input type="text" id="intitule" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Nombre de personnes *</label><input type="number" id="nbPersonnes" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Type de contrat *</label><select id="typeContrat" class="input-modern"><option>CDI</option><option>CDD</option><option>Intérim</option><option>Stage</option></select></div>
-                            <div class="md:col-span-2"><label class="block text-gray-700 mb-2">Description *</label><textarea id="description" rows="4" required class="input-modern"></textarea></div>
+                            <div><label class="block text-gray-700 mb-2">Nombre de personnes</label><input type="number" id="nbPersonnes" class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Type de contrat *</label>
+                                <select id="typeContrat" class="input-modern">
+                                    <option>CDI</option><option>CDD</option><option>Intérim</option><option>Stage</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2"><label class="block text-gray-700 mb-2">Description courte *</label><textarea id="descriptionCourte" rows="2" required class="input-modern"></textarea></div>
+                            <div class="md:col-span-2"><label class="block text-gray-700 mb-2">Description détaillée</label><textarea id="descriptionLongue" rows="4" class="input-modern"></textarea></div>
+                            <div><label class="block text-gray-700 mb-2">Niveau d'expérience souhaité</label><input type="text" id="niveauExperience" class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Compétences nécessaires</label><textarea id="competencesRequises" rows="2" class="input-modern"></textarea></div>
                             <div><label class="block text-gray-700 mb-2">Lieu de travail</label><input type="text" id="lieuTravail" class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2">Horaires</label><input type="text" id="horaires" class="input-modern"></div>
                             <div><label class="block text-gray-700 mb-2">Salaire proposé (TND)</label><input type="number" id="salairePropose" class="input-modern"></div>
+                            <div class="md:col-span-2"><label class="block text-gray-700 mb-2">Avantages (transport, repas, primes, assurance, logement...)</label><textarea id="avantages" rows="2" class="input-modern"></textarea></div>
                         </div>
                         <div class="mt-6 flex justify-end">
                             <button type="submit" class="btn-primary"><i class="fas fa-paper-plane mr-2"></i> Publier l'offre</button>
@@ -932,204 +1185,209 @@
                     </form>
                 </div>
             `;
-            document.getElementById('dashboardContent').innerHTML = offreHTML;
+            document.getElementById('dashboardContent').innerHTML = html;
         }
 
-        function showCandidaturesRecues() {
-            const candidats = JSON.parse(localStorage.getItem('candidats') || '[]');
-            let html = `<h2 class="text-2xl font-bold mb-6"><i class="fas fa-inbox text-purple-600 mr-2"></i> Candidatures reçues</h2>`;
-            if (candidats.length === 0) {
-                html += `<div class="text-center py-8 text-gray-500">Aucune candidature pour le moment</div>`;
+        async function publierOffre(event) {
+            event.preventDefault();
+            
+            const offreData = {
+                entreprise_id: currentUser.id,
+                intitule: document.getElementById('intitule').value,
+                nombre_personnes: document.getElementById('nbPersonnes').value || 1,
+                description_courte: document.getElementById('descriptionCourte').value,
+                description_longue: document.getElementById('descriptionLongue').value,
+                niveau_experience: document.getElementById('niveauExperience').value,
+                competences_requises: document.getElementById('competencesRequises').value,
+                lieu_travail: document.getElementById('lieuTravail').value,
+                horaires: document.getElementById('horaires').value,
+                type_contrat: document.getElementById('typeContrat').value,
+                salaire_propose: document.getElementById('salairePropose').value || null,
+                avantages: document.getElementById('avantages').value,
+                status: 'active',
+                created_at: new Date(),
+                updated_at: new Date()
+            };
+            
+            const { error } = await supabaseClient.from('offres').insert([offreData]);
+            
+            if (error) {
+                Swal.fire('Erreur', error.message, 'error');
             } else {
-                html += `<div class="space-y-4">`;
-                candidats.forEach(c => {
+                Swal.fire('Succès', 'Offre publiée avec succès', 'success').then(() => showEntrepriseDashboard());
+            }
+        }
+
+        async function showMesOffres() {
+            const { data: offres } = await supabaseClient
+                .from('offres')
+                .select('*')
+                .eq('entreprise_id', currentUser.id)
+                .order('created_at', { ascending: false });
+            
+            let html = `
+                <div class="dashboard-main">
+                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-bullhorn text-purple-600 mr-2"></i> Mes offres</h2>
+                    <div class="space-y-4">
+            `;
+            
+            if (!offres || offres.length === 0) {
+                html += '<p class="text-center text-gray-500 py-8">Vous n\'avez pas encore publié d\'offres.</p>';
+                html += '<div class="text-center"><button onclick="showPublierOffre()" class="btn-primary">+ Publier une offre</button></div>';
+            } else {
+                for (const offre of offres) {
                     html += `
-                        <div class="border rounded-lg p-4 hover:shadow-lg transition">
-                            <div class="flex justify-between items-start">
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-start flex-wrap gap-2">
                                 <div>
-                                    <h3 class="font-bold text-lg">${c.prenom} ${c.nom}</h3>
-                                    <p class="text-gray-600">${c.metier}</p>
-                                    <p class="text-sm text-gray-500">${c.ville} - ${c.disponibilite}</p>
+                                    <h3 class="font-bold text-lg">${offre.intitule}</h3>
+                                    <p class="text-sm text-gray-500">${offre.lieu_travail || 'Lieu non spécifié'} • ${offre.type_contrat}</p>
+                                    <p class="text-xs text-gray-400 mt-1">Publiée le ${new Date(offre.created_at).toLocaleDateString()}</p>
+                                    ${offre.salaire_propose ? `<p class="text-sm font-semibold text-green-600">${offre.salaire_propose} TND</p>` : ''}
+                                </div>
+                                <span class="status-badge ${offre.status === 'active' ? 'status-preselection' : 'status-non-retenu'}">${offre.status === 'active' ? 'Active' : 'Fermée'}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            html += `</div><div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary">← Retour</button></div></div>`;
+            document.getElementById('dashboardContent').innerHTML = html;
+        }
+
+        async function showCandidaturesRecues() {
+            const { data: offres } = await supabaseClient.from('offres').select('id').eq('entreprise_id', currentUser.id);
+            
+            if (!offres || offres.length === 0) {
+                let html = `
+                    <div class="dashboard-main">
+                        <h2 class="text-2xl font-bold mb-6"><i class="fas fa-inbox text-purple-600 mr-2"></i> Candidatures reçues</h2>
+                        <p class="text-center text-gray-500 py-8">Aucune offre publiée pour recevoir des candidatures.</p>
+                        <div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary">← Retour</button></div>
+                    </div>
+                `;
+                document.getElementById('dashboardContent').innerHTML = html;
+                return;
+            }
+            
+            const offreIds = offres.map(o => o.id);
+            const { data: candidatures } = await supabaseClient
+                .from('candidatures')
+                .select('*, offres(intitule, lieu_travail), candidats(nom, prenom, metier_recherche, telephone)')
+                .in('offre_id', offreIds)
+                .order('date_candidature', { ascending: false });
+            
+            let html = `
+                <div class="dashboard-main">
+                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-inbox text-purple-600 mr-2"></i> Candidatures reçues</h2>
+                    <div class="space-y-4">
+            `;
+            
+            if (!candidatures || candidatures.length === 0) {
+                html += '<p class="text-center text-gray-500 py-8">Aucune candidature reçue pour le moment.</p>';
+            } else {
+                for (const cand of candidatures) {
+                    html += `
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-start flex-wrap gap-4">
+                                <div class="flex-1">
+                                    <h3 class="font-bold">${cand.candidats?.prenom || ''} ${cand.candidats?.nom || 'Candidat'}</h3>
+                                    <p class="text-sm text-gray-600">Tél: ${cand.candidats?.telephone || '-'}</p>
+                                    <p class="text-sm text-gray-600">Poste : ${cand.offres?.intitule || 'Offre'}</p>
+                                    <p class="text-sm text-gray-600">Métier : ${cand.candidats?.metier_recherche || 'Non spécifié'}</p>
+                                    <p class="text-xs text-gray-500">Reçu le ${new Date(cand.date_candidature).toLocaleDateString()}</p>
                                 </div>
                                 <div class="flex gap-2">
-                                    <button onclick="validerCandidature(${c.id})" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"><i class="fas fa-check mr-1"></i> Valider</button>
-                                    <button onclick="refuserCandidature(${c.id})" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"><i class="fas fa-times mr-1"></i> Refuser</button>
+                                    <button onclick="updateCandidatureStatus('${cand.id}', 'preselectionne')" class="px-3 py-1 bg-green-500 text-white rounded-lg text-sm">
+                                        <i class="fas fa-check mr-1"></i> Présélectionner
+                                    </button>
+                                    <button onclick="updateCandidatureStatus('${cand.id}', 'refuse')" class="px-3 py-1 bg-red-500 text-white rounded-lg text-sm">
+                                        <i class="fas fa-times mr-1"></i> Refuser
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     `;
-                });
-                html += `</div>`;
+                }
             }
+            
+            html += `</div><div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary">← Retour</button></div></div>`;
             document.getElementById('dashboardContent').innerHTML = html;
         }
 
-        function showCandidatsDisponibles() {
-            const candidats = JSON.parse(localStorage.getItem('candidats') || '[]');
-            let html = `<h2 class="text-2xl font-bold mb-6"><i class="fas fa-users text-purple-600 mr-2"></i> Candidats disponibles</h2>`;
-            if (candidats.length === 0) {
-                html += `<div class="text-center py-8 text-gray-500">Aucun candidat disponible</div>`;
+        async function updateCandidatureStatus(candidatureId, status) {
+            const { error } = await supabaseClient
+                .from('candidatures')
+                .update({ statut: status, updated_at: new Date() })
+                .eq('id', candidatureId);
+            
+            if (error) {
+                Swal.fire('Erreur', error.message, 'error');
             } else {
-                html += `<div class="grid md:grid-cols-2 gap-4">`;
-                candidats.forEach(c => {
-                    html += `
-                        <div class="border rounded-lg p-4 hover:shadow-lg transition">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-purple-600 text-xl"></i>
-                                </div>
-                                <div>
-                                    <h3 class="font-bold">${c.prenom} ${c.nom}</h3>
-                                    <p class="text-sm text-gray-600">${c.metier}</p>
-                                    <p class="text-xs text-gray-500">${c.ville} - ${c.disponibilite}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                html += `</div>`;
+                Swal.fire('Succès', `Statut mis à jour : ${status === 'preselectionne' ? 'Présélectionné' : 'Refusé'}`, 'success');
+                showCandidaturesRecues();
             }
-            document.getElementById('dashboardContent').innerHTML = html;
         }
 
-        function showAdminCandidats() {
-            const candidats = JSON.parse(localStorage.getItem('candidats') || '[]');
-            let html = `<h2 class="text-2xl font-bold mb-6"><i class="fas fa-user-graduate text-purple-600 mr-2"></i> Gestion des candidats</h2>`;
-            if (candidats.length === 0) {
-                html += `<div class="text-center py-8 text-gray-500">Aucun candidat inscrit</div>`;
-            } else {
-                html += `<div class="overflow-x-auto"><table class="w-full"><thead><tr class="bg-gray-50"><th class="px-4 py-3 text-left">Nom</th><th>Prénom</th><th>Métier</th><th>Ville</th><th>Actions</th></tr></thead><tbody>`;
-                candidats.forEach(c => {
-                    html += `<tr class="border-t"><td class="px-4 py-3">${c.nom}</td><td>${c.prenom}</td><td>${c.metier}</td><td>${c.ville}</td><td><button onclick="validerCandidat(${c.id})" class="text-green-600 hover:text-green-800"><i class="fas fa-check-circle"></i></button></td></tr>`;
-                });
-                html += `</tbody></table></div>`;
-            }
-            document.getElementById('dashboardContent').innerHTML = html;
-        }
-
-        function showAdminEntreprises() {
-            const entreprises = JSON.parse(localStorage.getItem('entreprises') || '[]');
-            let html = `<h2 class="text-2xl font-bold mb-6"><i class="fas fa-building text-purple-600 mr-2"></i> Gestion des entreprises</h2>`;
-            if (entreprises.length === 0) {
-                html += `<div class="text-center py-8 text-gray-500">Aucune entreprise inscrite</div>`;
-            } else {
-                html += `<div class="overflow-x-auto"><table class="w-full"><thead><tr class="bg-gray-50"><th class="px-4 py-3 text-left">Entreprise</th><th>Secteur</th><th>Responsable</th><th>Email</th></tr></thead><tbody>`;
-                entreprises.forEach(e => {
-                    html += `<tr class="border-t"><td class="px-4 py-3">${e.nom}</td><td>${e.secteur}</td><td>${e.responsable}</td><td>${e.email}</td></tr>`;
-                });
-                html += `</tbody></table></div>`;
-            }
-            document.getElementById('dashboardContent').innerHTML = html;
-        }
-
-        function showAdminStatistiques() {
-            const candidats = JSON.parse(localStorage.getItem('candidats') || '[]');
-            const entreprises = JSON.parse(localStorage.getItem('entreprises') || '[]');
-            let html = `
-                <h2 class="text-2xl font-bold mb-6"><i class="fas fa-chart-bar text-purple-600 mr-2"></i> Statistiques générales</h2>
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div class="border rounded-lg p-6">
-                        <h3 class="font-bold mb-4 text-lg">Répartition candidats</h3>
-                        <div class="space-y-3">
-                            <div><div class="flex justify-between"><span>Total candidats</span><span class="font-bold">${candidats.length}</span></div></div>
-                            <div><div class="flex justify-between"><span>Disponibles immédiatement</span><span class="font-bold">${candidats.filter(c => c.disponibilite === 'Immédiate').length}</span></div></div>
-                            <div><div class="flex justify-between"><span>Secteur Industrie</span><span class="font-bold">${candidats.filter(c => c.secteur === 'Industrie').length}</span></div></div>
-                        </div>
-                    </div>
-                    <div class="border rounded-lg p-6">
-                        <h3 class="font-bold mb-4 text-lg">Répartition entreprises</h3>
-                        <div class="space-y-3">
-                            <div><div class="flex justify-between"><span>Total entreprises</span><span class="font-bold">${entreprises.length}</span></div></div>
-                            <div><div class="flex justify-between"><span>Offres publiées</span><span class="font-bold">15</span></div></div>
-                            <div><div class="flex justify-between"><span>Recrutements réalisés</span><span class="font-bold">8</span></div></div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            document.getElementById('dashboardContent').innerHTML = html;
-        }
-
-        function showSuiviCandidatures() {
+        // ====================================================
+        // DASHBOARD ADMIN
+        // ====================================================
+        async function showAdminDashboard() {
+            const { count: candidatsCount } = await supabaseClient.from('candidats').select('*', { count: 'exact', head: true });
+            const { count: entreprisesCount } = await supabaseClient.from('entreprises').select('*', { count: 'exact', head: true });
+            const { count: offresCount } = await supabaseClient.from('offres').select('*', { count: 'exact', head: true });
+            const { count: candidaturesCount } = await supabaseClient.from('candidatures').select('*', { count: 'exact', head: true });
+            
             const html = `
-                <h2 class="text-2xl font-bold mb-6"><i class="fas fa-chart-line text-purple-600 mr-2"></i> Suivi des candidatures</h2>
-                <div class="space-y-4">
-                    <div class="border rounded-lg p-4">
-                        <div class="flex justify-between items-center">
-                            <div><h3 class="font-bold">Opérateur de production</h3><p class="text-sm text-gray-600">Tech Solutions - Tunis</p></div>
-                            <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full"><i class="fas fa-clock mr-1"></i> En cours d'étude</span>
-                        </div>
-                        <div class="mt-3 bg-gray-200 rounded-full h-2"><div class="bg-yellow-500 rounded-full h-2" style="width: 40%"></div></div>
+                <div class="dashboard-main fade-in">
+                    <div class="text-center mb-8">
+                        <i class="fas fa-chart-line text-5xl text-purple-600 mb-3"></i>
+                        <h2 class="text-2xl font-bold">Administration OctoGo</h2>
+                        <p class="text-gray-600">Gestion complète de la plateforme</p>
                     </div>
-                    <div class="border rounded-lg p-4">
-                        <div class="flex justify-between items-center">
-                            <div><h3 class="font-bold">Technicien maintenance</h3><p class="text-sm text-gray-600">Industrie Plus - Ben Arous</p></div>
-                            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full"><i class="fas fa-check-circle mr-1"></i> Présélectionné</span>
+                    <div class="grid md:grid-cols-4 gap-6">
+                        <div class="stat-card">
+                            <i class="fas fa-users text-3xl text-blue-600 mb-2"></i>
+                            <div class="text-2xl font-bold">${candidatsCount || 0}</div>
+                            <div class="text-gray-600">Candidats</div>
                         </div>
-                        <div class="mt-3 bg-gray-200 rounded-full h-2"><div class="bg-green-500 rounded-full h-2" style="width: 70%"></div></div>
+                        <div class="stat-card">
+                            <i class="fas fa-building text-3xl text-green-600 mb-2"></i>
+                            <div class="text-2xl font-bold">${entreprisesCount || 0}</div>
+                            <div class="text-gray-600">Entreprises</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-briefcase text-3xl text-purple-600 mb-2"></i>
+                            <div class="text-2xl font-bold">${offresCount || 0}</div>
+                            <div class="text-gray-600">Offres</div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-file-alt text-3xl text-orange-600 mb-2"></i>
+                            <div class="text-2xl font-bold">${candidaturesCount || 0}</div>
+                            <div class="text-gray-600">Candidatures</div>
+                        </div>
+                    </div>
+                    <div class="mt-8 flex justify-center">
+                        <button onclick="logout()" class="btn-secondary">Déconnexion</button>
                     </div>
                 </div>
             `;
-            document.getElementById('dashboardContent').innerHTML = html;
+            document.getElementById('mainContent').innerHTML = html;
         }
 
-        // Fonctions utilitaires
-        function genererCVManuel() {
-            Swal.fire('Succès', 'Votre CV a été généré en PDF', 'success');
+        // ====================================================
+        // DÉCONNEXION
+        // ====================================================
+        function logout() {
+            currentUser = null;
+            currentUserType = null;
+            localStorage.removeItem('currentSession');
+            showHome();
         }
 
-        function showCandidatProfile() {
-            document.getElementById('dashboardContent').innerHTML = '<div class="text-center py-8">Formulaire de modification du profil...</div>';
-        }
-
-        function showCandidatExperiences() {
-            document.getElementById('dashboardContent').innerHTML = '<div class="text-center py-8">Gestion des expériences...</div>';
-        }
-
-        function showCandidatCompetences() {
-            document.getElementById('dashboardContent').innerHTML = '<div class="text-center py-8">Gestion des compétences...</div>';
-        }
-
-        function showCandidatDocuments() {
-            document.getElementById('dashboardContent').innerHTML = '<div class="text-center py-8">Gestion des documents...</div>';
-        }
-
-        function showEntrepriseProfile() {
-            document.getElementById('dashboardContent').innerHTML = '<div class="text-center py-8">Modification du profil entreprise...</div>';
-        }
-
-        function showHistoriqueRecrutements() {
-            document.getElementById('dashboardContent').innerHTML = '<div class="text-center py-8">Historique des recrutements...</div>';
-        }
-
-        function publierOffre(event) {
-            event.preventDefault();
-            Swal.fire('Succès', 'Offre publiée avec succès', 'success').then(() => showEntrepriseDashboard());
-        }
-
-        function validerCandidature(id) {
-            Swal.fire('Succès', 'Candidature validée', 'success');
-        }
-
-        function refuserCandidature(id) {
-            Swal.fire('Info', 'Candidature refusée', 'info');
-        }
-
-        function validerCandidat(id) {
-            Swal.fire('Succès', 'Candidat validé', 'success');
-        }
-
-        function exportData() {
-            Swal.fire('Export', 'Données exportées avec succès', 'success');
-        }
-
-        // Initialisation
-        function initDemoData() {
-            if (!localStorage.getItem('candidats')) localStorage.setItem('candidats', JSON.stringify([]));
-            if (!localStorage.getItem('entreprises')) localStorage.setItem('entreprises', JSON.stringify([]));
-            if (!localStorage.getItem('offres')) localStorage.setItem('offres', JSON.stringify([]));
-        }
-
-        initDemoData();
+        // Vérifier la session au chargement
+        checkSession();
     </script>
 </body>
 
