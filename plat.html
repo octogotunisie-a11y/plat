@@ -238,6 +238,30 @@
             background: #f3f4f6;
             color: #4b5563;
         }
+        
+        .file-upload {
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload:hover {
+            border-color: #667eea;
+            background: #f8fafc;
+        }
+        
+        .document-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e0e7ff;
+            color: #4338ca;
+            border-radius: 8px;
+            font-size: 12px;
+            margin: 4px;
+        }
     </style>
 </head>
 
@@ -415,7 +439,7 @@
         // ====================================================
         function showAuthModal(type) {
             const html = `
-                <div class="max-w-4xl mx-auto fade-in">
+                <div class="max-w-5xl mx-auto fade-in">
                     <div class="card-pro p-8">
                         <div class="text-center mb-8">
                             <div class="text-5xl mb-4">${type === 'candidat' ? '👤' : '🏢'}</div>
@@ -450,7 +474,7 @@
 
         function getRegisterCandidatForm() {
             return `
-                <form onsubmit="registerCandidat(event)">
+                <form onsubmit="registerCandidat(event)" enctype="multipart/form-data">
                     <div class="form-section">
                         <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-user-circle mr-2"></i>Informations personnelles</h3>
                         <div class="grid md:grid-cols-2 gap-4">
@@ -506,6 +530,72 @@
                                 </select>
                             </div>
                             <div><label class="block text-gray-700 mb-2">Salaire souhaité (TND)</label><input type="number" id="salaireSouhaite" class="input-modern"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- SECTION DOCUMENTS AVEC UPLOAD DE CV -->
+                    <div class="form-section">
+                        <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-file-alt mr-2"></i>Documents (Optionnel)</h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 mb-2">CV (PDF ou Word)</label>
+                                <div class="file-upload" onclick="document.getElementById('cvFile').click()">
+                                    <i class="fas fa-cloud-upload-alt text-3xl text-purple-600 mb-2"></i>
+                                    <p class="text-sm text-gray-500">Cliquez pour télécharger votre CV</p>
+                                    <p class="text-xs text-gray-400">Formats acceptés: PDF, DOC, DOCX (Max 5MB)</p>
+                                </div>
+                                <input type="file" id="cvFile" accept=".pdf,.doc,.docx" class="hidden" onchange="updateFileName('cvFile', 'cvFileName')">
+                                <p id="cvFileName" class="text-xs text-green-600 mt-1"></p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Photo de profil</label>
+                                <div class="file-upload" onclick="document.getElementById('photoFile').click()">
+                                    <i class="fas fa-camera text-3xl text-purple-600 mb-2"></i>
+                                    <p class="text-sm text-gray-500">Cliquez pour ajouter une photo</p>
+                                    <p class="text-xs text-gray-400">Formats acceptés: JPG, PNG (Max 2MB)</p>
+                                </div>
+                                <input type="file" id="photoFile" accept="image/*" class="hidden" onchange="updateFileName('photoFile', 'photoFileName')">
+                                <p id="photoFileName" class="text-xs text-green-600 mt-1"></p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Carte d'identité</label>
+                                <div class="file-upload" onclick="document.getElementById('carteFile').click()">
+                                    <i class="fas fa-id-card text-3xl text-purple-600 mb-2"></i>
+                                    <p class="text-sm text-gray-500">Cliquez pour télécharger</p>
+                                </div>
+                                <input type="file" id="carteFile" accept=".pdf,.jpg,.png" class="hidden" onchange="updateFileName('carteFile', 'carteFileName')">
+                                <p id="carteFileName" class="text-xs text-green-600 mt-1"></p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Diplômes</label>
+                                <div class="file-upload" onclick="document.getElementById('diplomesFile').click()">
+                                    <i class="fas fa-graduation-cap text-3xl text-purple-600 mb-2"></i>
+                                    <p class="text-sm text-gray-500">Cliquez pour télécharger</p>
+                                </div>
+                                <input type="file" id="diplomesFile" accept=".pdf,.jpg,.png" class="hidden" onchange="updateFileName('diplomesFile', 'diplomesFileName')">
+                                <p id="diplomesFileName" class="text-xs text-green-600 mt-1"></p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Certificats</label>
+                                <div class="file-upload" onclick="document.getElementById('certificatsFile').click()">
+                                    <i class="fas fa-certificate text-3xl text-purple-600 mb-2"></i>
+                                    <p class="text-sm text-gray-500">Cliquez pour télécharger</p>
+                                </div>
+                                <input type="file" id="certificatsFile" accept=".pdf,.jpg,.png" class="hidden" onchange="updateFileName('certificatsFile', 'certificatsFileName')">
+                                <p id="certificatsFileName" class="text-xs text-green-600 mt-1"></p>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 mb-2">Attestations de travail</label>
+                                <div class="file-upload" onclick="document.getElementById('attestationsFile').click()">
+                                    <i class="fas fa-briefcase text-3xl text-purple-600 mb-2"></i>
+                                    <p class="text-sm text-gray-500">Cliquez pour télécharger</p>
+                                </div>
+                                <input type="file" id="attestationsFile" accept=".pdf,.jpg,.png" class="hidden" onchange="updateFileName('attestationsFile', 'attestationsFileName')">
+                                <p id="attestationsFileName" class="text-xs text-green-600 mt-1"></p>
+                            </div>
+                        </div>
+                        <div class="mt-3 p-3 bg-blue-50 rounded-lg">
+                            <p class="text-sm text-blue-700"><i class="fas fa-info-circle mr-2"></i>Ces documents seront visibles par les recruteurs lors de vos candidatures.</p>
                         </div>
                     </div>
                     
@@ -582,6 +672,14 @@
             `;
         }
 
+        function updateFileName(inputId, labelId) {
+            const input = document.getElementById(inputId);
+            const label = document.getElementById(labelId);
+            if (input.files && input.files[0]) {
+                label.innerHTML = `<i class="fas fa-check-circle"></i> ${input.files[0].name}`;
+            }
+        }
+
         function switchTab(tab, type) {
             const tabInscription = document.getElementById('tabInscription');
             const tabConnexion = document.getElementById('tabConnexion');
@@ -606,6 +704,37 @@
         }
 
         // ====================================================
+        // FONCTIONS UPLOAD FICHIERS
+        // ====================================================
+        async function uploadFile(file, folder, fileName) {
+            if (!file || file.size === 0) return null;
+
+            const fileExt = file.name.split('.').pop();
+            const safeFileName = fileName.replace(/[^a-zA-Z0-9]/g, '_');
+            const filePath = `${folder}/${safeFileName}_${Date.now()}.${fileExt}`;
+
+            const {
+                data,
+                error
+            } = await supabaseClient.storage
+                .from('candidat-documents')
+                .upload(filePath, file);
+
+            if (error) {
+                console.error('Erreur upload:', error);
+                return null;
+            }
+
+            const {
+                data: publicUrl
+            } = supabaseClient.storage
+                .from('candidat-documents')
+                .getPublicUrl(filePath);
+
+            return publicUrl.publicUrl;
+        }
+
+        // ====================================================
         // INSCRIPTIONS
         // ====================================================
         async function registerCandidat(event) {
@@ -620,11 +749,30 @@
             });
 
             try {
+                const userPhone = document.getElementById('telephone').value;
+
+                // Upload des fichiers
+                const cvFile = document.getElementById('cvFile').files[0];
+                const photoFile = document.getElementById('photoFile').files[0];
+                const carteFile = document.getElementById('carteFile').files[0];
+                const diplomesFile = document.getElementById('diplomesFile').files[0];
+                const certificatsFile = document.getElementById('certificatsFile').files[0];
+                const attestationsFile = document.getElementById('attestationsFile').files[0];
+
+                const [cvUrl, photoUrl, carteUrl, diplomesUrl, certificatsUrl, attestationsUrl] = await Promise.all([
+                    uploadFile(cvFile, 'cv', userPhone),
+                    uploadFile(photoFile, 'photos', userPhone),
+                    uploadFile(carteFile, 'cartes', userPhone),
+                    uploadFile(diplomesFile, 'diplomes', userPhone),
+                    uploadFile(certificatsFile, 'certificats', userPhone),
+                    uploadFile(attestationsFile, 'attestations', userPhone)
+                ]);
+
                 const candidatData = {
                     nom: document.getElementById('nom').value,
                     prenom: document.getElementById('prenom').value,
                     date_naissance: document.getElementById('dateNaissance').value || null,
-                    telephone: document.getElementById('telephone').value,
+                    telephone: userPhone,
                     mot_de_passe: document.getElementById('password').value,
                     adresse: document.getElementById('adresse').value,
                     ville: document.getElementById('ville').value,
@@ -639,6 +787,12 @@
                     disponibilite: document.getElementById('disponibilite').value,
                     mobilite_geographique: document.getElementById('mobilite').value === 'true',
                     salaire_souhaite: document.getElementById('salaireSouhaite').value || null,
+                    cv_url: cvUrl,
+                    photo_url: photoUrl,
+                    carte_identite_url: carteUrl,
+                    diplomes_url: diplomesUrl,
+                    certificats_url: certificatsUrl,
+                    attestations_url: attestationsUrl,
                     status: 'actif',
                     created_at: new Date(),
                     updated_at: new Date()
@@ -651,14 +805,13 @@
                 if (error) throw error;
 
                 Swal.fire({
-                        icon: 'success',
-                        title: 'Inscription réussie !',
-                        text: 'Votre profil a été créé avec succès. Veuillez vous connecter.'
-                    })
-                    .then(() => {
-                        // Basculer vers l'onglet connexion
-                        switchTab('connexion', 'candidat');
-                    });
+                    icon: 'success',
+                    title: 'Inscription réussie !',
+                    text: 'Votre profil a été créé avec succès. Veuillez vous connecter.',
+                    confirmButtonColor: '#667eea'
+                }).then(() => {
+                    switchTab('connexion', 'candidat');
+                });
             } catch (error) {
                 Swal.fire({
                     icon: 'error',
@@ -703,14 +856,13 @@
                 if (error) throw error;
 
                 Swal.fire({
-                        icon: 'success',
-                        title: 'Inscription réussie !',
-                        text: 'Votre espace entreprise a été créé. Veuillez vous connecter.'
-                    })
-                    .then(() => {
-                        // Basculer vers l'onglet connexion
-                        switchTab('connexion', 'entreprise');
-                    });
+                    icon: 'success',
+                    title: 'Inscription réussie !',
+                    text: 'Votre espace entreprise a été créé. Veuillez vous connecter.',
+                    confirmButtonColor: '#667eea'
+                }).then(() => {
+                    switchTab('connexion', 'entreprise');
+                });
             } catch (error) {
                 Swal.fire({
                     icon: 'error',
@@ -852,23 +1004,43 @@
         }
 
         // ====================================================
-        // DASHBOARD CANDIDAT (simplifié pour la démo)
+        // DASHBOARD CANDIDAT COMPLET
         // ====================================================
         async function showCandidatDashboard() {
+            const {
+                data: offres
+            } = await supabaseClient.from('offres').select('*, entreprises(nom_entreprise)').eq('status', 'active');
+            const {
+                data: candidatures
+            } = await supabaseClient.from('candidatures').select('*').eq('candidat_id', currentUser.id);
+
             const html = `
                 <div class="flex flex-col md:flex-row gap-6 fade-in">
                     <div class="md:w-80">
                         <div class="dashboard-sidebar">
                             <div class="text-center mb-6">
-                                <div class="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-3">
-                                    <i class="fas fa-user text-white text-4xl"></i>
-                                </div>
+                                ${currentUser.photo_url ? 
+                                    `<img src="${currentUser.photo_url}" class="w-24 h-24 rounded-full object-cover mx-auto mb-3 border-4 border-purple-300">` :
+                                    `<div class="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-user text-white text-4xl"></i>
+                                    </div>`
+                                }
                                 <h3 class="font-bold text-xl">Espace Candidat</h3>
                                 <p class="text-sm text-gray-500">${currentUser.prenom} ${currentUser.nom}</p>
+                                <p class="text-xs text-gray-400">${currentUser.telephone}</p>
                             </div>
                             <nav class="space-y-2">
                                 <button onclick="showListeOffres()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
                                     <i class="fas fa-search w-6 text-purple-600"></i> Offres d'emploi
+                                </button>
+                                <button onclick="showMesCandidatures()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
+                                    <i class="fas fa-chart-line w-6 text-purple-600"></i> Mes candidatures
+                                </button>
+                                <button onclick="showMonProfil()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
+                                    <i class="fas fa-user-edit w-6 text-purple-600"></i> Mon profil
+                                </button>
+                                <button onclick="showMesDocuments()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
+                                    <i class="fas fa-file-alt w-6 text-purple-600"></i> Mes documents
                                 </button>
                                 <button onclick="logout()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 flex items-center">
                                     <i class="fas fa-sign-out-alt w-6"></i> Déconnexion
@@ -877,9 +1049,24 @@
                         </div>
                     </div>
                     <div class="flex-1">
-                        <div class="dashboard-main">
-                            <h2 class="text-2xl font-bold mb-4">Bienvenue ${currentUser.prenom} !</h2>
-                            <p class="text-gray-600">Vous êtes connecté à votre espace candidat.</p>
+                        <div class="dashboard-main" id="dashboardContent">
+                            <div class="text-center mb-8">
+                                <i class="fas fa-chart-line text-5xl text-purple-600 mb-3"></i>
+                                <h2 class="text-2xl font-bold">Tableau de bord</h2>
+                                <p class="text-gray-600">Bienvenue dans votre espace candidat</p>
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="stat-card" onclick="showListeOffres()">
+                                    <i class="fas fa-briefcase text-3xl text-blue-600 mb-2"></i>
+                                    <div class="text-2xl font-bold">${offres ? offres.length : 0}</div>
+                                    <div class="text-gray-600">Offres disponibles</div>
+                                </div>
+                                <div class="stat-card" onclick="showMesCandidatures()">
+                                    <i class="fas fa-paper-plane text-3xl text-green-600 mb-2"></i>
+                                    <div class="text-2xl font-bold">${candidatures ? candidatures.length : 0}</div>
+                                    <div class="text-gray-600">Mes candidatures</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -888,47 +1075,230 @@
         }
 
         async function showListeOffres() {
-            const {
-                data: offres
-            } = await supabaseClient.from('offres').select('*, entreprises(nom_entreprise)').eq('status', 'active');
-
-            let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6">Offres disponibles</h2><div class="space-y-4">`;
-
+            const { data: offres } = await supabaseClient.from('offres').select('*, entreprises(nom_entreprise, ville)').eq('status', 'active');
+            
+            let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6"><i class="fas fa-search text-purple-600 mr-2"></i> Offres disponibles</h2><div class="space-y-4">`;
+            
             if (!offres || offres.length === 0) {
-                html += '<p class="text-center text-gray-500 py-8">Aucune offre disponible.</p>';
+                html += '<p class="text-center text-gray-500 py-8">Aucune offre disponible pour le moment.</p>';
             } else {
                 for (const offre of offres) {
-                    html += `<div class="border rounded-lg p-4"><h3 class="font-bold">${offre.intitule}</h3><p class="text-sm text-gray-600">${offre.entreprises?.nom_entreprise || 'Entreprise'}</p><button onclick="postulerOffre('${offre.id}')" class="mt-2 btn-primary px-4 py-2 text-sm">Postuler</button></div>`;
+                    html += `
+                        <div class="border rounded-lg p-4 hover:shadow-lg transition">
+                            <div class="flex justify-between items-start flex-wrap gap-4">
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-lg">${offre.intitule}</h3>
+                                    <p class="text-sm text-gray-600">${offre.entreprises?.nom_entreprise || 'Entreprise'} - ${offre.entreprises?.ville || ''}</p>
+                                    <p class="text-sm text-gray-500 mt-1">${offre.lieu_travail || 'Lieu non spécifié'} • ${offre.type_contrat}</p>
+                                    <p class="text-sm mt-2">${offre.description_courte?.substring(0, 150) || ''}...</p>
+                                    ${offre.salaire_propose ? `<p class="text-sm font-semibold text-green-600 mt-1">💰 ${offre.salaire_propose} TND</p>` : ''}
+                                </div>
+                                <button onclick="postulerOffre('${offre.id}')" class="btn-primary px-4 py-2 text-sm">Postuler</button>
+                            </div>
+                        </div>
+                    `;
                 }
             }
+            
             html += `</div><div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div></div>`;
             document.getElementById('dashboardContent').innerHTML = html;
         }
 
         async function postulerOffre(offreId) {
-            const {
-                data: existing
-            } = await supabaseClient.from('candidatures').select('id').eq('candidat_id', currentUser.id).eq('offre_id', offreId);
+            const { data: existing } = await supabaseClient.from('candidatures').select('id').eq('candidat_id', currentUser.id).eq('offre_id', offreId);
             if (existing && existing.length > 0) {
-                Swal.fire('Info', 'Vous avez déjà postulé', 'info');
+                Swal.fire('Info', 'Vous avez déjà postulé à cette offre', 'info');
                 return;
             }
-            const {
-                error
-            } = await supabaseClient.from('candidatures').insert([{
-                candidat_id: currentUser.id,
-                offre_id: offreId,
-                statut: 'en_attente',
-                date_candidature: new Date()
+            
+            const { error } = await supabaseClient.from('candidatures').insert([{ 
+                candidat_id: currentUser.id, 
+                offre_id: offreId, 
+                statut: 'en_attente', 
+                date_candidature: new Date(),
+                updated_at: new Date()
             }]);
-            if (error) Swal.fire('Erreur', error.message, 'error');
-            else Swal.fire('Succès', 'Candidature envoyée', 'success');
+            
+            if (error) {
+                Swal.fire('Erreur', error.message, 'error');
+            } else {
+                Swal.fire('Succès', 'Votre candidature a été envoyée !', 'success');
+                showListeOffres();
+            }
+        }
+
+        async function showMesCandidatures() {
+            const { data: candidatures } = await supabaseClient
+                .from('candidatures')
+                .select('*, offres(intitule, lieu_travail, type_contrat, entreprises(nom_entreprise))')
+                .eq('candidat_id', currentUser.id)
+                .order('date_candidature', { ascending: false });
+            
+            let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6"><i class="fas fa-chart-line text-purple-600 mr-2"></i> Mes candidatures</h2><div class="space-y-4">`;
+            
+            if (!candidatures || candidatures.length === 0) {
+                html += '<p class="text-center text-gray-500 py-8">Vous n\'avez pas encore postulé à des offres.</p>';
+            } else {
+                for (const cand of candidatures) {
+                    const statutClass = { 'en_attente': 'status-etude', 'preselectionne': 'status-preselection', 'entretien': 'status-entretien', 'accepte': 'status-retenu', 'refuse': 'status-non-retenu' }[cand.statut] || 'status-etude';
+                    const statutText = { 'en_attente': 'En cours d\'étude', 'preselectionne': 'Présélectionné', 'entretien': 'Entretien prévu', 'accepte': 'Retenu', 'refuse': 'Non retenu' }[cand.statut] || cand.statut;
+                    
+                    html += `
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-center flex-wrap gap-2">
+                                <div>
+                                    <h3 class="font-bold">${cand.offres?.intitule || 'Offre'}</h3>
+                                    <p class="text-sm text-gray-600">${cand.offres?.entreprises?.nom_entreprise || ''}</p>
+                                    <p class="text-sm text-gray-600">Postulé le ${new Date(cand.date_candidature).toLocaleDateString()}</p>
+                                </div>
+                                <span class="status-badge ${statutClass}">${statutText}</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            html += `</div><div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div></div>`;
+            document.getElementById('dashboardContent').innerHTML = html;
+        }
+
+        async function showMonProfil() {
+            const html = `
+                <div class="dashboard-main">
+                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-user-edit text-purple-600 mr-2"></i> Mon profil</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div><label class="font-semibold">Nom:</label> <p>${currentUser.nom || '-'}</p></div>
+                        <div><label class="font-semibold">Prénom:</label> <p>${currentUser.prenom || '-'}</p></div>
+                        <div><label class="font-semibold">Date de naissance:</label> <p>${currentUser.date_naissance ? new Date(currentUser.date_naissance).toLocaleDateString() : '-'}</p></div>
+                        <div><label class="font-semibold">Téléphone:</label> <p>${currentUser.telephone || '-'}</p></div>
+                        <div><label class="font-semibold">Adresse:</label> <p>${currentUser.adresse || '-'}</p></div>
+                        <div><label class="font-semibold">Ville/Région:</label> <p>${currentUser.ville || '-'} / ${currentUser.region || '-'}</p></div>
+                        <div><label class="font-semibold">Métier recherché:</label> <p>${currentUser.metier_recherche || '-'}</p></div>
+                        <div><label class="font-semibold">Salaire souhaité:</label> <p>${currentUser.salaire_souhaite ? currentUser.salaire_souhaite + ' TND' : '-'}</p></div>
+                    </div>
+                    <div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div>
+                </div>
+            `;
+            document.getElementById('dashboardContent').innerHTML = html;
+        }
+
+        async function showMesDocuments() {
+            const hasDocuments = currentUser.cv_url || currentUser.photo_url || currentUser.carte_identite_url || currentUser.diplomes_url || currentUser.certificats_url || currentUser.attestations_url;
+            
+            let html = `
+                <div class="dashboard-main">
+                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-file-alt text-purple-600 mr-2"></i> Mes documents</h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-file-pdf text-red-500 mr-2"></i>CV</h3>
+                            ${currentUser.cv_url ? 
+                                `<a href="${currentUser.cv_url}" target="_blank" class="text-purple-600 hover:underline">📄 Voir mon CV</a>
+                                 <p class="text-xs text-gray-500 mt-1">Téléchargé le ${new Date(currentUser.created_at).toLocaleDateString()}</p>` : 
+                                `<p class="text-gray-500">Aucun CV téléchargé</p>
+                                 <button onclick="uploadNewDocument('cv')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Télécharger un CV</button>`}
+                        </div>
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-image text-blue-500 mr-2"></i>Photo de profil</h3>
+                            ${currentUser.photo_url ? 
+                                `<img src="${currentUser.photo_url}" class="w-24 h-24 rounded-full object-cover mb-2">
+                                 <button onclick="uploadNewDocument('photo')" class="text-sm bg-gray-200 px-3 py-1 rounded">Modifier</button>` : 
+                                `<p class="text-gray-500">Aucune photo</p>
+                                 <button onclick="uploadNewDocument('photo')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter une photo</button>`}
+                        </div>
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-id-card text-green-500 mr-2"></i>Carte d'identité</h3>
+                            ${currentUser.carte_identite_url ? 
+                                `<a href="${currentUser.carte_identite_url}" target="_blank" class="text-purple-600 hover:underline">🪪 Voir ma carte d'identité</a>` : 
+                                `<p class="text-gray-500">Aucune carte d'identité</p>
+                                 <button onclick="uploadNewDocument('carte')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
+                        </div>
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-graduation-cap text-yellow-500 mr-2"></i>Diplômes</h3>
+                            ${currentUser.diplomes_url ? 
+                                `<a href="${currentUser.diplomes_url}" target="_blank" class="text-purple-600 hover:underline">🎓 Voir mes diplômes</a>` : 
+                                `<p class="text-gray-500">Aucun diplôme</p>
+                                 <button onclick="uploadNewDocument('diplomes')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
+                        </div>
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-certificate text-indigo-500 mr-2"></i>Certificats</h3>
+                            ${currentUser.certificats_url ? 
+                                `<a href="${currentUser.certificats_url}" target="_blank" class="text-purple-600 hover:underline">📜 Voir mes certificats</a>` : 
+                                `<p class="text-gray-500">Aucun certificat</p>
+                                 <button onclick="uploadNewDocument('certificats')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
+                        </div>
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-briefcase text-gray-500 mr-2"></i>Attestations de travail</h3>
+                            ${currentUser.attestations_url ? 
+                                `<a href="${currentUser.attestations_url}" target="_blank" class="text-purple-600 hover:underline">📁 Voir mes attestations</a>` : 
+                                `<p class="text-gray-500">Aucune attestation</p>
+                                 <button onclick="uploadNewDocument('attestations')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
+                        </div>
+                    </div>
+                    <div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div>
+                </div>
+            `;
+            document.getElementById('dashboardContent').innerHTML = html;
+        }
+
+        async function uploadNewDocument(docType) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            
+            if (docType === 'cv') {
+                input.accept = '.pdf,.doc,.docx';
+            } else if (docType === 'photo') {
+                input.accept = 'image/*';
+            } else {
+                input.accept = '.pdf,.jpg,.png';
+            }
+            
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                Swal.fire({ title: 'Téléchargement...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+                
+                let folder = '';
+                let fieldName = '';
+                
+                switch(docType) {
+                    case 'cv': folder = 'cv'; fieldName = 'cv_url'; break;
+                    case 'photo': folder = 'photos'; fieldName = 'photo_url'; break;
+                    case 'carte': folder = 'cartes'; fieldName = 'carte_identite_url'; break;
+                    case 'diplomes': folder = 'diplomes'; fieldName = 'diplomes_url'; break;
+                    case 'certificats': folder = 'certificats'; fieldName = 'certificats_url'; break;
+                    case 'attestations': folder = 'attestations'; fieldName = 'attestations_url'; break;
+                }
+                
+                const url = await uploadFile(file, folder, currentUser.telephone);
+                
+                if (url) {
+                    const { error } = await supabaseClient
+                        .from('candidats')
+                        .update({ [fieldName]: url, updated_at: new Date() })
+                        .eq('id', currentUser.id);
+                    
+                    if (error) {
+                        Swal.fire('Erreur', error.message, 'error');
+                    } else {
+                        currentUser[fieldName] = url;
+                        Swal.fire('Succès', 'Document téléchargé avec succès', 'success');
+                        showMesDocuments();
+                    }
+                } else {
+                    Swal.fire('Erreur', 'Erreur lors du téléchargement', 'error');
+                }
+            };
+            
+            input.click();
         }
 
         // ====================================================
         // DASHBOARD ENTREPRISE (simplifié)
         // ====================================================
         async function showEntrepriseDashboard() {
+            const { data: offres } = await supabaseClient.from('offres').select('*').eq('entreprise_id', currentUser.id);
+            
             const html = `
                 <div class="flex flex-col md:flex-row gap-6 fade-in">
                     <div class="md:w-80">
@@ -944,6 +1314,12 @@
                                 <button onclick="showPublierOffre()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
                                     <i class="fas fa-plus-circle w-6 text-purple-600"></i> Publier une offre
                                 </button>
+                                <button onclick="showMesOffresEntreprise()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
+                                    <i class="fas fa-bullhorn w-6 text-purple-600"></i> Mes offres
+                                </button>
+                                <button onclick="showCandidaturesRecues()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
+                                    <i class="fas fa-inbox w-6 text-purple-600"></i> Candidatures reçues
+                                </button>
                                 <button onclick="logout()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 flex items-center">
                                     <i class="fas fa-sign-out-alt w-6"></i> Déconnexion
                                 </button>
@@ -951,26 +1327,60 @@
                         </div>
                     </div>
                     <div class="flex-1">
-                        <div class="dashboard-main">
-                            <h2 class="text-2xl font-bold mb-4">Bienvenue ${currentUser.nom_entreprise} !</h2>
-                            <p class="text-gray-600">Vous êtes connecté à votre espace recruteur.</p>
+                        <div class="dashboard-main" id="dashboardContent">
+                            <div class="text-center mb-8">
+                                <i class="fas fa-chart-line text-5xl text-green-600 mb-3"></i>
+                                <h2 class="text-2xl font-bold">Tableau de bord</h2>
+                                <p class="text-gray-600">Bienvenue ${currentUser.nom_entreprise}</p>
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div class="stat-card" onclick="showMesOffresEntreprise()">
+                                    <i class="fas fa-bullhorn text-3xl text-blue-600 mb-2"></i>
+                                    <div class="text-2xl font-bold">${offres ? offres.length : 0}</div>
+                                    <div class="text-gray-600">Mes offres</div>
+                                </div>
+                                <div class="stat-card" onclick="showCandidaturesRecues()">
+                                    <i class="fas fa-users text-3xl text-green-600 mb-2"></i>
+                                    <div class="text-2xl font-bold" id="candidaturesCount">0</div>
+                                    <div class="text-gray-600">Candidatures reçues</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
             document.getElementById('mainContent').innerHTML = html;
+            chargerCandidaturesCount();
+        }
+
+        async function chargerCandidaturesCount() {
+            const { data: offres } = await supabaseClient.from('offres').select('id').eq('entreprise_id', currentUser.id);
+            if (offres && offres.length > 0) {
+                const offreIds = offres.map(o => o.id);
+                const { data: candidatures } = await supabaseClient.from('candidatures').select('id').in('offre_id', offreIds);
+                const count = candidatures ? candidatures.length : 0;
+                const countEl = document.getElementById('candidaturesCount');
+                if (countEl) countEl.innerText = count;
+            }
         }
 
         function showPublierOffre() {
             const html = `
                 <div class="dashboard-main">
-                    <h2 class="text-2xl font-bold mb-6">Publier une offre</h2>
+                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-plus-circle text-purple-600 mr-2"></i> Publier une offre</h2>
                     <form onsubmit="publierOffre(event)">
                         <div class="grid md:grid-cols-2 gap-4">
-                            <div class="md:col-span-2"><label>Intitulé *</label><input type="text" id="intitule" required class="input-modern"></div>
-                            <div><label>Type de contrat *</label><select id="typeContrat" class="input-modern"><option>CDI</option><option>CDD</option></select></div>
-                            <div><label>Salaire</label><input type="number" id="salairePropose" class="input-modern"></div>
-                            <div class="md:col-span-2"><label>Description *</label><textarea id="descriptionCourte" rows="3" required class="input-modern"></textarea></div>
+                            <div class="md:col-span-2"><label>Intitulé du poste *</label><input type="text" id="intitule" required class="input-modern"></div>
+                            <div><label>Nombre de personnes</label><input type="number" id="nbPersonnes" class="input-modern" value="1"></div>
+                            <div><label>Type de contrat *</label>
+                                <select id="typeContrat" class="input-modern">
+                                    <option>CDI</option><option>CDD</option><option>Intérim</option><option>Stage</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2"><label>Description courte *</label><textarea id="descriptionCourte" rows="3" required class="input-modern"></textarea></div>
+                            <div><label>Lieu de travail</label><input type="text" id="lieuTravail" class="input-modern"></div>
+                            <div><label>Salaire proposé (TND)</label><input type="number" id="salairePropose" class="input-modern"></div>
+                            <div class="md:col-span-2"><label>Avantages</label><textarea id="avantages" rows="2" class="input-modern" placeholder="Transport, repas, primes..."></textarea></div>
                         </div>
                         <div class="mt-6"><button type="submit" class="btn-primary">Publier</button></div>
                     </form>
@@ -984,17 +1394,95 @@
             const offreData = {
                 entreprise_id: currentUser.id,
                 intitule: document.getElementById('intitule').value,
+                nombre_personnes: document.getElementById('nbPersonnes').value || 1,
+                description_courte: document.getElementById('descriptionCourte').value,
+                lieu_travail: document.getElementById('lieuTravail').value,
                 type_contrat: document.getElementById('typeContrat').value,
                 salaire_propose: document.getElementById('salairePropose').value || null,
-                description_courte: document.getElementById('descriptionCourte').value,
+                avantages: document.getElementById('avantages').value,
                 status: 'active',
-                created_at: new Date()
+                created_at: new Date(),
+                updated_at: new Date()
             };
-            const {
-                error
-            } = await supabaseClient.from('offres').insert([offreData]);
-            if (error) Swal.fire('Erreur', error.message, 'error');
-            else Swal.fire('Succès', 'Offre publiée', 'success').then(() => showEntrepriseDashboard());
+            
+            const { error } = await supabaseClient.from('offres').insert([offreData]);
+            if (error) {
+                Swal.fire('Erreur', error.message, 'error');
+            } else {
+                Swal.fire('Succès', 'Offre publiée avec succès', 'success').then(() => showEntrepriseDashboard());
+            }
+        }
+
+        async function showMesOffresEntreprise() {
+            const { data: offres } = await supabaseClient.from('offres').select('*').eq('entreprise_id', currentUser.id).order('created_at', { ascending: false });
+            
+            let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6">Mes offres</h2><div class="space-y-4">`;
+            
+            if (!offres || offres.length === 0) {
+                html += '<p class="text-center text-gray-500 py-8">Aucune offre publiée.</p>';
+            } else {
+                for (const offre of offres) {
+                    html += `<div class="border rounded-lg p-4"><h3 class="font-bold">${offre.intitule}</h3><p class="text-sm text-gray-500">${offre.type_contrat} - ${offre.lieu_travail || 'Lieu non spécifié'}</p><span class="status-badge ${offre.status === 'active' ? 'status-preselection' : 'status-non-retenu'}">${offre.status === 'active' ? 'Active' : 'Fermée'}</span></div>`;
+                }
+            }
+            
+            html += `</div><div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary">← Retour</button></div></div>`;
+            document.getElementById('dashboardContent').innerHTML = html;
+        }
+
+        async function showCandidaturesRecues() {
+            const { data: offres } = await supabaseClient.from('offres').select('id').eq('entreprise_id', currentUser.id);
+            
+            if (!offres || offres.length === 0) {
+                let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6">Candidatures reçues</h2><p class="text-center text-gray-500 py-8">Aucune candidature reçue.</p><div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary">← Retour</button></div></div>`;
+                document.getElementById('dashboardContent').innerHTML = html;
+                return;
+            }
+            
+            const offreIds = offres.map(o => o.id);
+            const { data: candidatures } = await supabaseClient
+                .from('candidatures')
+                .select('*, offres(intitule), candidats(nom, prenom, telephone, cv_url)')
+                .in('offre_id', offreIds)
+                .order('date_candidature', { ascending: false });
+            
+            let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6">Candidatures reçues</h2><div class="space-y-4">`;
+            
+            if (!candidatures || candidatures.length === 0) {
+                html += '<p class="text-center text-gray-500 py-8">Aucune candidature reçue.</p>';
+            } else {
+                for (const cand of candidatures) {
+                    html += `
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-start flex-wrap gap-4">
+                                <div>
+                                    <h3 class="font-bold">${cand.candidats?.prenom || ''} ${cand.candidats?.nom || 'Candidat'}</h3>
+                                    <p class="text-sm text-gray-600">Tél: ${cand.candidats?.telephone || '-'}</p>
+                                    <p class="text-sm text-gray-600">Poste: ${cand.offres?.intitule || 'Offre'}</p>
+                                    ${cand.candidats?.cv_url ? `<a href="${cand.candidats.cv_url}" target="_blank" class="text-sm text-purple-600"><i class="fas fa-file-pdf"></i> Voir CV</a>` : ''}
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="updateCandidatureStatus('${cand.id}', 'preselectionne')" class="px-3 py-1 bg-green-500 text-white rounded">✓</button>
+                                    <button onclick="updateCandidatureStatus('${cand.id}', 'refuse')" class="px-3 py-1 bg-red-500 text-white rounded">✗</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            html += `</div><div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary">← Retour</button></div></div>`;
+            document.getElementById('dashboardContent').innerHTML = html;
+        }
+
+        async function updateCandidatureStatus(candidatureId, status) {
+            const { error } = await supabaseClient.from('candidatures').update({ statut: status, updated_at: new Date() }).eq('id', candidatureId);
+            if (error) {
+                Swal.fire('Erreur', error.message, 'error');
+            } else {
+                Swal.fire('Succès', `Statut mis à jour`, 'success');
+                showCandidaturesRecues();
+            }
         }
 
         // ====================================================
