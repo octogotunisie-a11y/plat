@@ -262,10 +262,60 @@
             font-size: 12px;
             margin: 4px;
         }
+        /* Style pour le sélecteur de langue */
+        
+        .lang-switch {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50px;
+            padding: 4px;
+            display: inline-flex;
+            gap: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .lang-btn {
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: white;
+        }
+        
+        .lang-btn.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .lang-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        [dir="rtl"] {
+            direction: rtl;
+        }
+        
+        [dir="rtl"] .flex,
+        [dir="rtl"] .space-x-4,
+        [dir="rtl"] .space-x-3,
+        [dir="rtl"] .flex-row {
+            direction: rtl;
+        }
+        
+        [dir="rtl"] .justify-between {
+            flex-direction: row-reverse;
+        }
+        
+        .transition-lang {
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 
-<body>
+<body dir="ltr">
     <div class="loader-wrapper" id="loaderWrapper">
         <div class="loader">
             <div style="width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto;">
@@ -279,18 +329,25 @@
     <div id="appContent" style="display: none;">
         <nav class="bg-white shadow-lg sticky top-0 z-50">
             <div class="container mx-auto px-4">
-                <div class="flex justify-between items-center py-4">
+                <div class="flex justify-between items-center py-4 flex-wrap gap-4">
                     <div class="flex items-center space-x-3 cursor-pointer" onclick="showHome()">
                         <div style="width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;">
                             <img src="afa.png" alt="Logo" style="height:60px;">
                         </div>
-                        <span class="font-bold text-2xl text-gray-800">AFA</span>
+                        <span class="font-bold text-2xl text-gray-800 lang-text" data-fr="AFA" data-ar="أفا">AFA</span>
                     </div>
+
+                    <!-- Sélecteur de langue Arabe/Français -->
+                    <div class="lang-switch">
+                        <button onclick="switchLanguage('fr')" id="btnFr" class="lang-btn active">FR</button>
+                        <button onclick="switchLanguage('ar')" id="btnAr" class="lang-btn">AR</button>
+                    </div>
+
                     <div class="hidden md:flex space-x-4">
-                        <button onclick="showHome()" class="text-gray-600 hover:text-purple-600 px-4 py-2">Accueil</button>
-                        <button onclick="showAuthModal('candidat')" class="text-gray-600 hover:text-purple-600 px-4 py-2">Espace Candidat</button>
-                        <button onclick="showAuthModal('entreprise')" class="text-gray-600 hover:text-purple-600 px-4 py-2">Espace Entreprise</button>
-                        <button onclick="showLogin('admin')" class="text-gray-600 hover:text-purple-600 px-4 py-2">Administrateur</button>
+                        <button onclick="showHome()" class="text-gray-600 hover:text-purple-600 px-4 py-2 lang-text" data-fr="Accueil" data-ar="الرئيسية">Accueil</button>
+                        <button onclick="showAuthModal('candidat')" class="text-gray-600 hover:text-purple-600 px-4 py-2 lang-text" data-fr="Espace Candidat" data-ar="مساحة المرشح">Espace Candidat</button>
+                        <button onclick="showAuthModal('entreprise')" class="text-gray-600 hover:text-purple-600 px-4 py-2 lang-text" data-fr="Espace Entreprise" data-ar="مساحة الشركة">Espace Entreprise</button>
+                        <button onclick="showLogin('admin')" class="text-gray-600 hover:text-purple-600 px-4 py-2 lang-text" data-fr="Administrateur" data-ar="المدير">Administrateur</button>
                     </div>
                 </div>
             </div>
@@ -311,6 +368,163 @@
         // ====================================================
         let currentUser = null;
         let currentUserType = null;
+        let currentLanguage = 'fr'; // 'fr' ou 'ar'
+
+        // ====================================================
+        // FONCTIONS DE TRADUCTION
+        // ====================================================
+        const translations = {
+            fr: {
+                // Navigation
+                "Accueil": "Accueil",
+                "Espace Candidat": "Espace Candidat",
+                "Espace Entreprise": "Espace Entreprise",
+                "Administrateur": "Administrateur",
+
+                // Hero section
+                "Plateforme de Recrutement": "Plateforme de Recrutement",
+                "La solution complète pour l'emploi et le recrutement professionnel": "La solution complète pour l'emploi et le recrutement professionnel",
+                "Je cherche un emploi": "Je cherche un emploi",
+                "Je recrute": "Je recrute",
+
+                // Stats
+                "Candidats inscrits": "Candidats inscrits",
+                "Entreprises partenaires": "Entreprises partenaires",
+                "Offres d'emploi": "Offres d'emploi",
+
+                // Services
+                "Nos services": "Nos services",
+                "Espace Candidat - Titre": "Espace Candidat",
+                "Créez votre CV professionnel, postulez aux offres et suivez vos candidatures": "Créez votre CV professionnel, postulez aux offres et suivez vos candidatures",
+                "Espace Entreprise - Titre": "Espace Entreprise",
+                "Publiez vos offres, trouvez les meilleurs talents et gérez vos recrutements": "Publiez vos offres, trouvez les meilleurs talents et gérez vos recrutements",
+                "Espace Admin - Titre": "Espace Admin",
+                "Gérez l'ensemble de la plateforme": "Gérez l'ensemble de la plateforme",
+
+                // Auth modal
+                "S'inscrire": "S'inscrire",
+                "Se connecter": "Se connecter",
+                "Inscription": "Inscription",
+                "Connexion": "Connexion",
+                "Informations personnelles": "Informations personnelles",
+                "Données professionnelles": "Données professionnelles",
+                "Documents (Optionnel)": "Documents (Optionnel)",
+                "Annuler": "Annuler",
+                "Créer mon espace": "Créer mon espace",
+
+                // Dashboard
+                "Tableau de bord": "Tableau de bord",
+                "Bienvenue dans votre espace candidat": "Bienvenue dans votre espace candidat",
+                "Offres disponibles": "Offres disponibles",
+                "Mes candidatures": "Mes candidatures",
+                "Mon profil": "Mon profil",
+                "Mes documents": "Mes documents",
+                "Déconnexion": "Déconnexion",
+                "Publier une offre": "Publier une offre",
+                "Mes offres": "Mes offres",
+                "Candidatures reçues": "Candidatures reçues",
+                "Administration": "Administration",
+
+                // Login
+                "Connexion Administrateur": "Connexion Administrateur",
+                "Retour à l'accueil": "Retour à l'accueil"
+            },
+            ar: {
+                // Navigation
+                "Accueil": "الرئيسية",
+                "Espace Candidat": "مساحة المرشح",
+                "Espace Entreprise": "مساحة الشركة",
+                "Administrateur": "المدير",
+
+                // Hero section
+                "Plateforme de Recrutement": "منصة التوظيف",
+                "La solution complète pour l'emploi et le recrutement professionnel": "الحل المتكامل للتوظيف والتوظيف الاحترافي",
+                "Je cherche un emploi": "أبحث عن وظيفة",
+                "Je recrute": "أوظف",
+
+                // Stats
+                "Candidats inscrits": "المرشحين المسجلين",
+                "Entreprises partenaires": "الشركات الشريكة",
+                "Offres d'emploi": "عروض العمل",
+
+                // Services
+                "Nos services": "خدماتنا",
+                "Espace Candidat - Titre": "مساحة المرشح",
+                "Créez votre CV professionnel, postulez aux offres et suivez vos candidatures": "قم بإنشاء سيرتك الذاتية الاحترافية، تقدم للعروض وتابع طلباتك",
+                "Espace Entreprise - Titre": "مساحة الشركة",
+                "Publiez vos offres, trouvez les meilleurs talents et gérez vos recrutements": "انشر عروضك، ابحث عن أفضل المواهب وأدر تعييناتك",
+                "Espace Admin - Titre": "مساحة المدير",
+                "Gérez l'ensemble de la plateforme": "إدارة المنصة بأكملها",
+
+                // Auth modal
+                "S'inscrire": "تسجيل",
+                "Se connecter": "تسجيل الدخول",
+                "Inscription": "تسجيل",
+                "Connexion": "تسجيل الدخول",
+                "Informations personnelles": "المعلومات الشخصية",
+                "Données professionnelles": "البيانات المهنية",
+                "Documents (Optionnel)": "الوثائق (اختياري)",
+                "Annuler": "إلغاء",
+                "Créer mon espace": "إنشاء مساحتي",
+
+                // Dashboard
+                "Tableau de bord": "لوحة التحكم",
+                "Bienvenue dans votre espace candidat": "مرحباً بك في مساحة المرشح",
+                "Offres disponibles": "العروض المتاحة",
+                "Mes candidatures": "طلباتي",
+                "Mon profil": "ملفي الشخصي",
+                "Mes documents": "وثائقي",
+                "Déconnexion": "تسجيل الخروج",
+                "Publier une offre": "نشر عرض",
+                "Mes offres": "عروضي",
+                "Candidatures reçues": "الطلبات المستلمة",
+                "Administration": "الإدارة",
+
+                // Login
+                "Connexion Administrateur": "تسجيل دخول المدير",
+                "Retour à l'accueil": "العودة إلى الرئيسية"
+            }
+        };
+
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+
+            // Mettre à jour l'attribut dir du body
+            document.body.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+            // Mettre à jour les boutons actifs
+            const btnFr = document.getElementById('btnFr');
+            const btnAr = document.getElementById('btnAr');
+
+            if (lang === 'fr') {
+                btnFr.classList.add('active');
+                btnAr.classList.remove('active');
+            } else {
+                btnAr.classList.add('active');
+                btnFr.classList.remove('active');
+            }
+
+            // Mettre à jour tous les éléments avec la classe lang-text
+            document.querySelectorAll('.lang-text').forEach(el => {
+                const frText = el.getAttribute('data-fr');
+                const arText = el.getAttribute('data-ar');
+                if (lang === 'fr' && frText) {
+                    el.textContent = frText;
+                } else if (lang === 'ar' && arText) {
+                    el.textContent = arText;
+                }
+            });
+
+            // Recharger la page courante pour mettre à jour le contenu dynamique
+            const currentContent = document.getElementById('mainContent').innerHTML;
+            if (currentContent.includes('hero-gradient')) {
+                showHome();
+            }
+        }
+
+        function t(key) {
+            return translations[currentLanguage][key] || key;
+        }
 
         // Chargement de la page
         setTimeout(() => {
@@ -381,52 +595,52 @@
             const html = `
                 <div class="fade-in">
                     <div class="hero-gradient mb-16">
-                        <h1 class="text-5xl md:text-6xl font-bold mb-4">Plateforme de Recrutement</h1>
-                        <p class="text-xl md:text-2xl mb-8">La solution complète pour l'emploi et le recrutement professionnel</p>
+                        <h1 class="text-5xl md:text-6xl font-bold mb-4 lang-text" data-fr="Plateforme de Recrutement" data-ar="منصة التوظيف">Plateforme de Recrutement</h1>
+                        <p class="text-xl md:text-2xl mb-8 lang-text" data-fr="La solution complète pour l'emploi et le recrutement professionnel" data-ar="الحل المتكامل للتوظيف والتوظيف الاحترافي">La solution complète pour l'emploi et le recrutement professionnel</p>
                         <div class="flex justify-center gap-4 flex-wrap">
-                            <button onclick="showAuthModal('candidat')" class="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:shadow-lg">Je cherche un emploi</button>
-                            <button onclick="showAuthModal('entreprise')" class="bg-purple-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-800">Je recrute</button>
+                            <button onclick="showAuthModal('candidat')" class="bg-white text-purple-600 px-8 py-3 rounded-full font-semibold hover:shadow-lg lang-text" data-fr="Je cherche un emploi" data-ar="أبحث عن وظيفة">Je cherche un emploi</button>
+                            <button onclick="showAuthModal('entreprise')" class="bg-purple-700 text-white px-8 py-3 rounded-full font-semibold hover:bg-purple-800 lang-text" data-fr="Je recrute" data-ar="أوظف">Je recrute</button>
                         </div>
                     </div>
                     <div class="grid md:grid-cols-3 gap-8 mb-16">
                         <div class="stat-card" onclick="showAuthModal('candidat')">
                             <i class="fas fa-users text-4xl text-purple-600 mb-3"></i>
                             <div class="text-3xl font-bold">${candidatsCount}</div>
-                            <div class="text-gray-600">Candidats inscrits</div>
+                            <div class="text-gray-600 lang-text" data-fr="Candidats inscrits" data-ar="المرشحين المسجلين">Candidats inscrits</div>
                         </div>
                         <div class="stat-card" onclick="showAuthModal('entreprise')">
                             <i class="fas fa-building text-4xl text-purple-600 mb-3"></i>
                             <div class="text-3xl font-bold">${entreprisesCount}</div>
-                            <div class="text-gray-600">Entreprises partenaires</div>
+                            <div class="text-gray-600 lang-text" data-fr="Entreprises partenaires" data-ar="الشركات الشريكة">Entreprises partenaires</div>
                         </div>
                         <div class="stat-card" onclick="showAuthModal('entreprise')">
                             <i class="fas fa-briefcase text-4xl text-purple-600 mb-3"></i>
                             <div class="text-3xl font-bold">${offresCount}</div>
-                            <div class="text-gray-600">Offres d'emploi</div>
+                            <div class="text-gray-600 lang-text" data-fr="Offres d'emploi" data-ar="عروض العمل">Offres d'emploi</div>
                         </div>
                     </div>
-                    <h2 class="text-3xl font-bold text-center mb-12">Nos services</h2>
+                    <h2 class="text-3xl font-bold text-center mb-12 lang-text" data-fr="Nos services" data-ar="خدماتنا">Nos services</h2>
                     <div class="grid md:grid-cols-3 gap-8">
                         <div class="card-pro p-8 text-center cursor-pointer" onclick="showAuthModal('candidat')">
                             <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i class="fas fa-user-graduate text-white text-3xl"></i>
                             </div>
-                            <h3 class="text-2xl font-bold mb-3">Espace Candidat</h3>
-                            <p class="text-gray-600">Créez votre CV professionnel, postulez aux offres et suivez vos candidatures</p>
+                            <h3 class="text-2xl font-bold mb-3 lang-text" data-fr="Espace Candidat" data-ar="مساحة المرشح">Espace Candidat</h3>
+                            <p class="text-gray-600 lang-text" data-fr="Créez votre CV professionnel, postulez aux offres et suivez vos candidatures" data-ar="قم بإنشاء سيرتك الذاتية الاحترافية، تقدم للعروض وتابع طلباتك">Créez votre CV professionnel, postulez aux offres et suivez vos candidatures</p>
                         </div>
                         <div class="card-pro p-8 text-center cursor-pointer" onclick="showAuthModal('entreprise')">
                             <div class="w-20 h-20 bg-gradient-to-r from-green-500 to-teal-600 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i class="fas fa-chart-line text-white text-3xl"></i>
                             </div>
-                            <h3 class="text-2xl font-bold mb-3">Espace Entreprise</h3>
-                            <p class="text-gray-600">Publiez vos offres, trouvez les meilleurs talents et gérez vos recrutements</p>
+                            <h3 class="text-2xl font-bold mb-3 lang-text" data-fr="Espace Entreprise" data-ar="مساحة الشركة">Espace Entreprise</h3>
+                            <p class="text-gray-600 lang-text" data-fr="Publiez vos offres, trouvez les meilleurs talents et gérez vos recrutements" data-ar="انشر عروضك، ابحث عن أفضل المواهب وأدر تعييناتك">Publiez vos offres, trouvez les meilleurs talents et gérez vos recrutements</p>
                         </div>
                         <div class="card-pro p-8 text-center cursor-pointer" onclick="showLogin('admin')">
                             <div class="w-20 h-20 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i class="fas fa-chart-pie text-white text-3xl"></i>
                             </div>
-                            <h3 class="text-2xl font-bold mb-3">Espace Admin</h3>
-                            <p class="text-gray-600">Gérez l'ensemble de la plateforme</p>
+                            <h3 class="text-2xl font-bold mb-3 lang-text" data-fr="Espace Admin" data-ar="مساحة المدير">Espace Admin</h3>
+                            <p class="text-gray-600 lang-text" data-fr="Gérez l'ensemble de la plateforme" data-ar="إدارة المنصة بأكملها">Gérez l'ensemble de la plateforme</p>
                         </div>
                     </div>
                 </div>
@@ -443,17 +657,17 @@
                     <div class="card-pro p-8">
                         <div class="text-center mb-8">
                             <div class="text-5xl mb-4">${type === 'candidat' ? '👤' : '🏢'}</div>
-                            <h2 class="text-3xl font-bold">Espace ${type === 'candidat' ? 'Candidat' : 'Entreprise'}</h2>
-                            <p class="text-gray-600 mt-2">${type === 'candidat' ? 'Trouvez l\'emploi de vos rêves' : 'Recrutez les meilleurs talents'}</p>
+                            <h2 class="text-3xl font-bold lang-text" data-fr="Espace ${type === 'candidat' ? 'Candidat' : 'Entreprise'}" data-ar="${type === 'candidat' ? 'مساحة المرشح' : 'مساحة الشركة'}">Espace ${type === 'candidat' ? 'Candidat' : 'Entreprise'}</h2>
+                            <p class="text-gray-600 mt-2 lang-text" data-fr="${type === 'candidat' ? 'Trouvez l\'emploi de vos rêves' : 'Recrutez les meilleurs talents'}" data-ar="${type === 'candidat' ? 'ابحث عن وظيفة أحلامك' : 'وظف أفضل المواهب'}">${type === 'candidat' ? 'Trouvez l\'emploi de vos rêves' : 'Recrutez les meilleurs talents'}</p>
                         </div>
                         
                         <!-- Tabs: Inscription (active par défaut) et Connexion -->
                         <div class="flex mb-8 rounded-lg overflow-hidden border border-gray-200">
                             <button id="tabInscription" onclick="switchTab('inscription', '${type}')" class="flex-1 py-3 font-semibold transition tab-active">
-                                <i class="fas fa-user-plus mr-2"></i> Inscription
+                                <i class="fas fa-user-plus mr-2"></i> <span class="lang-text" data-fr="Inscription" data-ar="تسجيل">Inscription</span>
                             </button>
                             <button id="tabConnexion" onclick="switchTab('connexion', '${type}')" class="flex-1 py-3 font-semibold transition tab-inactive">
-                                <i class="fas fa-sign-in-alt mr-2"></i> Connexion
+                                <i class="fas fa-sign-in-alt mr-2"></i> <span class="lang-text" data-fr="Connexion" data-ar="تسجيل الدخول">Connexion</span>
                             </button>
                         </div>
                         
@@ -476,132 +690,148 @@
             return `
                 <form onsubmit="registerCandidat(event)" enctype="multipart/form-data">
                     <div class="form-section">
-                        <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-user-circle mr-2"></i>Informations personnelles</h3>
+                        <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-user-circle mr-2"></i><span class="lang-text" data-fr="Informations personnelles" data-ar="المعلومات الشخصية">Informations personnelles</span></h3>
                         <div class="grid md:grid-cols-2 gap-4">
-                            <div><label class="block text-gray-700 mb-2">Nom *</label><input type="text" id="nom" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Prénom *</label><input type="text" id="prenom" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Date de naissance</label><input type="date" id="dateNaissance" class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Téléphone *</label><input type="tel" id="telephone" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Mot de passe *</label><input type="password" id="password" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Adresse</label><input type="text" id="adresse" class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Ville</label><input type="text" id="ville" class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Région</label><input type="text" id="region" class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Situation familiale</label>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Nom" data-ar="الاسم">Nom</span> *</label><input type="text" id="nom" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Prénom" data-ar="اللقب">Prénom</span> *</label><input type="text" id="prenom" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Date de naissance" data-ar="تاريخ الميلاد">Date de naissance</span></label><input type="date" id="dateNaissance" class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Téléphone" data-ar="الهاتف">Téléphone</span> *</label><input type="tel" id="telephone" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Mot de passe" data-ar="كلمة المرور">Mot de passe</span> *</label><input type="password" id="password" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Adresse" data-ar="العنوان">Adresse</span></label><input type="text" id="adresse" class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Ville" data-ar="المدينة">Ville</span></label><input type="text" id="ville" class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Région" data-ar="الجهة">Région</span></label><input type="text" id="region" class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Situation familiale" data-ar="الحالة العائلية">Situation familiale</span></label>
                                 <select id="situationFamiliale" class="input-modern">
-                                    <option value="">Sélectionner</option>
-                                    <option>Célibataire</option><option>Marié(e)</option><option>Divorcé(e)</option><option>Veuf/veuve</option>
+                                    <option value=""><span class="lang-text" data-fr="Sélectionner" data-ar="اختر">Sélectionner</span></option>
+                                    <option><span class="lang-text" data-fr="Célibataire" data-ar="أعزب">Célibataire</span></option><option><span class="lang-text" data-fr="Marié(e)" data-ar="متزوج">Marié(e)</span></option>
+                                    <option><span class="lang-text" data-fr="Divorcé(e)" data-ar="مطلق">Divorcé(e)</span></option><option><span class="lang-text" data-fr="Veuf/veuve" data-ar="أرمل">Veuf/veuve</span></option>
                                 </select>
                             </div>
-                            <div><label class="block text-gray-700 mb-2">Niveau d'étude</label>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Niveau d'étude" data-ar="المستوى الدراسي">Niveau d'étude</span></label>
                                 <select id="niveauEtude" class="input-modern">
-                                    <option value="">Sélectionner</option>
-                                    <option>Sans diplôme</option><option>Bac</option><option>Bac+2</option><option>Bac+3</option><option>Bac+5</option><option>Doctorat</option>
+                                    <option value=""><span class="lang-text" data-fr="Sélectionner" data-ar="اختر">Sélectionner</span></option>
+                                    <option><span class="lang-text" data-fr="Sans diplôme" data-ar="بدون شهادة">Sans diplôme</span></option>
+                                    <option><span class="lang-text" data-fr="Bac" data-ar="بكالوريا">Bac</span></option>
+                                    <option><span class="lang-text" data-fr="Bac+2" data-ar="بكالوريا+2">Bac+2</span></option>
+                                    <option><span class="lang-text" data-fr="Bac+3" data-ar="بكالوريا+3">Bac+3</span></option>
+                                    <option><span class="lang-text" data-fr="Bac+5" data-ar="بكالوريا+5">Bac+5</span></option>
+                                    <option><span class="lang-text" data-fr="Doctorat" data-ar="دكتوراه">Doctorat</span></option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     
                     <div class="form-section">
-                        <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-briefcase mr-2"></i>Données professionnelles</h3>
+                        <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-briefcase mr-2"></i><span class="lang-text" data-fr="Données professionnelles" data-ar="البيانات المهنية">Données professionnelles</span></h3>
                         <div class="grid md:grid-cols-2 gap-4">
-                            <div><label class="block text-gray-700 mb-2">Métier recherché *</label><input type="text" id="metierRecherche" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Secteur</label>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Métier recherché" data-ar="المهنة المطلوبة">Métier recherché</span> *</label><input type="text" id="metierRecherche" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Secteur" data-ar="القطاع">Secteur</span></label>
                                 <select id="secteur" class="input-modern">
-                                    <option value="">Sélectionner</option>
-                                    <option>Industrie</option><option>Service</option><option>Logistique</option><option>Hôtellerie</option>
-                                    <option>Sécurité</option><option>Nettoyage</option><option>Restauration</option>
+                                    <option value=""><span class="lang-text" data-fr="Sélectionner" data-ar="اختر">Sélectionner</span></option>
+                                    <option><span class="lang-text" data-fr="Industrie" data-ar="صناعة">Industrie</span></option>
+                                    <option><span class="lang-text" data-fr="Service" data-ar="خدمات">Service</span></option>
+                                    <option><span class="lang-text" data-fr="Logistique" data-ar="لوجستيك">Logistique</span></option>
+                                    <option><span class="lang-text" data-fr="Hôtellerie" data-ar="فندقة">Hôtellerie</span></option>
+                                    <option><span class="lang-text" data-fr="Sécurité" data-ar="أمن">Sécurité</span></option>
+                                    <option><span class="lang-text" data-fr="Nettoyage" data-ar="تنظيف">Nettoyage</span></option>
+                                    <option><span class="lang-text" data-fr="Restauration" data-ar="مطاعم">Restauration</span></option>
                                 </select>
                             </div>
-                            <div><label class="block text-gray-700 mb-2">Expériences professionnelles</label><textarea id="experiences" rows="3" class="input-modern" placeholder="Décrivez vos expériences..."></textarea></div>
-                            <div><label class="block text-gray-700 mb-2">Compétences</label><textarea id="competences" rows="3" class="input-modern" placeholder="Listez vos compétences..."></textarea></div>
-                            <div><label class="block text-gray-700 mb-2">Permis de conduire</label>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Expériences professionnelles" data-ar="الخبرات المهنية">Expériences professionnelles</span></label><textarea id="experiences" rows="3" class="input-modern" placeholder="Décrivez vos expériences..."></textarea></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Compétences" data-ar="المهارات">Compétences</span></label><textarea id="competences" rows="3" class="input-modern" placeholder="Listez vos compétences..."></textarea></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Permis de conduire" data-ar="رخصة السياقة">Permis de conduire</span></label>
                                 <select id="permisConduire" class="input-modern">
-                                    <option value="false">Non</option><option value="true">Oui</option>
+                                    <option value="false"><span class="lang-text" data-fr="Non" data-ar="لا">Non</span></option>
+                                    <option value="true"><span class="lang-text" data-fr="Oui" data-ar="نعم">Oui</span></option>
                                 </select>
                             </div>
-                            <div><label class="block text-gray-700 mb-2">Disponibilité</label>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Disponibilité" data-ar="التوفر">Disponibilité</span></label>
                                 <select id="disponibilite" class="input-modern">
-                                    <option>Immédiate</option><option>1 semaine</option><option>2 semaines</option><option>1 mois</option>
+                                    <option><span class="lang-text" data-fr="Immédiate" data-ar="فوري">Immédiate</span></option>
+                                    <option><span class="lang-text" data-fr="1 semaine" data-ar="أسبوع">1 semaine</span></option>
+                                    <option><span class="lang-text" data-fr="2 semaines" data-ar="أسبوعين">2 semaines</span></option>
+                                    <option><span class="lang-text" data-fr="1 mois" data-ar="شهر">1 mois</span></option>
                                 </select>
                             </div>
-                            <div><label class="block text-gray-700 mb-2">Mobilité géographique</label>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Mobilité géographique" data-ar="التنقل الجغرافي">Mobilité géographique</span></label>
                                 <select id="mobilite" class="input-modern">
-                                    <option value="false">Non</option><option value="true">Oui</option>
+                                    <option value="false"><span class="lang-text" data-fr="Non" data-ar="لا">Non</span></option>
+                                    <option value="true"><span class="lang-text" data-fr="Oui" data-ar="نعم">Oui</span></option>
                                 </select>
                             </div>
-                            <div><label class="block text-gray-700 mb-2">Salaire souhaité (TND)</label><input type="number" id="salaireSouhaite" class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Salaire souhaité (TND)" data-ar="الراتب المطلوب (دينار)">Salaire souhaité (TND)</span></label><input type="number" id="salaireSouhaite" class="input-modern"></div>
                         </div>
                     </div>
                     
                     <!-- SECTION DOCUMENTS AVEC UPLOAD DE CV -->
                     <div class="form-section">
-                        <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-file-alt mr-2"></i>Documents (Optionnel)</h3>
+                        <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-file-alt mr-2"></i><span class="lang-text" data-fr="Documents (Optionnel)" data-ar="الوثائق (اختياري)">Documents (Optionnel)</span></h3>
                         <div class="grid md:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-gray-700 mb-2">CV (PDF ou Word)</label>
+                                <label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="CV (PDF ou Word)" data-ar="السيرة الذاتية (PDF أو Word)">CV (PDF ou Word)</span></label>
                                 <div class="file-upload" onclick="document.getElementById('cvFile').click()">
                                     <i class="fas fa-cloud-upload-alt text-3xl text-purple-600 mb-2"></i>
-                                    <p class="text-sm text-gray-500">Cliquez pour télécharger votre CV</p>
-                                    <p class="text-xs text-gray-400">Formats acceptés: PDF, DOC, DOCX (Max 5MB)</p>
+                                    <p class="text-sm text-gray-500"><span class="lang-text" data-fr="Cliquez pour télécharger votre CV" data-ar="انقر لتحميل سيرتك الذاتية">Cliquez pour télécharger votre CV</span></p>
+                                    <p class="text-xs text-gray-400"><span class="lang-text" data-fr="Formats acceptés: PDF, DOC, DOCX (Max 5MB)" data-ar="الصيغ المقبولة: PDF, DOC, DOCX (الحد الأقصى 5 ميجابايت)">Formats acceptés: PDF, DOC, DOCX (Max 5MB)</span></p>
                                 </div>
                                 <input type="file" id="cvFile" accept=".pdf,.doc,.docx" class="hidden" onchange="updateFileName('cvFile', 'cvFileName')">
                                 <p id="cvFileName" class="text-xs text-green-600 mt-1"></p>
                             </div>
                             <div>
-                                <label class="block text-gray-700 mb-2">Photo de profil</label>
+                                <label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Photo de profil" data-ar="الصورة الشخصية">Photo de profil</span></label>
                                 <div class="file-upload" onclick="document.getElementById('photoFile').click()">
                                     <i class="fas fa-camera text-3xl text-purple-600 mb-2"></i>
-                                    <p class="text-sm text-gray-500">Cliquez pour ajouter une photo</p>
-                                    <p class="text-xs text-gray-400">Formats acceptés: JPG, PNG (Max 2MB)</p>
+                                    <p class="text-sm text-gray-500"><span class="lang-text" data-fr="Cliquez pour ajouter une photo" data-ar="انقر لإضافة صورة">Cliquez pour ajouter une photo</span></p>
+                                    <p class="text-xs text-gray-400"><span class="lang-text" data-fr="Formats acceptés: JPG, PNG (Max 2MB)" data-ar="الصيغ المقبولة: JPG, PNG (الحد الأقصى 2 ميجابايت)">Formats acceptés: JPG, PNG (Max 2MB)</span></p>
                                 </div>
                                 <input type="file" id="photoFile" accept="image/*" class="hidden" onchange="updateFileName('photoFile', 'photoFileName')">
                                 <p id="photoFileName" class="text-xs text-green-600 mt-1"></p>
                             </div>
                             <div>
-                                <label class="block text-gray-700 mb-2">Carte d'identité</label>
+                                <label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Carte d'identité" data-ar="بطاقة الهوية">Carte d'identité</span></label>
                                 <div class="file-upload" onclick="document.getElementById('carteFile').click()">
                                     <i class="fas fa-id-card text-3xl text-purple-600 mb-2"></i>
-                                    <p class="text-sm text-gray-500">Cliquez pour télécharger</p>
+                                    <p class="text-sm text-gray-500"><span class="lang-text" data-fr="Cliquez pour télécharger" data-ar="انقر للتحميل">Cliquez pour télécharger</span></p>
                                 </div>
                                 <input type="file" id="carteFile" accept=".pdf,.jpg,.png" class="hidden" onchange="updateFileName('carteFile', 'carteFileName')">
                                 <p id="carteFileName" class="text-xs text-green-600 mt-1"></p>
                             </div>
                             <div>
-                                <label class="block text-gray-700 mb-2">Diplômes</label>
+                                <label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Diplômes" data-ar="الشهادات">Diplômes</span></label>
                                 <div class="file-upload" onclick="document.getElementById('diplomesFile').click()">
                                     <i class="fas fa-graduation-cap text-3xl text-purple-600 mb-2"></i>
-                                    <p class="text-sm text-gray-500">Cliquez pour télécharger</p>
+                                    <p class="text-sm text-gray-500"><span class="lang-text" data-fr="Cliquez pour télécharger" data-ar="انقر للتحميل">Cliquez pour télécharger</span></p>
                                 </div>
                                 <input type="file" id="diplomesFile" accept=".pdf,.jpg,.png" class="hidden" onchange="updateFileName('diplomesFile', 'diplomesFileName')">
                                 <p id="diplomesFileName" class="text-xs text-green-600 mt-1"></p>
                             </div>
                             <div>
-                                <label class="block text-gray-700 mb-2">Certificats</label>
+                                <label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Certificats" data-ar="الشهادات المهنية">Certificats</span></label>
                                 <div class="file-upload" onclick="document.getElementById('certificatsFile').click()">
                                     <i class="fas fa-certificate text-3xl text-purple-600 mb-2"></i>
-                                    <p class="text-sm text-gray-500">Cliquez pour télécharger</p>
+                                    <p class="text-sm text-gray-500"><span class="lang-text" data-fr="Cliquez pour télécharger" data-ar="انقر للتحميل">Cliquez pour télécharger</span></p>
                                 </div>
                                 <input type="file" id="certificatsFile" accept=".pdf,.jpg,.png" class="hidden" onchange="updateFileName('certificatsFile', 'certificatsFileName')">
                                 <p id="certificatsFileName" class="text-xs text-green-600 mt-1"></p>
                             </div>
                             <div>
-                                <label class="block text-gray-700 mb-2">Attestations de travail</label>
+                                <label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Attestations de travail" data-ar="شهادات العمل">Attestations de travail</span></label>
                                 <div class="file-upload" onclick="document.getElementById('attestationsFile').click()">
                                     <i class="fas fa-briefcase text-3xl text-purple-600 mb-2"></i>
-                                    <p class="text-sm text-gray-500">Cliquez pour télécharger</p>
+                                    <p class="text-sm text-gray-500"><span class="lang-text" data-fr="Cliquez pour télécharger" data-ar="انقر للتحميل">Cliquez pour télécharger</span></p>
                                 </div>
                                 <input type="file" id="attestationsFile" accept=".pdf,.jpg,.png" class="hidden" onchange="updateFileName('attestationsFile', 'attestationsFileName')">
                                 <p id="attestationsFileName" class="text-xs text-green-600 mt-1"></p>
                             </div>
                         </div>
                         <div class="mt-3 p-3 bg-blue-50 rounded-lg">
-                            <p class="text-sm text-blue-700"><i class="fas fa-info-circle mr-2"></i>Ces documents seront visibles par les recruteurs lors de vos candidatures.</p>
+                            <p class="text-sm text-blue-700"><i class="fas fa-info-circle mr-2"></i><span class="lang-text" data-fr="Ces documents seront visibles par les recruteurs lors de vos candidatures." data-ar="ستكون هذه الوثائق مرئية لأصحاب العمل عند تقديم طلباتك.">Ces documents seront visibles par les recruteurs lors de vos candidatures.</span></p>
                         </div>
                     </div>
                     
                     <div class="flex justify-between mt-8">
-                        <button type="button" onclick="showHome()" class="btn-secondary">Annuler</button>
-                        <button type="submit" class="btn-primary"><i class="fas fa-user-plus mr-2"></i> S'inscrire</button>
+                        <button type="button" onclick="showHome()" class="btn-secondary"><span class="lang-text" data-fr="Annuler" data-ar="إلغاء">Annuler</span></button>
+                        <button type="submit" class="btn-primary"><i class="fas fa-user-plus mr-2"></i> <span class="lang-text" data-fr="S'inscrire" data-ar="تسجيل">S'inscrire</span></button>
                     </div>
                 </form>
             `;
@@ -611,30 +841,36 @@
             return `
                 <form onsubmit="registerEntreprise(event)">
                     <div class="form-section">
-                        <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-building mr-2"></i>Informations entreprise</h3>
+                        <h3 class="text-xl font-bold mb-4 text-purple-600"><i class="fas fa-building mr-2"></i><span class="lang-text" data-fr="Informations entreprise" data-ar="معلومات الشركة">Informations entreprise</span></h3>
                         <div class="grid md:grid-cols-2 gap-4">
-                            <div class="md:col-span-2"><label class="block text-gray-700 mb-2">Nom de l'entreprise *</label><input type="text" id="nomEntreprise" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Secteur d'activité *</label>
+                            <div class="md:col-span-2"><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Nom de l'entreprise" data-ar="اسم الشركة">Nom de l'entreprise</span> *</label><input type="text" id="nomEntreprise" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Secteur d'activité" data-ar="قطاع النشاط">Secteur d'activité</span> *</label>
                                 <select id="secteurActivite" required class="input-modern">
-                                    <option value="">Sélectionner</option>
-                                    <option>Industrie</option><option>Services</option><option>Logistique</option>
-                                    <option>Hôtellerie</option><option>Sécurité</option><option>Nettoyage</option>
-                                    <option>Restauration</option><option>Technologie</option><option>Construction</option>
+                                    <option value=""><span class="lang-text" data-fr="Sélectionner" data-ar="اختر">Sélectionner</span></option>
+                                    <option><span class="lang-text" data-fr="Industrie" data-ar="صناعة">Industrie</span></option>
+                                    <option><span class="lang-text" data-fr="Services" data-ar="خدمات">Services</span></option>
+                                    <option><span class="lang-text" data-fr="Logistique" data-ar="لوجستيك">Logistique</span></option>
+                                    <option><span class="lang-text" data-fr="Hôtellerie" data-ar="فندقة">Hôtellerie</span></option>
+                                    <option><span class="lang-text" data-fr="Sécurité" data-ar="أمن">Sécurité</span></option>
+                                    <option><span class="lang-text" data-fr="Nettoyage" data-ar="تنظيف">Nettoyage</span></option>
+                                    <option><span class="lang-text" data-fr="Restauration" data-ar="مطاعم">Restauration</span></option>
+                                    <option><span class="lang-text" data-fr="Technologie" data-ar="تكنولوجيا">Technologie</span></option>
+                                    <option><span class="lang-text" data-fr="Construction" data-ar="بناء">Construction</span></option>
                                 </select>
                             </div>
-                            <div class="md:col-span-2"><label class="block text-gray-700 mb-2">Adresse *</label><input type="text" id="adresseEntreprise" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Ville *</label><input type="text" id="villeEntreprise" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Responsable RH *</label><input type="text" id="responsableRH" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Téléphone *</label><input type="tel" id="telEntreprise" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Email *</label><input type="email" id="emailEntreprise" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Mot de passe *</label><input type="password" id="passwordEntreprise" required class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Matricule fiscal</label><input type="text" id="matriculeFiscal" class="input-modern"></div>
-                            <div><label class="block text-gray-700 mb-2">Registre de commerce</label><input type="text" id="registreCommerce" class="input-modern"></div>
+                            <div class="md:col-span-2"><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Adresse" data-ar="العنوان">Adresse</span> *</label><input type="text" id="adresseEntreprise" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Ville" data-ar="المدينة">Ville</span> *</label><input type="text" id="villeEntreprise" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Responsable RH" data-ar="مسؤول الموارد البشرية">Responsable RH</span> *</label><input type="text" id="responsableRH" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Téléphone" data-ar="الهاتف">Téléphone</span> *</label><input type="tel" id="telEntreprise" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Email" data-ar="البريد الإلكتروني">Email</span> *</label><input type="email" id="emailEntreprise" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Mot de passe" data-ar="كلمة المرور">Mot de passe</span> *</label><input type="password" id="passwordEntreprise" required class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Matricule fiscal" data-ar="الرقم الضريبي">Matricule fiscal</span></label><input type="text" id="matriculeFiscal" class="input-modern"></div>
+                            <div><label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Registre de commerce" data-ar="السجل التجاري">Registre de commerce</span></label><input type="text" id="registreCommerce" class="input-modern"></div>
                         </div>
                     </div>
                     <div class="flex justify-between mt-8">
-                        <button type="button" onclick="showHome()" class="btn-secondary">Annuler</button>
-                        <button type="submit" class="btn-primary"><i class="fas fa-check-circle mr-2"></i> Créer mon espace</button>
+                        <button type="button" onclick="showHome()" class="btn-secondary"><span class="lang-text" data-fr="Annuler" data-ar="إلغاء">Annuler</span></button>
+                        <button type="submit" class="btn-primary"><i class="fas fa-check-circle mr-2"></i> <span class="lang-text" data-fr="Créer mon espace" data-ar="إنشاء مساحتي">Créer mon espace</span></button>
                     </div>
                 </form>
             `;
@@ -644,14 +880,14 @@
             return `
                 <form onsubmit="handleLoginCandidat(event)">
                     <div class="mb-4">
-                        <label class="block text-gray-700 mb-2">Téléphone *</label>
+                        <label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Téléphone" data-ar="الهاتف">Téléphone</span> *</label>
                         <input type="tel" id="loginTelephone" required class="input-modern" placeholder="0612345678">
                     </div>
                     <div class="mb-6">
-                        <label class="block text-gray-700 mb-2">Mot de passe *</label>
+                        <label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Mot de passe" data-ar="كلمة المرور">Mot de passe</span> *</label>
                         <input type="password" id="loginPasswordCandidat" required class="input-modern" placeholder="••••••••">
                     </div>
-                    <button type="submit" class="btn-primary w-full">Se connecter</button>
+                    <button type="submit" class="btn-primary w-full"><span class="lang-text" data-fr="Se connecter" data-ar="تسجيل الدخول">Se connecter</span></button>
                 </form>
             `;
         }
@@ -660,14 +896,14 @@
             return `
                 <form onsubmit="handleLoginEntreprise(event)">
                     <div class="mb-4">
-                        <label class="block text-gray-700 mb-2">Email *</label>
+                        <label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Email" data-ar="البريد الإلكتروني">Email</span> *</label>
                         <input type="email" id="loginEmail" required class="input-modern" placeholder="contact@entreprise.com">
                     </div>
                     <div class="mb-6">
-                        <label class="block text-gray-700 mb-2">Mot de passe *</label>
+                        <label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Mot de passe" data-ar="كلمة المرور">Mot de passe</span> *</label>
                         <input type="password" id="loginPasswordEntreprise" required class="input-modern" placeholder="••••••••">
                     </div>
-                    <button type="submit" class="btn-primary w-full">Se connecter</button>
+                    <button type="submit" class="btn-primary w-full"><span class="lang-text" data-fr="Se connecter" data-ar="تسجيل الدخول">Se connecter</span></button>
                 </form>
             `;
         }
@@ -958,20 +1194,20 @@
                     <div class="card-pro p-8">
                         <div class="text-center mb-8">
                             <div class="text-5xl mb-4">👑</div>
-                            <h2 class="text-3xl font-bold">Connexion Administrateur</h2>
+                            <h2 class="text-3xl font-bold"><span class="lang-text" data-fr="Connexion Administrateur" data-ar="تسجيل دخول المدير">Connexion Administrateur</span></h2>
                         </div>
                         <form onsubmit="handleLoginAdmin(event)">
                             <div class="mb-4">
-                                <label class="block text-gray-700 mb-2">Email</label>
+                                <label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Email" data-ar="البريد الإلكتروني">Email</span></label>
                                 <input type="email" id="adminEmail" required class="input-modern" placeholder="admin@afa.com">
                             </div>
                             <div class="mb-6">
-                                <label class="block text-gray-700 mb-2">Mot de passe</label>
+                                <label class="block text-gray-700 mb-2"><span class="lang-text" data-fr="Mot de passe" data-ar="كلمة المرور">Mot de passe</span></label>
                                 <input type="password" id="adminPassword" required class="input-modern" placeholder="••••••••">
                             </div>
-                            <button type="submit" class="btn-primary w-full">Se connecter</button>
+                            <button type="submit" class="btn-primary w-full"><span class="lang-text" data-fr="Se connecter" data-ar="تسجيل الدخول">Se connecter</span></button>
                         </form>
-                        <button onclick="showHome()" class="mt-4 text-gray-500 hover:text-gray-700 text-sm w-full">← Retour à l'accueil</button>
+                        <button onclick="showHome()" class="mt-4 text-gray-500 hover:text-gray-700 text-sm w-full"><span class="lang-text" data-fr="Retour à l'accueil" data-ar="العودة إلى الرئيسية">← Retour à l'accueil</span></button>
                     </div>
                 </div>
             `;
@@ -1031,19 +1267,19 @@
                             </div>
                             <nav class="space-y-2">
                                 <button onclick="showListeOffres()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
-                                    <i class="fas fa-search w-6 text-purple-600"></i> Offres d'emploi
+                                    <i class="fas fa-search w-6 text-purple-600"></i> <span class="lang-text" data-fr="Offres d'emploi" data-ar="عروض العمل">Offres d'emploi</span>
                                 </button>
                                 <button onclick="showMesCandidatures()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
-                                    <i class="fas fa-chart-line w-6 text-purple-600"></i> Mes candidatures
+                                    <i class="fas fa-chart-line w-6 text-purple-600"></i> <span class="lang-text" data-fr="Mes candidatures" data-ar="طلباتي">Mes candidatures</span>
                                 </button>
                                 <button onclick="showMonProfil()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
-                                    <i class="fas fa-user-edit w-6 text-purple-600"></i> Mon profil
+                                    <i class="fas fa-user-edit w-6 text-purple-600"></i> <span class="lang-text" data-fr="Mon profil" data-ar="ملفي الشخصي">Mon profil</span>
                                 </button>
                                 <button onclick="showMesDocuments()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
-                                    <i class="fas fa-file-alt w-6 text-purple-600"></i> Mes documents
+                                    <i class="fas fa-file-alt w-6 text-purple-600"></i> <span class="lang-text" data-fr="Mes documents" data-ar="وثائقي">Mes documents</span>
                                 </button>
                                 <button onclick="logout()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 flex items-center">
-                                    <i class="fas fa-sign-out-alt w-6"></i> Déconnexion
+                                    <i class="fas fa-sign-out-alt w-6"></i> <span class="lang-text" data-fr="Déconnexion" data-ar="تسجيل الخروج">Déconnexion</span>
                                 </button>
                             </nav>
                         </div>
@@ -1052,19 +1288,19 @@
                         <div class="dashboard-main" id="dashboardContent">
                             <div class="text-center mb-8">
                                 <i class="fas fa-chart-line text-5xl text-purple-600 mb-3"></i>
-                                <h2 class="text-2xl font-bold">Tableau de bord</h2>
-                                <p class="text-gray-600">Bienvenue dans votre espace candidat</p>
+                                <h2 class="text-2xl font-bold"><span class="lang-text" data-fr="Tableau de bord" data-ar="لوحة التحكم">Tableau de bord</span></h2>
+                                <p class="text-gray-600"><span class="lang-text" data-fr="Bienvenue dans votre espace candidat" data-ar="مرحباً بك في مساحة المرشح">Bienvenue dans votre espace candidat</span></p>
                             </div>
                             <div class="grid md:grid-cols-2 gap-6">
                                 <div class="stat-card" onclick="showListeOffres()">
                                     <i class="fas fa-briefcase text-3xl text-blue-600 mb-2"></i>
                                     <div class="text-2xl font-bold">${offres ? offres.length : 0}</div>
-                                    <div class="text-gray-600">Offres disponibles</div>
+                                    <div class="text-gray-600"><span class="lang-text" data-fr="Offres disponibles" data-ar="العروض المتاحة">Offres disponibles</span></div>
                                 </div>
                                 <div class="stat-card" onclick="showMesCandidatures()">
                                     <i class="fas fa-paper-plane text-3xl text-green-600 mb-2"></i>
                                     <div class="text-2xl font-bold">${candidatures ? candidatures.length : 0}</div>
-                                    <div class="text-gray-600">Mes candidatures</div>
+                                    <div class="text-gray-600"><span class="lang-text" data-fr="Mes candidatures" data-ar="طلباتي">Mes candidatures</span></div>
                                 </div>
                             </div>
                         </div>
@@ -1077,10 +1313,10 @@
         async function showListeOffres() {
             const { data: offres } = await supabaseClient.from('offres').select('*, entreprises(nom_entreprise, ville)').eq('status', 'active');
             
-            let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6"><i class="fas fa-search text-purple-600 mr-2"></i> Offres disponibles</h2><div class="space-y-4">`;
+            let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6"><i class="fas fa-search text-purple-600 mr-2"></i> <span class="lang-text" data-fr="Offres disponibles" data-ar="العروض المتاحة">Offres disponibles</span></h2><div class="space-y-4">`;
             
             if (!offres || offres.length === 0) {
-                html += '<p class="text-center text-gray-500 py-8">Aucune offre disponible pour le moment.</p>';
+                html += '<p class="text-center text-gray-500 py-8"><span class="lang-text" data-fr="Aucune offre disponible pour le moment." data-ar="لا توجد عروض متاحة حالياً.">Aucune offre disponible pour le moment.</span></p>';
             } else {
                 for (const offre of offres) {
                     html += `
@@ -1093,14 +1329,14 @@
                                     <p class="text-sm mt-2">${offre.description_courte?.substring(0, 150) || ''}...</p>
                                     ${offre.salaire_propose ? `<p class="text-sm font-semibold text-green-600 mt-1">💰 ${offre.salaire_propose} TND</p>` : ''}
                                 </div>
-                                <button onclick="postulerOffre('${offre.id}')" class="btn-primary px-4 py-2 text-sm">Postuler</button>
+                                <button onclick="postulerOffre('${offre.id}')" class="btn-primary px-4 py-2 text-sm"><span class="lang-text" data-fr="Postuler" data-ar="تقدم">Postuler</span></button>
                             </div>
                         </div>
                     `;
                 }
             }
             
-            html += `</div><div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div></div>`;
+            html += `</div><div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary"><span class="lang-text" data-fr="Retour" data-ar="عودة">← Retour</span></button></div></div>`;
             document.getElementById('dashboardContent').innerHTML = html;
         }
 
@@ -1134,10 +1370,10 @@
                 .eq('candidat_id', currentUser.id)
                 .order('date_candidature', { ascending: false });
             
-            let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6"><i class="fas fa-chart-line text-purple-600 mr-2"></i> Mes candidatures</h2><div class="space-y-4">`;
+            let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6"><i class="fas fa-chart-line text-purple-600 mr-2"></i> <span class="lang-text" data-fr="Mes candidatures" data-ar="طلباتي">Mes candidatures</span></h2><div class="space-y-4">`;
             
             if (!candidatures || candidatures.length === 0) {
-                html += '<p class="text-center text-gray-500 py-8">Vous n\'avez pas encore postulé à des offres.</p>';
+                html += '<p class="text-center text-gray-500 py-8"><span class="lang-text" data-fr="Vous n\'avez pas encore postulé à des offres." data-ar="لم تقم بالتقديم على أي عروض بعد.">Vous n\'avez pas encore postulé à des offres.</span></p>';
             } else {
                 for (const cand of candidatures) {
                     const statutClass = { 'en_attente': 'status-etude', 'preselectionne': 'status-preselection', 'entretien': 'status-entretien', 'accepte': 'status-retenu', 'refuse': 'status-non-retenu' }[cand.statut] || 'status-etude';
@@ -1149,7 +1385,7 @@
                                 <div>
                                     <h3 class="font-bold">${cand.offres?.intitule || 'Offre'}</h3>
                                     <p class="text-sm text-gray-600">${cand.offres?.entreprises?.nom_entreprise || ''}</p>
-                                    <p class="text-sm text-gray-600">Postulé le ${new Date(cand.date_candidature).toLocaleDateString()}</p>
+                                    <p class="text-sm text-gray-600"><span class="lang-text" data-fr="Postulé le" data-ar="تم التقديم في">Postulé le</span> ${new Date(cand.date_candidature).toLocaleDateString()}</p>
                                 </div>
                                 <span class="status-badge ${statutClass}">${statutText}</span>
                             </div>
@@ -1158,25 +1394,25 @@
                 }
             }
             
-            html += `</div><div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div></div>`;
+            html += `</div><div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary"><span class="lang-text" data-fr="Retour" data-ar="عودة">← Retour</span></button></div></div>`;
             document.getElementById('dashboardContent').innerHTML = html;
         }
 
         async function showMonProfil() {
             const html = `
                 <div class="dashboard-main">
-                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-user-edit text-purple-600 mr-2"></i> Mon profil</h2>
+                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-user-edit text-purple-600 mr-2"></i> <span class="lang-text" data-fr="Mon profil" data-ar="ملفي الشخصي">Mon profil</span></h2>
                     <div class="grid md:grid-cols-2 gap-4">
-                        <div><label class="font-semibold">Nom:</label> <p>${currentUser.nom || '-'}</p></div>
-                        <div><label class="font-semibold">Prénom:</label> <p>${currentUser.prenom || '-'}</p></div>
-                        <div><label class="font-semibold">Date de naissance:</label> <p>${currentUser.date_naissance ? new Date(currentUser.date_naissance).toLocaleDateString() : '-'}</p></div>
-                        <div><label class="font-semibold">Téléphone:</label> <p>${currentUser.telephone || '-'}</p></div>
-                        <div><label class="font-semibold">Adresse:</label> <p>${currentUser.adresse || '-'}</p></div>
-                        <div><label class="font-semibold">Ville/Région:</label> <p>${currentUser.ville || '-'} / ${currentUser.region || '-'}</p></div>
-                        <div><label class="font-semibold">Métier recherché:</label> <p>${currentUser.metier_recherche || '-'}</p></div>
-                        <div><label class="font-semibold">Salaire souhaité:</label> <p>${currentUser.salaire_souhaite ? currentUser.salaire_souhaite + ' TND' : '-'}</p></div>
+                        <div><label class="font-semibold"><span class="lang-text" data-fr="Nom" data-ar="الاسم">Nom</span>:</label> <p>${currentUser.nom || '-'}</p></div>
+                        <div><label class="font-semibold"><span class="lang-text" data-fr="Prénom" data-ar="اللقب">Prénom</span>:</label> <p>${currentUser.prenom || '-'}</p></div>
+                        <div><label class="font-semibold"><span class="lang-text" data-fr="Date de naissance" data-ar="تاريخ الميلاد">Date de naissance</span>:</label> <p>${currentUser.date_naissance ? new Date(currentUser.date_naissance).toLocaleDateString() : '-'}</p></div>
+                        <div><label class="font-semibold"><span class="lang-text" data-fr="Téléphone" data-ar="الهاتف">Téléphone</span>:</label> <p>${currentUser.telephone || '-'}</p></div>
+                        <div><label class="font-semibold"><span class="lang-text" data-fr="Adresse" data-ar="العنوان">Adresse</span>:</label> <p>${currentUser.adresse || '-'}</p></div>
+                        <div><label class="font-semibold"><span class="lang-text" data-fr="Ville/Région" data-ar="المدينة/الجهة">Ville/Région</span>:</label> <p>${currentUser.ville || '-'} / ${currentUser.region || '-'}</p></div>
+                        <div><label class="font-semibold"><span class="lang-text" data-fr="Métier recherché" data-ar="المهنة المطلوبة">Métier recherché</span>:</label> <p>${currentUser.metier_recherche || '-'}</p></div>
+                        <div><label class="font-semibold"><span class="lang-text" data-fr="Salaire souhaité" data-ar="الراتب المطلوب">Salaire souhaité</span>:</label> <p>${currentUser.salaire_souhaite ? currentUser.salaire_souhaite + ' TND' : '-'}</p></div>
                     </div>
-                    <div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div>
+                    <div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary"><span class="lang-text" data-fr="Retour" data-ar="عودة">← Retour</span></button></div>
                 </div>
             `;
             document.getElementById('dashboardContent').innerHTML = html;
@@ -1187,54 +1423,54 @@
             
             let html = `
                 <div class="dashboard-main">
-                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-file-alt text-purple-600 mr-2"></i> Mes documents</h2>
+                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-file-alt text-purple-600 mr-2"></i> <span class="lang-text" data-fr="Mes documents" data-ar="وثائقي">Mes documents</span></h2>
                     <div class="grid md:grid-cols-2 gap-6">
                         <div class="border rounded-lg p-4">
-                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-file-pdf text-red-500 mr-2"></i>CV</h3>
+                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-file-pdf text-red-500 mr-2"></i><span class="lang-text" data-fr="CV" data-ar="السيرة الذاتية">CV</span></h3>
                             ${currentUser.cv_url ? 
-                                `<a href="${currentUser.cv_url}" target="_blank" class="text-purple-600 hover:underline">📄 Voir mon CV</a>
-                                 <p class="text-xs text-gray-500 mt-1">Téléchargé le ${new Date(currentUser.created_at).toLocaleDateString()}</p>` : 
-                                `<p class="text-gray-500">Aucun CV téléchargé</p>
-                                 <button onclick="uploadNewDocument('cv')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Télécharger un CV</button>`}
+                                `<a href="${currentUser.cv_url}" target="_blank" class="text-purple-600 hover:underline">📄 <span class="lang-text" data-fr="Voir mon CV" data-ar="عرض سيرتي الذاتية">Voir mon CV</span></a>
+                                 <p class="text-xs text-gray-500 mt-1"><span class="lang-text" data-fr="Téléchargé le" data-ar="تم التحميل في">Téléchargé le</span> ${new Date(currentUser.created_at).toLocaleDateString()}</p>` : 
+                                `<p class="text-gray-500"><span class="lang-text" data-fr="Aucun CV téléchargé" data-ar="لا توجد سيرة ذاتية">Aucun CV téléchargé</span></p>
+                                 <button onclick="uploadNewDocument('cv')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded"><span class="lang-text" data-fr="Télécharger un CV" data-ar="تحميل سيرة ذاتية">Télécharger un CV</span></button>`}
                         </div>
                         <div class="border rounded-lg p-4">
-                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-image text-blue-500 mr-2"></i>Photo de profil</h3>
+                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-image text-blue-500 mr-2"></i><span class="lang-text" data-fr="Photo de profil" data-ar="الصورة الشخصية">Photo de profil</span></h3>
                             ${currentUser.photo_url ? 
                                 `<img src="${currentUser.photo_url}" class="w-24 h-24 rounded-full object-cover mb-2">
-                                 <button onclick="uploadNewDocument('photo')" class="text-sm bg-gray-200 px-3 py-1 rounded">Modifier</button>` : 
-                                `<p class="text-gray-500">Aucune photo</p>
-                                 <button onclick="uploadNewDocument('photo')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter une photo</button>`}
+                                 <button onclick="uploadNewDocument('photo')" class="text-sm bg-gray-200 px-3 py-1 rounded"><span class="lang-text" data-fr="Modifier" data-ar="تعديل">Modifier</span></button>` : 
+                                `<p class="text-gray-500"><span class="lang-text" data-fr="Aucune photo" data-ar="لا توجد صورة">Aucune photo</span></p>
+                                 <button onclick="uploadNewDocument('photo')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded"><span class="lang-text" data-fr="Ajouter une photo" data-ar="إضافة صورة">Ajouter une photo</span></button>`}
                         </div>
                         <div class="border rounded-lg p-4">
-                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-id-card text-green-500 mr-2"></i>Carte d'identité</h3>
+                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-id-card text-green-500 mr-2"></i><span class="lang-text" data-fr="Carte d'identité" data-ar="بطاقة الهوية">Carte d'identité</span></h3>
                             ${currentUser.carte_identite_url ? 
-                                `<a href="${currentUser.carte_identite_url}" target="_blank" class="text-purple-600 hover:underline">🪪 Voir ma carte d'identité</a>` : 
-                                `<p class="text-gray-500">Aucune carte d'identité</p>
-                                 <button onclick="uploadNewDocument('carte')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
+                                `<a href="${currentUser.carte_identite_url}" target="_blank" class="text-purple-600 hover:underline">🪪 <span class="lang-text" data-fr="Voir ma carte d'identité" data-ar="عرض بطاقة هويتي">Voir ma carte d'identité</span></a>` : 
+                                `<p class="text-gray-500"><span class="lang-text" data-fr="Aucune carte d'identité" data-ar="لا توجد بطاقة هوية">Aucune carte d'identité</span></p>
+                                 <button onclick="uploadNewDocument('carte')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded"><span class="lang-text" data-fr="Ajouter" data-ar="إضافة">Ajouter</span></button>`}
                         </div>
                         <div class="border rounded-lg p-4">
-                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-graduation-cap text-yellow-500 mr-2"></i>Diplômes</h3>
+                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-graduation-cap text-yellow-500 mr-2"></i><span class="lang-text" data-fr="Diplômes" data-ar="الشهادات">Diplômes</span></h3>
                             ${currentUser.diplomes_url ? 
-                                `<a href="${currentUser.diplomes_url}" target="_blank" class="text-purple-600 hover:underline">🎓 Voir mes diplômes</a>` : 
-                                `<p class="text-gray-500">Aucun diplôme</p>
-                                 <button onclick="uploadNewDocument('diplomes')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
+                                `<a href="${currentUser.diplomes_url}" target="_blank" class="text-purple-600 hover:underline">🎓 <span class="lang-text" data-fr="Voir mes diplômes" data-ar="عرض شهاداتي">Voir mes diplômes</span></a>` : 
+                                `<p class="text-gray-500"><span class="lang-text" data-fr="Aucun diplôme" data-ar="لا توجد شهادات">Aucun diplôme</span></p>
+                                 <button onclick="uploadNewDocument('diplomes')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded"><span class="lang-text" data-fr="Ajouter" data-ar="إضافة">Ajouter</span></button>`}
                         </div>
                         <div class="border rounded-lg p-4">
-                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-certificate text-indigo-500 mr-2"></i>Certificats</h3>
+                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-certificate text-indigo-500 mr-2"></i><span class="lang-text" data-fr="Certificats" data-ar="الشهادات المهنية">Certificats</span></h3>
                             ${currentUser.certificats_url ? 
-                                `<a href="${currentUser.certificats_url}" target="_blank" class="text-purple-600 hover:underline">📜 Voir mes certificats</a>` : 
-                                `<p class="text-gray-500">Aucun certificat</p>
-                                 <button onclick="uploadNewDocument('certificats')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
+                                `<a href="${currentUser.certificats_url}" target="_blank" class="text-purple-600 hover:underline">📜 <span class="lang-text" data-fr="Voir mes certificats" data-ar="عرض شهاداتي المهنية">Voir mes certificats</span></a>` : 
+                                `<p class="text-gray-500"><span class="lang-text" data-fr="Aucun certificat" data-ar="لا توجد شهادات مهنية">Aucun certificat</span></p>
+                                 <button onclick="uploadNewDocument('certificats')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded"><span class="lang-text" data-fr="Ajouter" data-ar="إضافة">Ajouter</span></button>`}
                         </div>
                         <div class="border rounded-lg p-4">
-                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-briefcase text-gray-500 mr-2"></i>Attestations de travail</h3>
+                            <h3 class="font-bold text-lg mb-3"><i class="fas fa-briefcase text-gray-500 mr-2"></i><span class="lang-text" data-fr="Attestations de travail" data-ar="شهادات العمل">Attestations de travail</span></h3>
                             ${currentUser.attestations_url ? 
-                                `<a href="${currentUser.attestations_url}" target="_blank" class="text-purple-600 hover:underline">📁 Voir mes attestations</a>` : 
-                                `<p class="text-gray-500">Aucune attestation</p>
-                                 <button onclick="uploadNewDocument('attestations')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded">Ajouter</button>`}
+                                `<a href="${currentUser.attestations_url}" target="_blank" class="text-purple-600 hover:underline">📁 <span class="lang-text" data-fr="Voir mes attestations" data-ar="عرض شهادات عملي">Voir mes attestations</span></a>` : 
+                                `<p class="text-gray-500"><span class="lang-text" data-fr="Aucune attestation" data-ar="لا توجد شهادات عمل">Aucune attestation</span></p>
+                                 <button onclick="uploadNewDocument('attestations')" class="mt-2 text-sm bg-purple-600 text-white px-3 py-1 rounded"><span class="lang-text" data-fr="Ajouter" data-ar="إضافة">Ajouter</span></button>`}
                         </div>
                     </div>
-                    <div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary">← Retour</button></div>
+                    <div class="mt-6"><button onclick="showCandidatDashboard()" class="btn-secondary"><span class="lang-text" data-fr="Retour" data-ar="عودة">← Retour</span></button></div>
                 </div>
             `;
             document.getElementById('dashboardContent').innerHTML = html;
@@ -1312,16 +1548,16 @@
                             </div>
                             <nav class="space-y-2">
                                 <button onclick="showPublierOffre()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
-                                    <i class="fas fa-plus-circle w-6 text-purple-600"></i> Publier une offre
+                                    <i class="fas fa-plus-circle w-6 text-purple-600"></i> <span class="lang-text" data-fr="Publier une offre" data-ar="نشر عرض">Publier une offre</span>
                                 </button>
                                 <button onclick="showMesOffresEntreprise()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
-                                    <i class="fas fa-bullhorn w-6 text-purple-600"></i> Mes offres
+                                    <i class="fas fa-bullhorn w-6 text-purple-600"></i> <span class="lang-text" data-fr="Mes offres" data-ar="عروضي">Mes offres</span>
                                 </button>
                                 <button onclick="showCandidaturesRecues()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-purple-50 flex items-center">
-                                    <i class="fas fa-inbox w-6 text-purple-600"></i> Candidatures reçues
+                                    <i class="fas fa-inbox w-6 text-purple-600"></i> <span class="lang-text" data-fr="Candidatures reçues" data-ar="الطلبات المستلمة">Candidatures reçues</span>
                                 </button>
                                 <button onclick="logout()" class="w-full text-left px-4 py-3 rounded-lg hover:bg-red-50 text-red-600 flex items-center">
-                                    <i class="fas fa-sign-out-alt w-6"></i> Déconnexion
+                                    <i class="fas fa-sign-out-alt w-6"></i> <span class="lang-text" data-fr="Déconnexion" data-ar="تسجيل الخروج">Déconnexion</span>
                                 </button>
                             </nav>
                         </div>
@@ -1330,19 +1566,19 @@
                         <div class="dashboard-main" id="dashboardContent">
                             <div class="text-center mb-8">
                                 <i class="fas fa-chart-line text-5xl text-green-600 mb-3"></i>
-                                <h2 class="text-2xl font-bold">Tableau de bord</h2>
-                                <p class="text-gray-600">Bienvenue ${currentUser.nom_entreprise}</p>
+                                <h2 class="text-2xl font-bold"><span class="lang-text" data-fr="Tableau de bord" data-ar="لوحة التحكم">Tableau de bord</span></h2>
+                                <p class="text-gray-600"><span class="lang-text" data-fr="Bienvenue" data-ar="مرحباً">Bienvenue</span> ${currentUser.nom_entreprise}</p>
                             </div>
                             <div class="grid md:grid-cols-2 gap-6">
                                 <div class="stat-card" onclick="showMesOffresEntreprise()">
                                     <i class="fas fa-bullhorn text-3xl text-blue-600 mb-2"></i>
                                     <div class="text-2xl font-bold">${offres ? offres.length : 0}</div>
-                                    <div class="text-gray-600">Mes offres</div>
+                                    <div class="text-gray-600"><span class="lang-text" data-fr="Mes offres" data-ar="عروضي">Mes offres</span></div>
                                 </div>
                                 <div class="stat-card" onclick="showCandidaturesRecues()">
                                     <i class="fas fa-users text-3xl text-green-600 mb-2"></i>
                                     <div class="text-2xl font-bold" id="candidaturesCount">0</div>
-                                    <div class="text-gray-600">Candidatures reçues</div>
+                                    <div class="text-gray-600"><span class="lang-text" data-fr="Candidatures reçues" data-ar="الطلبات المستلمة">Candidatures reçues</span></div>
                                 </div>
                             </div>
                         </div>
@@ -1367,22 +1603,22 @@
         function showPublierOffre() {
             const html = `
                 <div class="dashboard-main">
-                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-plus-circle text-purple-600 mr-2"></i> Publier une offre</h2>
+                    <h2 class="text-2xl font-bold mb-6"><i class="fas fa-plus-circle text-purple-600 mr-2"></i> <span class="lang-text" data-fr="Publier une offre" data-ar="نشر عرض">Publier une offre</span></h2>
                     <form onsubmit="publierOffre(event)">
                         <div class="grid md:grid-cols-2 gap-4">
-                            <div class="md:col-span-2"><label>Intitulé du poste *</label><input type="text" id="intitule" required class="input-modern"></div>
-                            <div><label>Nombre de personnes</label><input type="number" id="nbPersonnes" class="input-modern" value="1"></div>
-                            <div><label>Type de contrat *</label>
+                            <div class="md:col-span-2"><label><span class="lang-text" data-fr="Intitulé du poste" data-ar="مسمى الوظيفة">Intitulé du poste</span> *</label><input type="text" id="intitule" required class="input-modern"></div>
+                            <div><label><span class="lang-text" data-fr="Nombre de personnes" data-ar="عدد الأشخاص">Nombre de personnes</span></label><input type="number" id="nbPersonnes" class="input-modern" value="1"></div>
+                            <div><label><span class="lang-text" data-fr="Type de contrat" data-ar="نوع العقد">Type de contrat</span> *</label>
                                 <select id="typeContrat" class="input-modern">
                                     <option>CDI</option><option>CDD</option><option>Intérim</option><option>Stage</option>
                                 </select>
                             </div>
-                            <div class="md:col-span-2"><label>Description courte *</label><textarea id="descriptionCourte" rows="3" required class="input-modern"></textarea></div>
-                            <div><label>Lieu de travail</label><input type="text" id="lieuTravail" class="input-modern"></div>
-                            <div><label>Salaire proposé (TND)</label><input type="number" id="salairePropose" class="input-modern"></div>
-                            <div class="md:col-span-2"><label>Avantages</label><textarea id="avantages" rows="2" class="input-modern" placeholder="Transport, repas, primes..."></textarea></div>
+                            <div class="md:col-span-2"><label><span class="lang-text" data-fr="Description courte" data-ar="وصف مختصر">Description courte</span> *</label><textarea id="descriptionCourte" rows="3" required class="input-modern"></textarea></div>
+                            <div><label><span class="lang-text" data-fr="Lieu de travail" data-ar="مكان العمل">Lieu de travail</span></label><input type="text" id="lieuTravail" class="input-modern"></div>
+                            <div><label><span class="lang-text" data-fr="Salaire proposé (TND)" data-ar="الراتب المقترح (دينار)">Salaire proposé (TND)</span></label><input type="number" id="salairePropose" class="input-modern"></div>
+                            <div class="md:col-span-2"><label><span class="lang-text" data-fr="Avantages" data-ar="المزايا">Avantages</span></label><textarea id="avantages" rows="2" class="input-modern" placeholder="Transport, repas, primes..."></textarea></div>
                         </div>
-                        <div class="mt-6"><button type="submit" class="btn-primary">Publier</button></div>
+                        <div class="mt-6"><button type="submit" class="btn-primary"><span class="lang-text" data-fr="Publier" data-ar="نشر">Publier</span></button></div>
                     </form>
                 </div>
             `;
@@ -1416,17 +1652,17 @@
         async function showMesOffresEntreprise() {
             const { data: offres } = await supabaseClient.from('offres').select('*').eq('entreprise_id', currentUser.id).order('created_at', { ascending: false });
             
-            let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6">Mes offres</h2><div class="space-y-4">`;
+            let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6"><span class="lang-text" data-fr="Mes offres" data-ar="عروضي">Mes offres</span></h2><div class="space-y-4">`;
             
             if (!offres || offres.length === 0) {
-                html += '<p class="text-center text-gray-500 py-8">Aucune offre publiée.</p>';
+                html += '<p class="text-center text-gray-500 py-8"><span class="lang-text" data-fr="Aucune offre publiée." data-ar="لا توجد عروض منشورة.">Aucune offre publiée.</span></p>';
             } else {
                 for (const offre of offres) {
                     html += `<div class="border rounded-lg p-4"><h3 class="font-bold">${offre.intitule}</h3><p class="text-sm text-gray-500">${offre.type_contrat} - ${offre.lieu_travail || 'Lieu non spécifié'}</p><span class="status-badge ${offre.status === 'active' ? 'status-preselection' : 'status-non-retenu'}">${offre.status === 'active' ? 'Active' : 'Fermée'}</span></div>`;
                 }
             }
             
-            html += `</div><div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary">← Retour</button></div></div>`;
+            html += `</div><div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary"><span class="lang-text" data-fr="Retour" data-ar="عودة">← Retour</span></button></div></div>`;
             document.getElementById('dashboardContent').innerHTML = html;
         }
 
@@ -1434,7 +1670,7 @@
             const { data: offres } = await supabaseClient.from('offres').select('id').eq('entreprise_id', currentUser.id);
             
             if (!offres || offres.length === 0) {
-                let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6">Candidatures reçues</h2><p class="text-center text-gray-500 py-8">Aucune candidature reçue.</p><div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary">← Retour</button></div></div>`;
+                let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6"><span class="lang-text" data-fr="Candidatures reçues" data-ar="الطلبات المستلمة">Candidatures reçues</span></h2><p class="text-center text-gray-500 py-8"><span class="lang-text" data-fr="Aucune candidature reçue." data-ar="لا توجد طلبات مستلمة.">Aucune candidature reçue.</span></p><div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary"><span class="lang-text" data-fr="Retour" data-ar="عودة">← Retour</span></button></div></div>`;
                 document.getElementById('dashboardContent').innerHTML = html;
                 return;
             }
@@ -1446,10 +1682,10 @@
                 .in('offre_id', offreIds)
                 .order('date_candidature', { ascending: false });
             
-            let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6">Candidatures reçues</h2><div class="space-y-4">`;
+            let html = `<div class="dashboard-main"><h2 class="text-2xl font-bold mb-6"><span class="lang-text" data-fr="Candidatures reçues" data-ar="الطلبات المستلمة">Candidatures reçues</span></h2><div class="space-y-4">`;
             
             if (!candidatures || candidatures.length === 0) {
-                html += '<p class="text-center text-gray-500 py-8">Aucune candidature reçue.</p>';
+                html += '<p class="text-center text-gray-500 py-8"><span class="lang-text" data-fr="Aucune candidature reçue." data-ar="لا توجد طلبات مستلمة.">Aucune candidature reçue.</span></p>';
             } else {
                 for (const cand of candidatures) {
                     html += `
@@ -1457,9 +1693,9 @@
                             <div class="flex justify-between items-start flex-wrap gap-4">
                                 <div>
                                     <h3 class="font-bold">${cand.candidats?.prenom || ''} ${cand.candidats?.nom || 'Candidat'}</h3>
-                                    <p class="text-sm text-gray-600">Tél: ${cand.candidats?.telephone || '-'}</p>
-                                    <p class="text-sm text-gray-600">Poste: ${cand.offres?.intitule || 'Offre'}</p>
-                                    ${cand.candidats?.cv_url ? `<a href="${cand.candidats.cv_url}" target="_blank" class="text-sm text-purple-600"><i class="fas fa-file-pdf"></i> Voir CV</a>` : ''}
+                                    <p class="text-sm text-gray-600"><span class="lang-text" data-fr="Tél" data-ar="الهاتف">Tél</span>: ${cand.candidats?.telephone || '-'}</p>
+                                    <p class="text-sm text-gray-600"><span class="lang-text" data-fr="Poste" data-ar="الوظيفة">Poste</span>: ${cand.offres?.intitule || 'Offre'}</p>
+                                    ${cand.candidats?.cv_url ? `<a href="${cand.candidats.cv_url}" target="_blank" class="text-sm text-purple-600"><i class="fas fa-file-pdf"></i> <span class="lang-text" data-fr="Voir CV" data-ar="عرض السيرة الذاتية">Voir CV</span></a>` : ''}
                                 </div>
                                 <div class="flex gap-2">
                                     <button onclick="updateCandidatureStatus('${cand.id}', 'preselectionne')" class="px-3 py-1 bg-green-500 text-white rounded">✓</button>
@@ -1471,7 +1707,7 @@
                 }
             }
             
-            html += `</div><div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary">← Retour</button></div></div>`;
+            html += `</div><div class="mt-6"><button onclick="showEntrepriseDashboard()" class="btn-secondary"><span class="lang-text" data-fr="Retour" data-ar="عودة">← Retour</span></button></div></div>`;
             document.getElementById('dashboardContent').innerHTML = html;
         }
 
@@ -1486,389 +1722,386 @@
         }
 
         // ====================================================
-        // ADMIN DASHBOARD
+        // ADMIN DASHBOARD COMPLET
         // ====================================================
-        // ====================================================
-// ADMIN DASHBOARD COMPLET
-// ====================================================
-async function showAdminDashboard() {
-    // Récupérer tous les candidats
-    const { data: candidats, error: candidatsError } = await supabaseClient
-        .from('candidats')
-        .select('*')
-        .order('created_at', { ascending: false });
-    
-    // Récupérer toutes les entreprises
-    const { data: entreprises, error: entreprisesError } = await supabaseClient
-        .from('entreprises')
-        .select('*')
-        .order('created_at', { ascending: false });
-    
-    // Récupérer les statistiques
-    const { data: stats } = await supabaseClient
-        .from('stats_dashboard')
-        .select('*')
-        .single();
-    
-    if (candidatsError) console.error('Erreur chargement candidats:', candidatsError);
-    if (entreprisesError) console.error('Erreur chargement entreprises:', entreprisesError);
-    
-    const html = `
-        <div class="dashboard-main fade-in">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold">👑 Administration</h2>
-                <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
-                    <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
-                </button>
-            </div>
+        async function showAdminDashboard() {
+            // Récupérer tous les candidats
+            const { data: candidats, error: candidatsError } = await supabaseClient
+                .from('candidats')
+                .select('*')
+                .order('created_at', { ascending: false });
             
-            <!-- Statistiques -->
-            <div class="grid md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-4">
-                    <i class="fas fa-users text-3xl mb-2"></i>
-                    <div class="text-2xl font-bold">${stats?.total_candidats || 0}</div>
-                    <div class="text-sm">Candidats</div>
-                </div>
-                <div class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-4">
-                    <i class="fas fa-building text-3xl mb-2"></i>
-                    <div class="text-2xl font-bold">${stats?.total_entreprises || 0}</div>
-                    <div class="text-sm">Entreprises</div>
-                </div>
-                <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg p-4">
-                    <i class="fas fa-briefcase text-3xl mb-2"></i>
-                    <div class="text-2xl font-bold">${stats?.offres_actives || 0}</div>
-                    <div class="text-sm">Offres actives</div>
-                </div>
-                <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg p-4">
-                    <i class="fas fa-file-alt text-3xl mb-2"></i>
-                    <div class="text-2xl font-bold">${stats?.total_candidatures || 0}</div>
-                    <div class="text-sm">Candidatures</div>
-                </div>
-            </div>
+            // Récupérer toutes les entreprises
+            const { data: entreprises, error: entreprisesError } = await supabaseClient
+                .from('entreprises')
+                .select('*')
+                .order('created_at', { ascending: false });
             
-            <!-- Tabs -->
-            <div class="flex mb-6 border-b">
-                <button onclick="showAdminCandidatsTab()" id="tabCandidats" class="px-6 py-3 font-semibold border-b-2 border-purple-600 text-purple-600">
-                    <i class="fas fa-user-graduate mr-2"></i>Candidats
-                </button>
-                <button onclick="showAdminEntreprisesTab()" id="tabEntreprises" class="px-6 py-3 font-semibold text-gray-500 hover:text-gray-700">
-                    <i class="fas fa-building mr-2"></i>Entreprises
-                </button>
-            </div>
+            // Récupérer les statistiques
+            const { data: stats } = await supabaseClient
+                .from('stats_dashboard')
+                .select('*')
+                .single();
             
-            <!-- Contenu des candidats (visible par défaut) -->
-            <div id="adminCandidatsContent">
-                ${generateAdminCandidatsHTML(candidats)}
-            </div>
+            if (candidatsError) console.error('Erreur chargement candidats:', candidatsError);
+            if (entreprisesError) console.error('Erreur chargement entreprises:', entreprisesError);
             
-            <!-- Contenu des entreprises (caché par défaut) -->
-            <div id="adminEntreprisesContent" style="display: none;">
-                ${generateAdminEntreprisesHTML(entreprises)}
-            </div>
-        </div>
-    `;
-    document.getElementById('mainContent').innerHTML = html;
-}
-
-// Générer le HTML des candidats pour l'admin
-function generateAdminCandidatsHTML(candidats) {
-    if (!candidats || candidats.length === 0) {
-        return '<p class="text-center text-gray-500 py-8">Aucun candidat inscrit.</p>';
-    }
-    
-    let html = `
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white rounded-lg overflow-hidden">
-                <thead class="bg-gray-800 text-white">
-                    <tr>
-                        <th class="py-3 px-4 text-left">Photo</th>
-                        <th class="py-3 px-4 text-left">Nom complet</th>
-                        <th class="py-3 px-4 text-left">Contact</th>
-                        <th class="py-3 px-4 text-left">Métier recherché</th>
-                        <th class="py-3 px-4 text-left">Date inscription</th>
-                        <th class="py-3 px-4 text-left">Statut</th>
-                        <th class="py-3 px-4 text-left">Documents</th>
-                        <th class="py-3 px-4 text-left">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-    `;
-    
-    for (const candidat of candidats) {
-        html += `
-            <tr class="hover:bg-gray-50">
-                <td class="py-3 px-4">
-                    ${candidat.photo_url ? 
-                        `<img src="${candidat.photo_url}" class="w-10 h-10 rounded-full object-cover">` : 
-                        `<div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center"><i class="fas fa-user text-gray-500"></i></div>`
-                    }
-                </td>
-                <td class="py-3 px-4 font-medium">${candidat.prenom || ''} ${candidat.nom || ''}</td>
-                <td class="py-3 px-4 text-sm">
-                    <div>${candidat.telephone || '-'}</div>
-                    <div class="text-gray-500 text-xs">${candidat.ville || '-'}</div>
-                </td>
-                <td class="py-3 px-4 text-sm">${candidat.metier_recherche || '-'}</td>
-                <td class="py-3 px-4 text-sm">${new Date(candidat.created_at).toLocaleDateString()}</td>
-                <td class="py-3 px-4">
-                    <span class="status-badge ${candidat.status === 'actif' ? 'status-preselection' : 'status-non-retenu'}">
-                        ${candidat.status === 'actif' ? 'Actif' : 'Inactif'}
-                    </span>
-                </td>
-                <td class="py-3 px-4">
-                    <div class="flex flex-wrap gap-1">
-                        ${candidat.cv_url ? `<button onclick="viewDocument('${candidat.cv_url}', 'CV - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-file-pdf"></i> CV</button>` : ''}
-                        ${candidat.carte_identite_url ? `<button onclick="viewDocument('${candidat.carte_identite_url}', 'Carte d\'identité - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-id-card"></i> CIN</button>` : ''}
-                        ${candidat.diplomes_url ? `<button onclick="viewDocument('${candidat.diplomes_url}', 'Diplômes - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-graduation-cap"></i> Diplômes</button>` : ''}
-                        ${candidat.certificats_url ? `<button onclick="viewDocument('${candidat.certificats_url}', 'Certificats - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-certificate"></i> Certificats</button>` : ''}
-                        ${candidat.attestations_url ? `<button onclick="viewDocument('${candidat.attestations_url}', 'Attestations - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-briefcase"></i> Attestations</button>` : ''}
+            const html = `
+                <div class="dashboard-main fade-in">
+                    <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+                        <h2 class="text-2xl font-bold"><i class="fas fa-crown text-yellow-500 mr-2"></i><span class="lang-text" data-fr="Administration" data-ar="الإدارة">Administration</span></h2>
+                        <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                            <i class="fas fa-sign-out-alt mr-2"></i><span class="lang-text" data-fr="Déconnexion" data-ar="تسجيل الخروج">Déconnexion</span>
+                        </button>
                     </div>
-                </td>
-                <td class="py-3 px-4">
-                    <button onclick="viewCandidatDetails('${candidat.id}')" class="text-blue-600 hover:text-blue-800 mr-2" title="Voir détails">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button onclick="toggleCandidatStatus('${candidat.id}', '${candidat.status}')" class="text-${candidat.status === 'actif' ? 'orange' : 'green'}-600 hover:text-${candidat.status === 'actif' ? 'orange' : 'green'}-800" title="${candidat.status === 'actif' ? 'Désactiver' : 'Activer'}">
-                        <i class="fas fa-${candidat.status === 'actif' ? 'ban' : 'check-circle'}"></i>
-                    </button>
-                </td>
-            </tr>
-        `;
-    }
-    
-    html += `
-                </tbody>
-            </table>
-        </div>
-    `;
-    
-    return html;
-}
+                    
+                    <!-- Statistiques -->
+                    <div class="grid md:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-4">
+                            <i class="fas fa-users text-3xl mb-2"></i>
+                            <div class="text-2xl font-bold">${stats?.total_candidats || 0}</div>
+                            <div class="text-sm"><span class="lang-text" data-fr="Candidats" data-ar="المرشحين">Candidats</span></div>
+                        </div>
+                        <div class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-4">
+                            <i class="fas fa-building text-3xl mb-2"></i>
+                            <div class="text-2xl font-bold">${stats?.total_entreprises || 0}</div>
+                            <div class="text-sm"><span class="lang-text" data-fr="Entreprises" data-ar="الشركات">Entreprises</span></div>
+                        </div>
+                        <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg p-4">
+                            <i class="fas fa-briefcase text-3xl mb-2"></i>
+                            <div class="text-2xl font-bold">${stats?.offres_actives || 0}</div>
+                            <div class="text-sm"><span class="lang-text" data-fr="Offres actives" data-ar="العروض النشطة">Offres actives</span></div>
+                        </div>
+                        <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg p-4">
+                            <i class="fas fa-file-alt text-3xl mb-2"></i>
+                            <div class="text-2xl font-bold">${stats?.total_candidatures || 0}</div>
+                            <div class="text-sm"><span class="lang-text" data-fr="Candidatures" data-ar="الطلبات">Candidatures</span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabs -->
+                    <div class="flex mb-6 border-b">
+                        <button onclick="showAdminCandidatsTab()" id="tabCandidats" class="px-6 py-3 font-semibold border-b-2 border-purple-600 text-purple-600">
+                            <i class="fas fa-user-graduate mr-2"></i><span class="lang-text" data-fr="Candidats" data-ar="المرشحين">Candidats</span>
+                        </button>
+                        <button onclick="showAdminEntreprisesTab()" id="tabEntreprises" class="px-6 py-3 font-semibold text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-building mr-2"></i><span class="lang-text" data-fr="Entreprises" data-ar="الشركات">Entreprises</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Contenu des candidats (visible par défaut) -->
+                    <div id="adminCandidatsContent">
+                        ${generateAdminCandidatsHTML(candidats)}
+                    </div>
+                    
+                    <!-- Contenu des entreprises (caché par défaut) -->
+                    <div id="adminEntreprisesContent" style="display: none;">
+                        ${generateAdminEntreprisesHTML(entreprises)}
+                    </div>
+                </div>
+            `;
+            document.getElementById('mainContent').innerHTML = html;
+        }
 
-// Générer le HTML des entreprises pour l'admin
-function generateAdminEntreprisesHTML(entreprises) {
-    if (!entreprises || entreprises.length === 0) {
-        return '<p class="text-center text-gray-500 py-8">Aucune entreprise inscrite.</p>';
-    }
-    
-    let html = `
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white rounded-lg overflow-hidden">
-                <thead class="bg-gray-800 text-white">
-                    <tr>
-                        <th class="py-3 px-4 text-left">Entreprise</th>
-                        <th class="py-3 px-4 text-left">Secteur</th>
-                        <th class="py-3 px-4 text-left">Contact</th>
-                        <th class="py-3 px-4 text-left">Ville</th>
-                        <th class="py-3 px-4 text-left">Date inscription</th>
-                        <th class="py-3 px-4 text-left">Statut</th>
-                        <th class="py-3 px-4 text-left">Actions</th>
+        // Générer le HTML des candidats pour l'admin
+        function generateAdminCandidatsHTML(candidats) {
+            if (!candidats || candidats.length === 0) {
+                return '<p class="text-center text-gray-500 py-8"><span class="lang-text" data-fr="Aucun candidat inscrit." data-ar="لا يوجد مرشحين مسجلين.">Aucun candidat inscrit.</span></p>';
+            }
+            
+            let html = `
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                        <thead class="bg-gray-800 text-white">
+                            <tr>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Photo" data-ar="الصورة">Photo</span></th>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Nom complet" data-ar="الاسم الكامل">Nom complet</span></th>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Contact" data-ar="جهة الاتصال">Contact</span></th>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Métier recherché" data-ar="المهنة المطلوبة">Métier recherché</span></th>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Date inscription" data-ar="تاريخ التسجيل">Date inscription</span></th>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Statut" data-ar="الحالة">Statut</span></th>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Documents" data-ar="الوثائق">Documents</span></th>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Actions" data-ar="الإجراءات">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+            `;
+            
+            for (const candidat of candidats) {
+                html += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-3 px-4">
+                            ${candidat.photo_url ? 
+                                `<img src="${candidat.photo_url}" class="w-10 h-10 rounded-full object-cover">` : 
+                                `<div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center"><i class="fas fa-user text-gray-500"></i></div>`
+                            }
+                        </td>
+                        <td class="py-3 px-4 font-medium">${candidat.prenom || ''} ${candidat.nom || ''}</td>
+                        <td class="py-3 px-4 text-sm">
+                            <div>${candidat.telephone || '-'}</div>
+                            <div class="text-gray-500 text-xs">${candidat.ville || '-'}</div>
+                        </td>
+                        <td class="py-3 px-4 text-sm">${candidat.metier_recherche || '-'}</td>
+                        <td class="py-3 px-4 text-sm">${new Date(candidat.created_at).toLocaleDateString()}</td>
+                        <td class="py-3 px-4">
+                            <span class="status-badge ${candidat.status === 'actif' ? 'status-preselection' : 'status-non-retenu'}">
+                                ${candidat.status === 'actif' ? (currentLanguage === 'fr' ? 'Actif' : 'نشط') : (currentLanguage === 'fr' ? 'Inactif' : 'غير نشط')}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4">
+                            <div class="flex flex-wrap gap-1">
+                                ${candidat.cv_url ? `<button onclick="viewDocument('${candidat.cv_url}', 'CV - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-file-pdf"></i> CV</button>` : ''}
+                                ${candidat.carte_identite_url ? `<button onclick="viewDocument('${candidat.carte_identite_url}', 'Carte d\'identité - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-id-card"></i> CIN</button>` : ''}
+                                ${candidat.diplomes_url ? `<button onclick="viewDocument('${candidat.diplomes_url}', 'Diplômes - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-graduation-cap"></i> <span class="lang-text" data-fr="Diplômes" data-ar="الشهادات">Diplômes</span></button>` : ''}
+                                ${candidat.certificats_url ? `<button onclick="viewDocument('${candidat.certificats_url}', 'Certificats - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-certificate"></i> <span class="lang-text" data-fr="Certificats" data-ar="الشهادات المهنية">Certificats</span></button>` : ''}
+                                ${candidat.attestations_url ? `<button onclick="viewDocument('${candidat.attestations_url}', 'Attestations - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-briefcase"></i> <span class="lang-text" data-fr="Attestations" data-ar="شهادات العمل">Attestations</span></button>` : ''}
+                            </div>
+                        </td>
+                        <td class="py-3 px-4">
+                            <button onclick="viewCandidatDetails('${candidat.id}')" class="text-blue-600 hover:text-blue-800 mr-2" title="Voir détails">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="toggleCandidatStatus('${candidat.id}', '${candidat.status}')" class="text-${candidat.status === 'actif' ? 'orange' : 'green'}-600 hover:text-${candidat.status === 'actif' ? 'orange' : 'green'}-800" title="${candidat.status === 'actif' ? (currentLanguage === 'fr' ? 'Désactiver' : 'تعطيل') : (currentLanguage === 'fr' ? 'Activer' : 'تفعيل')}">
+                                <i class="fas fa-${candidat.status === 'actif' ? 'ban' : 'check-circle'}"></i>
+                            </button>
+                        </td>
                     </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-    `;
-    
-    for (const entreprise of entreprises) {
-        html += `
-            <tr class="hover:bg-gray-50">
-                <td class="py-3 px-4 font-medium">${entreprise.nom_entreprise || '-'}</td>
-                <td class="py-3 px-4 text-sm">${entreprise.secteur_activite || '-'}</td>
-                <td class="py-3 px-4 text-sm">
-                    <div>${entreprise.responsable_rh || '-'}</div>
-                    <div class="text-gray-500 text-xs">${entreprise.telephone || '-'}</div>
-                    <div class="text-gray-500 text-xs">${entreprise.email || '-'}</div>
-                </td>
-                <td class="py-3 px-4 text-sm">${entreprise.ville || '-'}</td>
-                <td class="py-3 px-4 text-sm">${new Date(entreprise.created_at).toLocaleDateString()}</td>
-                <td class="py-3 px-4">
-                    <span class="status-badge ${entreprise.status === 'actif' ? 'status-preselection' : 'status-non-retenu'}">
-                        ${entreprise.status === 'actif' ? 'Actif' : 'Inactif'}
-                    </span>
-                </td>
-                <td class="py-3 px-4">
-                    <button onclick="viewEntrepriseDetails('${entreprise.id}')" class="text-blue-600 hover:text-blue-800 mr-2" title="Voir détails">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                    <button onclick="toggleEntrepriseStatus('${entreprise.id}', '${entreprise.status}')" class="text-${entreprise.status === 'actif' ? 'orange' : 'green'}-600 hover:text-${entreprise.status === 'actif' ? 'orange' : 'green'}-800" title="${entreprise.status === 'actif' ? 'Désactiver' : 'Activer'}">
-                        <i class="fas fa-${entreprise.status === 'actif' ? 'ban' : 'check-circle'}"></i>
-                    </button>
-                </td>
-            </tr>
-        `;
-    }
-    
-    html += `
-                </tbody>
-            </table>
-        </div>
-    `;
-    
-    return html;
-}
-
-// Fonctions pour les onglets admin
-function showAdminCandidatsTab() {
-    document.getElementById('adminCandidatsContent').style.display = 'block';
-    document.getElementById('adminEntreprisesContent').style.display = 'none';
-    
-    document.getElementById('tabCandidats').classList.add('border-purple-600', 'text-purple-600');
-    document.getElementById('tabCandidats').classList.remove('text-gray-500');
-    document.getElementById('tabEntreprises').classList.remove('border-purple-600', 'text-purple-600');
-    document.getElementById('tabEntreprises').classList.add('text-gray-500');
-}
-
-function showAdminEntreprisesTab() {
-    document.getElementById('adminCandidatsContent').style.display = 'none';
-    document.getElementById('adminEntreprisesContent').style.display = 'block';
-    
-    document.getElementById('tabEntreprises').classList.add('border-purple-600', 'text-purple-600');
-    document.getElementById('tabEntreprises').classList.remove('text-gray-500');
-    document.getElementById('tabCandidats').classList.remove('border-purple-600', 'text-purple-600');
-    document.getElementById('tabCandidats').classList.add('text-gray-500');
-}
-
-// Voir un document
-function viewDocument(url, title) {
-    Swal.fire({
-        title: title,
-        html: `<iframe src="${url}" style="width:100%; height:500px; border:none;"></iframe>`,
-        width: '80%',
-        showConfirmButton: true,
-        confirmButtonText: 'Fermer'
-    });
-}
-
-// Voir les détails d'un candidat
-async function viewCandidatDetails(candidatId) {
-    const { data: candidat, error } = await supabaseClient
-        .from('candidats')
-        .select('*')
-        .eq('id', candidatId)
-        .single();
-    
-    if (error) {
-        Swal.fire('Erreur', error.message, 'error');
-        return;
-    }
-    
-    Swal.fire({
-        title: `Détails - ${candidat.prenom} ${candidat.nom}`,
-        html: `
-            <div class="text-left">
-                <div class="grid grid-cols-2 gap-2 mb-4">
-                    <div><strong>📞 Téléphone:</strong> ${candidat.telephone || '-'}</div>
-                    <div><strong>📍 Ville:</strong> ${candidat.ville || '-'}</div>
-                    <div><strong>🎓 Niveau d'étude:</strong> ${candidat.niveau_etude || '-'}</div>
-                    <div><strong>💼 Métier recherché:</strong> ${candidat.metier_recherche || '-'}</div>
-                    <div><strong>💰 Salaire souhaité:</strong> ${candidat.salaire_souhaite ? candidat.salaire_souhaite + ' TND' : '-'}</div>
-                    <div><strong>🚗 Permis:</strong> ${candidat.permis_conduire ? 'Oui' : 'Non'}</div>
+                `;
+            }
+            
+            html += `
+                        </tbody>
+                    </table>
                 </div>
-                <div class="border-t pt-3">
-                    <strong>📝 Compétences:</strong>
-                    <p class="text-sm text-gray-600 mt-1">${candidat.competences || 'Non renseigné'}</p>
-                </div>
-                <div class="border-t pt-3 mt-2">
-                    <strong>💼 Expériences:</strong>
-                    <p class="text-sm text-gray-600 mt-1">${candidat.experiences || 'Non renseigné'}</p>
-                </div>
-            </div>
-        `,
-        width: '600px',
-        confirmButtonText: 'Fermer'
-    });
-}
-
-// Voir les détails d'une entreprise
-async function viewEntrepriseDetails(entrepriseId) {
-    const { data: entreprise, error } = await supabaseClient
-        .from('entreprises')
-        .select('*')
-        .eq('id', entrepriseId)
-        .single();
-    
-    if (error) {
-        Swal.fire('Erreur', error.message, 'error');
-        return;
-    }
-    
-    Swal.fire({
-        title: `Détails - ${entreprise.nom_entreprise}`,
-        html: `
-            <div class="text-left">
-                <div class="grid grid-cols-2 gap-2 mb-4">
-                    <div><strong>🏢 Secteur:</strong> ${entreprise.secteur_activite || '-'}</div>
-                    <div><strong>📍 Adresse:</strong> ${entreprise.adresse || '-'}</div>
-                    <div><strong>📍 Ville:</strong> ${entreprise.ville || '-'}</div>
-                    <div><strong>👤 Responsable RH:</strong> ${entreprise.responsable_rh || '-'}</div>
-                    <div><strong>📞 Téléphone:</strong> ${entreprise.telephone || '-'}</div>
-                    <div><strong>✉️ Email:</strong> ${entreprise.email || '-'}</div>
-                    <div><strong>📄 Matricule fiscal:</strong> ${entreprise.matricule_fiscal || '-'}</div>
-                    <div><strong>📋 Registre commerce:</strong> ${entreprise.registre_commerce || '-'}</div>
-                </div>
-            </div>
-        `,
-        width: '600px',
-        confirmButtonText: 'Fermer'
-    });
-}
-
-// Changer le statut d'un candidat
-async function toggleCandidatStatus(candidatId, currentStatus) {
-    const newStatus = currentStatus === 'actif' ? 'inactif' : 'actif';
-    const action = newStatus === 'actif' ? 'activer' : 'désactiver';
-    
-    const result = await Swal.fire({
-        title: `Confirmation`,
-        text: `Voulez-vous vraiment ${action} ce candidat ?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Oui',
-        cancelButtonText: 'Non'
-    });
-    
-    if (result.isConfirmed) {
-        const { error } = await supabaseClient
-            .from('candidats')
-            .update({ status: newStatus, updated_at: new Date() })
-            .eq('id', candidatId);
-        
-        if (error) {
-            Swal.fire('Erreur', error.message, 'error');
-        } else {
-            Swal.fire('Succès', `Candidat ${action} avec succès`, 'success');
-            showAdminDashboard(); // Rafraîchir la page
+            `;
+            
+            return html;
         }
-    }
-}
 
-// Changer le statut d'une entreprise
-async function toggleEntrepriseStatus(entrepriseId, currentStatus) {
-    const newStatus = currentStatus === 'actif' ? 'inactif' : 'actif';
-    const action = newStatus === 'actif' ? 'activer' : 'désactiver';
-    
-    const result = await Swal.fire({
-        title: `Confirmation`,
-        text: `Voulez-vous vraiment ${action} cette entreprise ?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Oui',
-        cancelButtonText: 'Non'
-    });
-    
-    if (result.isConfirmed) {
-        const { error } = await supabaseClient
-            .from('entreprises')
-            .update({ status: newStatus, updated_at: new Date() })
-            .eq('id', entrepriseId);
-        
-        if (error) {
-            Swal.fire('Erreur', error.message, 'error');
-        } else {
-            Swal.fire('Succès', `Entreprise ${action} avec succès`, 'success');
-            showAdminDashboard(); // Rafraîchir la page
+        // Générer le HTML des entreprises pour l'admin
+        function generateAdminEntreprisesHTML(entreprises) {
+            if (!entreprises || entreprises.length === 0) {
+                return '<p class="text-center text-gray-500 py-8"><span class="lang-text" data-fr="Aucune entreprise inscrite." data-ar="لا توجد شركات مسجلة.">Aucune entreprise inscrite.</span></p>';
+            }
+            
+            let html = `
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                        <thead class="bg-gray-800 text-white">
+                            <tr>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Entreprise" data-ar="الشركة">Entreprise</span></th>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Secteur" data-ar="القطاع">Secteur</span></th>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Contact" data-ar="جهة الاتصال">Contact</span></th>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Ville" data-ar="المدينة">Ville</span></th>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Date inscription" data-ar="تاريخ التسجيل">Date inscription</span></th>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Statut" data-ar="الحالة">Statut</span></th>
+                                <th class="py-3 px-4 text-left"><span class="lang-text" data-fr="Actions" data-ar="الإجراءات">Actions</span></th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+            `;
+            
+            for (const entreprise of entreprises) {
+                html += `
+                    <tr class="hover:bg-gray-50">
+                        <td class="py-3 px-4 font-medium">${entreprise.nom_entreprise || '-'}</td>
+                        <td class="py-3 px-4 text-sm">${entreprise.secteur_activite || '-'}</td>
+                        <td class="py-3 px-4 text-sm">
+                            <div>${entreprise.responsable_rh || '-'}</div>
+                            <div class="text-gray-500 text-xs">${entreprise.telephone || '-'}</div>
+                            <div class="text-gray-500 text-xs">${entreprise.email || '-'}</div>
+                        </td>
+                        <td class="py-3 px-4 text-sm">${entreprise.ville || '-'}</td>
+                        <td class="py-3 px-4 text-sm">${new Date(entreprise.created_at).toLocaleDateString()}</td>
+                        <td class="py-3 px-4">
+                            <span class="status-badge ${entreprise.status === 'actif' ? 'status-preselection' : 'status-non-retenu'}">
+                                ${entreprise.status === 'actif' ? (currentLanguage === 'fr' ? 'Actif' : 'نشط') : (currentLanguage === 'fr' ? 'Inactif' : 'غير نشط')}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4">
+                            <button onclick="viewEntrepriseDetails('${entreprise.id}')" class="text-blue-600 hover:text-blue-800 mr-2" title="Voir détails">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button onclick="toggleEntrepriseStatus('${entreprise.id}', '${entreprise.status}')" class="text-${entreprise.status === 'actif' ? 'orange' : 'green'}-600 hover:text-${entreprise.status === 'actif' ? 'orange' : 'green'}-800" title="${entreprise.status === 'actif' ? (currentLanguage === 'fr' ? 'Désactiver' : 'تعطيل') : (currentLanguage === 'fr' ? 'Activer' : 'تفعيل')}">
+                                <i class="fas fa-${entreprise.status === 'actif' ? 'ban' : 'check-circle'}"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            return html;
         }
-    }
-}
+
+        // Fonctions pour les onglets admin
+        function showAdminCandidatsTab() {
+            document.getElementById('adminCandidatsContent').style.display = 'block';
+            document.getElementById('adminEntreprisesContent').style.display = 'none';
+            
+            document.getElementById('tabCandidats').classList.add('border-purple-600', 'text-purple-600');
+            document.getElementById('tabCandidats').classList.remove('text-gray-500');
+            document.getElementById('tabEntreprises').classList.remove('border-purple-600', 'text-purple-600');
+            document.getElementById('tabEntreprises').classList.add('text-gray-500');
+        }
+
+        function showAdminEntreprisesTab() {
+            document.getElementById('adminCandidatsContent').style.display = 'none';
+            document.getElementById('adminEntreprisesContent').style.display = 'block';
+            
+            document.getElementById('tabEntreprises').classList.add('border-purple-600', 'text-purple-600');
+            document.getElementById('tabEntreprises').classList.remove('text-gray-500');
+            document.getElementById('tabCandidats').classList.remove('border-purple-600', 'text-purple-600');
+            document.getElementById('tabCandidats').classList.add('text-gray-500');
+        }
+
+        // Voir un document
+        function viewDocument(url, title) {
+            Swal.fire({
+                title: title,
+                html: `<iframe src="${url}" style="width:100%; height:500px; border:none;"></iframe>`,
+                width: '80%',
+                showConfirmButton: true,
+                confirmButtonText: currentLanguage === 'fr' ? 'Fermer' : 'إغلاق'
+            });
+        }
+
+        // Voir les détails d'un candidat
+        async function viewCandidatDetails(candidatId) {
+            const { data: candidat, error } = await supabaseClient
+                .from('candidats')
+                .select('*')
+                .eq('id', candidatId)
+                .single();
+            
+            if (error) {
+                Swal.fire('Erreur', error.message, 'error');
+                return;
+            }
+            
+            Swal.fire({
+                title: `${currentLanguage === 'fr' ? 'Détails -' : 'تفاصيل -'} ${candidat.prenom} ${candidat.nom}`,
+                html: `
+                    <div class="text-left">
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <div><strong><span class="lang-text" data-fr="Téléphone" data-ar="الهاتف">Téléphone</span>:</strong> ${candidat.telephone || '-'}</div>
+                            <div><strong><span class="lang-text" data-fr="Ville" data-ar="المدينة">Ville</span>:</strong> ${candidat.ville || '-'}</div>
+                            <div><strong><span class="lang-text" data-fr="Niveau d'étude" data-ar="المستوى الدراسي">Niveau d'étude</span>:</strong> ${candidat.niveau_etude || '-'}</div>
+                            <div><strong><span class="lang-text" data-fr="Métier recherché" data-ar="المهنة المطلوبة">Métier recherché</span>:</strong> ${candidat.metier_recherche || '-'}</div>
+                            <div><strong><span class="lang-text" data-fr="Salaire souhaité" data-ar="الراتب المطلوب">Salaire souhaité</span>:</strong> ${candidat.salaire_souhaite ? candidat.salaire_souhaite + ' TND' : '-'}</div>
+                            <div><strong><span class="lang-text" data-fr="Permis" data-ar="رخصة السياقة">Permis</span>:</strong> ${candidat.permis_conduire ? (currentLanguage === 'fr' ? 'Oui' : 'نعم') : (currentLanguage === 'fr' ? 'Non' : 'لا')}</div>
+                        </div>
+                        <div class="border-t pt-3">
+                            <strong><span class="lang-text" data-fr="Compétences" data-ar="المهارات">Compétences</span>:</strong>
+                            <p class="text-sm text-gray-600 mt-1">${candidat.competences || (currentLanguage === 'fr' ? 'Non renseigné' : 'غير محدد')}</p>
+                        </div>
+                        <div class="border-t pt-3 mt-2">
+                            <strong><span class="lang-text" data-fr="Expériences" data-ar="الخبرات">Expériences</span>:</strong>
+                            <p class="text-sm text-gray-600 mt-1">${candidat.experiences || (currentLanguage === 'fr' ? 'Non renseigné' : 'غير محدد')}</p>
+                        </div>
+                    </div>
+                `,
+                width: '600px',
+                confirmButtonText: currentLanguage === 'fr' ? 'Fermer' : 'إغلاق'
+            });
+        }
+
+        // Voir les détails d'une entreprise
+        async function viewEntrepriseDetails(entrepriseId) {
+            const { data: entreprise, error } = await supabaseClient
+                .from('entreprises')
+                .select('*')
+                .eq('id', entrepriseId)
+                .single();
+            
+            if (error) {
+                Swal.fire('Erreur', error.message, 'error');
+                return;
+            }
+            
+            Swal.fire({
+                title: `${currentLanguage === 'fr' ? 'Détails -' : 'تفاصيل -'} ${entreprise.nom_entreprise}`,
+                html: `
+                    <div class="text-left">
+                        <div class="grid grid-cols-2 gap-2 mb-4">
+                            <div><strong><span class="lang-text" data-fr="Secteur" data-ar="القطاع">Secteur</span>:</strong> ${entreprise.secteur_activite || '-'}</div>
+                            <div><strong><span class="lang-text" data-fr="Adresse" data-ar="العنوان">Adresse</span>:</strong> ${entreprise.adresse || '-'}</div>
+                            <div><strong><span class="lang-text" data-fr="Ville" data-ar="المدينة">Ville</span>:</strong> ${entreprise.ville || '-'}</div>
+                            <div><strong><span class="lang-text" data-fr="Responsable RH" data-ar="مسؤول الموارد البشرية">Responsable RH</span>:</strong> ${entreprise.responsable_rh || '-'}</div>
+                            <div><strong><span class="lang-text" data-fr="Téléphone" data-ar="الهاتف">Téléphone</span>:</strong> ${entreprise.telephone || '-'}</div>
+                            <div><strong><span class="lang-text" data-fr="Email" data-ar="البريد الإلكتروني">Email</span>:</strong> ${entreprise.email || '-'}</div>
+                            <div><strong><span class="lang-text" data-fr="Matricule fiscal" data-ar="الرقم الضريبي">Matricule fiscal</span>:</strong> ${entreprise.matricule_fiscal || '-'}</div>
+                            <div><strong><span class="lang-text" data-fr="Registre commerce" data-ar="السجل التجاري">Registre commerce</span>:</strong> ${entreprise.registre_commerce || '-'}</div>
+                        </div>
+                    </div>
+                `,
+                width: '600px',
+                confirmButtonText: currentLanguage === 'fr' ? 'Fermer' : 'إغلاق'
+            });
+        }
+
+        // Changer le statut d'un candidat
+        async function toggleCandidatStatus(candidatId, currentStatus) {
+            const newStatus = currentStatus === 'actif' ? 'inactif' : 'actif';
+            const action = newStatus === 'actif' ? (currentLanguage === 'fr' ? 'activer' : 'تفعيل') : (currentLanguage === 'fr' ? 'désactiver' : 'تعطيل');
+            
+            const result = await Swal.fire({
+                title: currentLanguage === 'fr' ? 'Confirmation' : 'تأكيد',
+                text: currentLanguage === 'fr' ? `Voulez-vous vraiment ${action} ce candidat ?` : `هل تريد حقاً ${action === 'تفعيل' ? 'تفعيل' : 'تعطيل'} هذا المرشح؟`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: currentLanguage === 'fr' ? 'Oui' : 'نعم',
+                cancelButtonText: currentLanguage === 'fr' ? 'Non' : 'لا'
+            });
+            
+            if (result.isConfirmed) {
+                const { error } = await supabaseClient
+                    .from('candidats')
+                    .update({ status: newStatus, updated_at: new Date() })
+                    .eq('id', candidatId);
+                
+                if (error) {
+                    Swal.fire(currentLanguage === 'fr' ? 'Erreur' : 'خطأ', error.message, 'error');
+                } else {
+                    Swal.fire(currentLanguage === 'fr' ? 'Succès' : 'نجاح', `${currentLanguage === 'fr' ? 'Candidat' : 'تم'} ${action} ${currentLanguage === 'fr' ? 'avec succès' : 'بنجاح'}`, 'success');
+                    showAdminDashboard(); // Rafraîchir la page
+                }
+            }
+        }
+
+        // Changer le statut d'une entreprise
+        async function toggleEntrepriseStatus(entrepriseId, currentStatus) {
+            const newStatus = currentStatus === 'actif' ? 'inactif' : 'actif';
+            const action = newStatus === 'actif' ? (currentLanguage === 'fr' ? 'activer' : 'تفعيل') : (currentLanguage === 'fr' ? 'désactiver' : 'تعطيل');
+            
+            const result = await Swal.fire({
+                title: currentLanguage === 'fr' ? 'Confirmation' : 'تأكيد',
+                text: currentLanguage === 'fr' ? `Voulez-vous vraiment ${action} cette entreprise ?` : `هل تريد حقاً ${action === 'تفعيل' ? 'تفعيل' : 'تعطيل'} هذه الشركة؟`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: currentLanguage === 'fr' ? 'Oui' : 'نعم',
+                cancelButtonText: currentLanguage === 'fr' ? 'Non' : 'لا'
+            });
+            
+            if (result.isConfirmed) {
+                const { error } = await supabaseClient
+                    .from('entreprises')
+                    .update({ status: newStatus, updated_at: new Date() })
+                    .eq('id', entrepriseId);
+                
+                if (error) {
+                    Swal.fire(currentLanguage === 'fr' ? 'Erreur' : 'خطأ', error.message, 'error');
+                } else {
+                    Swal.fire(currentLanguage === 'fr' ? 'Succès' : 'نجاح', `${currentLanguage === 'fr' ? 'Entreprise' : 'تم'} ${action} ${currentLanguage === 'fr' ? 'avec succès' : 'بنجاح'}`, 'success');
+                    showAdminDashboard(); // Rafraîchir la page
+                }
+            }
+        }
 
         // ====================================================
         // DÉCONNEXION
