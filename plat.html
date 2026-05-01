@@ -1488,16 +1488,387 @@
         // ====================================================
         // ADMIN DASHBOARD
         // ====================================================
-        async function showAdminDashboard() {
-            const html = `
-                <div class="dashboard-main fade-in">
-                    <h2 class="text-2xl font-bold mb-6">Administration</h2>
-                    <p>Bienvenue dans l'espace administrateur.</p>
-                    <div class="mt-6"><button onclick="logout()" class="btn-secondary">Déconnexion</button></div>
+        // ====================================================
+// ADMIN DASHBOARD COMPLET
+// ====================================================
+async function showAdminDashboard() {
+    // Récupérer tous les candidats
+    const { data: candidats, error: candidatsError } = await supabaseClient
+        .from('candidats')
+        .select('*')
+        .order('created_at', { ascending: false });
+    
+    // Récupérer toutes les entreprises
+    const { data: entreprises, error: entreprisesError } = await supabaseClient
+        .from('entreprises')
+        .select('*')
+        .order('created_at', { ascending: false });
+    
+    // Récupérer les statistiques
+    const { data: stats } = await supabaseClient
+        .from('stats_dashboard')
+        .select('*')
+        .single();
+    
+    if (candidatsError) console.error('Erreur chargement candidats:', candidatsError);
+    if (entreprisesError) console.error('Erreur chargement entreprises:', entreprisesError);
+    
+    const html = `
+        <div class="dashboard-main fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">👑 Administration</h2>
+                <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                </button>
+            </div>
+            
+            <!-- Statistiques -->
+            <div class="grid md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-4">
+                    <i class="fas fa-users text-3xl mb-2"></i>
+                    <div class="text-2xl font-bold">${stats?.total_candidats || 0}</div>
+                    <div class="text-sm">Candidats</div>
                 </div>
-            `;
-            document.getElementById('mainContent').innerHTML = html;
+                <div class="bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-4">
+                    <i class="fas fa-building text-3xl mb-2"></i>
+                    <div class="text-2xl font-bold">${stats?.total_entreprises || 0}</div>
+                    <div class="text-sm">Entreprises</div>
+                </div>
+                <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg p-4">
+                    <i class="fas fa-briefcase text-3xl mb-2"></i>
+                    <div class="text-2xl font-bold">${stats?.offres_actives || 0}</div>
+                    <div class="text-sm">Offres actives</div>
+                </div>
+                <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg p-4">
+                    <i class="fas fa-file-alt text-3xl mb-2"></i>
+                    <div class="text-2xl font-bold">${stats?.total_candidatures || 0}</div>
+                    <div class="text-sm">Candidatures</div>
+                </div>
+            </div>
+            
+            <!-- Tabs -->
+            <div class="flex mb-6 border-b">
+                <button onclick="showAdminCandidatsTab()" id="tabCandidats" class="px-6 py-3 font-semibold border-b-2 border-purple-600 text-purple-600">
+                    <i class="fas fa-user-graduate mr-2"></i>Candidats
+                </button>
+                <button onclick="showAdminEntreprisesTab()" id="tabEntreprises" class="px-6 py-3 font-semibold text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-building mr-2"></i>Entreprises
+                </button>
+            </div>
+            
+            <!-- Contenu des candidats (visible par défaut) -->
+            <div id="adminCandidatsContent">
+                ${generateAdminCandidatsHTML(candidats)}
+            </div>
+            
+            <!-- Contenu des entreprises (caché par défaut) -->
+            <div id="adminEntreprisesContent" style="display: none;">
+                ${generateAdminEntreprisesHTML(entreprises)}
+            </div>
+        </div>
+    `;
+    document.getElementById('mainContent').innerHTML = html;
+}
+
+// Générer le HTML des candidats pour l'admin
+function generateAdminCandidatsHTML(candidats) {
+    if (!candidats || candidats.length === 0) {
+        return '<p class="text-center text-gray-500 py-8">Aucun candidat inscrit.</p>';
+    }
+    
+    let html = `
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                <thead class="bg-gray-800 text-white">
+                    <tr>
+                        <th class="py-3 px-4 text-left">Photo</th>
+                        <th class="py-3 px-4 text-left">Nom complet</th>
+                        <th class="py-3 px-4 text-left">Contact</th>
+                        <th class="py-3 px-4 text-left">Métier recherché</th>
+                        <th class="py-3 px-4 text-left">Date inscription</th>
+                        <th class="py-3 px-4 text-left">Statut</th>
+                        <th class="py-3 px-4 text-left">Documents</th>
+                        <th class="py-3 px-4 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+    `;
+    
+    for (const candidat of candidats) {
+        html += `
+            <tr class="hover:bg-gray-50">
+                <td class="py-3 px-4">
+                    ${candidat.photo_url ? 
+                        `<img src="${candidat.photo_url}" class="w-10 h-10 rounded-full object-cover">` : 
+                        `<div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center"><i class="fas fa-user text-gray-500"></i></div>`
+                    }
+                </td>
+                <td class="py-3 px-4 font-medium">${candidat.prenom || ''} ${candidat.nom || ''}</td>
+                <td class="py-3 px-4 text-sm">
+                    <div>${candidat.telephone || '-'}</div>
+                    <div class="text-gray-500 text-xs">${candidat.ville || '-'}</div>
+                </td>
+                <td class="py-3 px-4 text-sm">${candidat.metier_recherche || '-'}</td>
+                <td class="py-3 px-4 text-sm">${new Date(candidat.created_at).toLocaleDateString()}</td>
+                <td class="py-3 px-4">
+                    <span class="status-badge ${candidat.status === 'actif' ? 'status-preselection' : 'status-non-retenu'}">
+                        ${candidat.status === 'actif' ? 'Actif' : 'Inactif'}
+                    </span>
+                </td>
+                <td class="py-3 px-4">
+                    <div class="flex flex-wrap gap-1">
+                        ${candidat.cv_url ? `<button onclick="viewDocument('${candidat.cv_url}', 'CV - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-file-pdf"></i> CV</button>` : ''}
+                        ${candidat.carte_identite_url ? `<button onclick="viewDocument('${candidat.carte_identite_url}', 'Carte d\'identité - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-id-card"></i> CIN</button>` : ''}
+                        ${candidat.diplomes_url ? `<button onclick="viewDocument('${candidat.diplomes_url}', 'Diplômes - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-graduation-cap"></i> Diplômes</button>` : ''}
+                        ${candidat.certificats_url ? `<button onclick="viewDocument('${candidat.certificats_url}', 'Certificats - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-certificate"></i> Certificats</button>` : ''}
+                        ${candidat.attestations_url ? `<button onclick="viewDocument('${candidat.attestations_url}', 'Attestations - ${candidat.prenom} ${candidat.nom}')" class="document-badge"><i class="fas fa-briefcase"></i> Attestations</button>` : ''}
+                    </div>
+                </td>
+                <td class="py-3 px-4">
+                    <button onclick="viewCandidatDetails('${candidat.id}')" class="text-blue-600 hover:text-blue-800 mr-2" title="Voir détails">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button onclick="toggleCandidatStatus('${candidat.id}', '${candidat.status}')" class="text-${candidat.status === 'actif' ? 'orange' : 'green'}-600 hover:text-${candidat.status === 'actif' ? 'orange' : 'green'}-800" title="${candidat.status === 'actif' ? 'Désactiver' : 'Activer'}">
+                        <i class="fas fa-${candidat.status === 'actif' ? 'ban' : 'check-circle'}"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }
+    
+    html += `
+                </tbody>
+            </table>
+        </div>
+    `;
+    
+    return html;
+}
+
+// Générer le HTML des entreprises pour l'admin
+function generateAdminEntreprisesHTML(entreprises) {
+    if (!entreprises || entreprises.length === 0) {
+        return '<p class="text-center text-gray-500 py-8">Aucune entreprise inscrite.</p>';
+    }
+    
+    let html = `
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white rounded-lg overflow-hidden">
+                <thead class="bg-gray-800 text-white">
+                    <tr>
+                        <th class="py-3 px-4 text-left">Entreprise</th>
+                        <th class="py-3 px-4 text-left">Secteur</th>
+                        <th class="py-3 px-4 text-left">Contact</th>
+                        <th class="py-3 px-4 text-left">Ville</th>
+                        <th class="py-3 px-4 text-left">Date inscription</th>
+                        <th class="py-3 px-4 text-left">Statut</th>
+                        <th class="py-3 px-4 text-left">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+    `;
+    
+    for (const entreprise of entreprises) {
+        html += `
+            <tr class="hover:bg-gray-50">
+                <td class="py-3 px-4 font-medium">${entreprise.nom_entreprise || '-'}</td>
+                <td class="py-3 px-4 text-sm">${entreprise.secteur_activite || '-'}</td>
+                <td class="py-3 px-4 text-sm">
+                    <div>${entreprise.responsable_rh || '-'}</div>
+                    <div class="text-gray-500 text-xs">${entreprise.telephone || '-'}</div>
+                    <div class="text-gray-500 text-xs">${entreprise.email || '-'}</div>
+                </td>
+                <td class="py-3 px-4 text-sm">${entreprise.ville || '-'}</td>
+                <td class="py-3 px-4 text-sm">${new Date(entreprise.created_at).toLocaleDateString()}</td>
+                <td class="py-3 px-4">
+                    <span class="status-badge ${entreprise.status === 'actif' ? 'status-preselection' : 'status-non-retenu'}">
+                        ${entreprise.status === 'actif' ? 'Actif' : 'Inactif'}
+                    </span>
+                </td>
+                <td class="py-3 px-4">
+                    <button onclick="viewEntrepriseDetails('${entreprise.id}')" class="text-blue-600 hover:text-blue-800 mr-2" title="Voir détails">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button onclick="toggleEntrepriseStatus('${entreprise.id}', '${entreprise.status}')" class="text-${entreprise.status === 'actif' ? 'orange' : 'green'}-600 hover:text-${entreprise.status === 'actif' ? 'orange' : 'green'}-800" title="${entreprise.status === 'actif' ? 'Désactiver' : 'Activer'}">
+                        <i class="fas fa-${entreprise.status === 'actif' ? 'ban' : 'check-circle'}"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }
+    
+    html += `
+                </tbody>
+            </table>
+        </div>
+    `;
+    
+    return html;
+}
+
+// Fonctions pour les onglets admin
+function showAdminCandidatsTab() {
+    document.getElementById('adminCandidatsContent').style.display = 'block';
+    document.getElementById('adminEntreprisesContent').style.display = 'none';
+    
+    document.getElementById('tabCandidats').classList.add('border-purple-600', 'text-purple-600');
+    document.getElementById('tabCandidats').classList.remove('text-gray-500');
+    document.getElementById('tabEntreprises').classList.remove('border-purple-600', 'text-purple-600');
+    document.getElementById('tabEntreprises').classList.add('text-gray-500');
+}
+
+function showAdminEntreprisesTab() {
+    document.getElementById('adminCandidatsContent').style.display = 'none';
+    document.getElementById('adminEntreprisesContent').style.display = 'block';
+    
+    document.getElementById('tabEntreprises').classList.add('border-purple-600', 'text-purple-600');
+    document.getElementById('tabEntreprises').classList.remove('text-gray-500');
+    document.getElementById('tabCandidats').classList.remove('border-purple-600', 'text-purple-600');
+    document.getElementById('tabCandidats').classList.add('text-gray-500');
+}
+
+// Voir un document
+function viewDocument(url, title) {
+    Swal.fire({
+        title: title,
+        html: `<iframe src="${url}" style="width:100%; height:500px; border:none;"></iframe>`,
+        width: '80%',
+        showConfirmButton: true,
+        confirmButtonText: 'Fermer'
+    });
+}
+
+// Voir les détails d'un candidat
+async function viewCandidatDetails(candidatId) {
+    const { data: candidat, error } = await supabaseClient
+        .from('candidats')
+        .select('*')
+        .eq('id', candidatId)
+        .single();
+    
+    if (error) {
+        Swal.fire('Erreur', error.message, 'error');
+        return;
+    }
+    
+    Swal.fire({
+        title: `Détails - ${candidat.prenom} ${candidat.nom}`,
+        html: `
+            <div class="text-left">
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <div><strong>📞 Téléphone:</strong> ${candidat.telephone || '-'}</div>
+                    <div><strong>📍 Ville:</strong> ${candidat.ville || '-'}</div>
+                    <div><strong>🎓 Niveau d'étude:</strong> ${candidat.niveau_etude || '-'}</div>
+                    <div><strong>💼 Métier recherché:</strong> ${candidat.metier_recherche || '-'}</div>
+                    <div><strong>💰 Salaire souhaité:</strong> ${candidat.salaire_souhaite ? candidat.salaire_souhaite + ' TND' : '-'}</div>
+                    <div><strong>🚗 Permis:</strong> ${candidat.permis_conduire ? 'Oui' : 'Non'}</div>
+                </div>
+                <div class="border-t pt-3">
+                    <strong>📝 Compétences:</strong>
+                    <p class="text-sm text-gray-600 mt-1">${candidat.competences || 'Non renseigné'}</p>
+                </div>
+                <div class="border-t pt-3 mt-2">
+                    <strong>💼 Expériences:</strong>
+                    <p class="text-sm text-gray-600 mt-1">${candidat.experiences || 'Non renseigné'}</p>
+                </div>
+            </div>
+        `,
+        width: '600px',
+        confirmButtonText: 'Fermer'
+    });
+}
+
+// Voir les détails d'une entreprise
+async function viewEntrepriseDetails(entrepriseId) {
+    const { data: entreprise, error } = await supabaseClient
+        .from('entreprises')
+        .select('*')
+        .eq('id', entrepriseId)
+        .single();
+    
+    if (error) {
+        Swal.fire('Erreur', error.message, 'error');
+        return;
+    }
+    
+    Swal.fire({
+        title: `Détails - ${entreprise.nom_entreprise}`,
+        html: `
+            <div class="text-left">
+                <div class="grid grid-cols-2 gap-2 mb-4">
+                    <div><strong>🏢 Secteur:</strong> ${entreprise.secteur_activite || '-'}</div>
+                    <div><strong>📍 Adresse:</strong> ${entreprise.adresse || '-'}</div>
+                    <div><strong>📍 Ville:</strong> ${entreprise.ville || '-'}</div>
+                    <div><strong>👤 Responsable RH:</strong> ${entreprise.responsable_rh || '-'}</div>
+                    <div><strong>📞 Téléphone:</strong> ${entreprise.telephone || '-'}</div>
+                    <div><strong>✉️ Email:</strong> ${entreprise.email || '-'}</div>
+                    <div><strong>📄 Matricule fiscal:</strong> ${entreprise.matricule_fiscal || '-'}</div>
+                    <div><strong>📋 Registre commerce:</strong> ${entreprise.registre_commerce || '-'}</div>
+                </div>
+            </div>
+        `,
+        width: '600px',
+        confirmButtonText: 'Fermer'
+    });
+}
+
+// Changer le statut d'un candidat
+async function toggleCandidatStatus(candidatId, currentStatus) {
+    const newStatus = currentStatus === 'actif' ? 'inactif' : 'actif';
+    const action = newStatus === 'actif' ? 'activer' : 'désactiver';
+    
+    const result = await Swal.fire({
+        title: `Confirmation`,
+        text: `Voulez-vous vraiment ${action} ce candidat ?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Oui',
+        cancelButtonText: 'Non'
+    });
+    
+    if (result.isConfirmed) {
+        const { error } = await supabaseClient
+            .from('candidats')
+            .update({ status: newStatus, updated_at: new Date() })
+            .eq('id', candidatId);
+        
+        if (error) {
+            Swal.fire('Erreur', error.message, 'error');
+        } else {
+            Swal.fire('Succès', `Candidat ${action} avec succès`, 'success');
+            showAdminDashboard(); // Rafraîchir la page
         }
+    }
+}
+
+// Changer le statut d'une entreprise
+async function toggleEntrepriseStatus(entrepriseId, currentStatus) {
+    const newStatus = currentStatus === 'actif' ? 'inactif' : 'actif';
+    const action = newStatus === 'actif' ? 'activer' : 'désactiver';
+    
+    const result = await Swal.fire({
+        title: `Confirmation`,
+        text: `Voulez-vous vraiment ${action} cette entreprise ?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Oui',
+        cancelButtonText: 'Non'
+    });
+    
+    if (result.isConfirmed) {
+        const { error } = await supabaseClient
+            .from('entreprises')
+            .update({ status: newStatus, updated_at: new Date() })
+            .eq('id', entrepriseId);
+        
+        if (error) {
+            Swal.fire('Erreur', error.message, 'error');
+        } else {
+            Swal.fire('Succès', `Entreprise ${action} avec succès`, 'success');
+            showAdminDashboard(); // Rafraîchir la page
+        }
+    }
+}
 
         // ====================================================
         // DÉCONNEXION
